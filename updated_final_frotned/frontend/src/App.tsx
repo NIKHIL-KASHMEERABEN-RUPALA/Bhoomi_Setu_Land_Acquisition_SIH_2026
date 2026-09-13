@@ -95,33 +95,6 @@ function AppShell({ children }: { children: ReactNode }) {
   const [aiModalOpen, setAiModalOpen] = useState(false);
   const [toast, setToast] = useState('');
   const [dark, setDark] = useState(() => window.localStorage.getItem('bhoomi-theme') === 'dark');
-  const [navTransition, setNavTransition] = useState<{
-    phase: 'in' | 'out';
-    targetHref: string;
-    targetLabel: string;
-    targetIcon?: any;
-  } | null>(null);
-
-  const handleNavSwitch = (href: string, label: string, Icon?: any) => {
-    if (navTransition) return;
-    const isCurrent = location === href || (href !== '/dashboard' && location.startsWith(href));
-    if (isCurrent) return;
-
-    setNavTransition({
-      phase: 'in',
-      targetHref: href,
-      targetLabel: label,
-      targetIcon: Icon,
-    });
-
-    window.setTimeout(() => {
-      setLocation(href);
-      setNavTransition((prev) => (prev ? { ...prev, phase: 'out' } : null));
-      window.setTimeout(() => {
-        setNavTransition(null);
-      }, 200);
-    }, 450);
-  };
 
   useEffect(() => {
     const listener = (event: KeyboardEvent) => {
@@ -159,16 +132,7 @@ function AppShell({ children }: { children: ReactNode }) {
         <div className="top-tier-1">
           <div className="top-tier-1-inner">
             <div className="brand-section">
-              <Link
-                href="/dashboard"
-                onClick={(e) => {
-                  if (location !== '/dashboard') {
-                    e.preventDefault();
-                    handleNavSwitch('/dashboard', 'Command center', LayoutDashboard);
-                  }
-                }}
-                style={{ display: 'flex', alignItems: 'center', gap: 12 }}
-              >
+              <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div className="logo-box">
                   <Landmark size={20} />
                 </div>
@@ -267,12 +231,6 @@ function AppShell({ children }: { children: ReactNode }) {
                 <Link
                   key={href}
                   href={href}
-                  onClick={(e) => {
-                    if (!isActive) {
-                      e.preventDefault();
-                      handleNavSwitch(href, label, Icon);
-                    }
-                  }}
                   className={`nav-tab ${isActive ? 'active' : ''}`}
                   data-testid={`link-nav-${label.toLowerCase().replaceAll(' ', '-')}`}
                 >
@@ -304,50 +262,13 @@ function AppShell({ children }: { children: ReactNode }) {
         </div>
       </footer>
 
-      {/* ═══ BHOOMISETU NAVBAR SWITCH LOGO POPUP ═══ */}
-      {navTransition && (
-        <div className={`nav-switch-overlay ${navTransition.phase}`} role="status" aria-live="polite">
-          <div className="nav-switch-card">
-            <div className="nav-switch-glow" />
-
-            <div className="nav-switch-emblem-wrap">
-              <div className="nav-switch-ring--outer" />
-              <div className="nav-switch-ring--inner" />
-              <div className="nav-switch-icon-box">
-                <Landmark size={28} />
-              </div>
-              <div className="nav-switch-pulse" />
-            </div>
-
-            <div className="nav-switch-brand">
-              <span className="nav-switch-tag">LAND INTELLIGENCE NETWORK</span>
-              <h3 className="nav-switch-name">BhoomiSetu</h3>
-            </div>
-
-            <div className="nav-switch-dest">
-              {navTransition.targetIcon ? (
-                <navTransition.targetIcon size={14} className="nav-switch-dest-icon" />
-              ) : (
-                <RouteIcon size={14} className="nav-switch-dest-icon" />
-              )}
-              <span>Opening <strong>{navTransition.targetLabel}</strong></span>
-            </div>
-
-            <div className="nav-switch-progress">
-              <div className="nav-switch-bar" />
-            </div>
-          </div>
-        </div>
-      )}
-
       {palette && (
         <CommandPalette
           commands={allNavItems}
           onClose={() => setPalette(false)}
           onNavigate={(href) => {
             setPalette(false);
-            const found = allNavItems.find((item) => item.href === href);
-            handleNavSwitch(href, found ? found.label : 'View', found?.icon);
+            setLocation(href);
           }}
         />
       )}
