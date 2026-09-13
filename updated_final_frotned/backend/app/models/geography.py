@@ -76,4 +76,15 @@ class LandParcel(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     area_hectares: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
     boundary_geojson: Mapped[str | None] = mapped_column(Text, nullable=True)
 
+    # Spatial and Habitation attributes for Nearest Parcel matching
+    latitude: Mapped[float | None] = mapped_column(Float, nullable=True)
+    longitude: Mapped[float | None] = mapped_column(Float, nullable=True)
+    map_x: Mapped[float | None] = mapped_column(Float, nullable=True)
+    map_y: Mapped[float | None] = mapped_column(Float, nullable=True)
+    habitation_status: Mapped[str] = mapped_column(String(50), default="none", nullable=False)  # "none", "sparse", "dense"
+    affected_families_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    structures_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    estimated_acquisition_days: Mapped[int] = mapped_column(Integer, default=30, nullable=False)
+
     village = relationship("Village", back_populates="parcels")
+

@@ -16,51 +16,74 @@ import joblib
 
 logger = logging.getLogger("bhoomi_setu.ml_bridge")
 
-ROOT_MODELS_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent / "models"
-BACKEND_MODELS_DIR = Path(__file__).resolve().parent.parent.parent / "model"
+def find_model_file(filename: str) -> Optional[Path]:
+    """Finds a model file by checking local backend, root repo, and Render paths."""
+    candidates = [
+        Path(__file__).resolve().parent.parent.parent / "model" / filename,
+        Path(__file__).resolve().parent.parent.parent.parent.parent / "models" / filename,
+        Path(__file__).resolve().parent.parent.parent.parent / "models" / filename,
+        Path.cwd() / "model" / filename,
+        Path.cwd() / "models" / filename,
+        Path("/opt/render/project/src/updated_final_frotned/backend/model") / filename,
+        Path("/opt/render/project/src/model") / filename,
+        Path("/opt/render/project/src/models") / filename,
+    ]
+    env_dir = os.getenv("MODEL_DIR")
+    if env_dir:
+        candidates.insert(0, Path(env_dir) / filename)
 
-XGB_PIPELINE_PATH = ROOT_MODELS_DIR / "bhoomi_xgb_pipeline.joblib"
-SHAP_EXPLAINER_PATH = ROOT_MODELS_DIR / "bhoomi_shap_explainer.joblib"
-METADATA_PATH = ROOT_MODELS_DIR / "model_metadata.json"
+    for c in candidates:
+        if c.exists():
+            return c
+    return None
+
 
 _xgb_pipeline = None
 _shap_explainer = None
 _model_metadata = None
 
+
 def get_xgb_pipeline():
     global _xgb_pipeline
     if _xgb_pipeline is None:
-        if XGB_PIPELINE_PATH.exists():
+        path = find_model_file("bhoomi_xgb_pipeline.joblib") or find_model_file("model.joblib")
+        if path and path.exists():
             try:
-                _xgb_pipeline = joblib.load(XGB_PIPELINE_PATH)
-                logger.info(f"Loaded 500-Tree XGBoost pipeline from {XGB_PIPELINE_PATH}")
+                _xgb_pipeline = joblib.load(path)
+                logger.info(f"Successfully loaded XGBoost pipeline from {path}")
             except Exception as e:
-                logger.warning(f"Could not load XGBoost pipeline: {e}")
+                logger.warning(f"Could not load XGBoost pipeline from {path}: {e}")
     return _xgb_pipeline
+
 
 def get_shap_explainer():
     global _shap_explainer
     if _shap_explainer is None:
-        if SHAP_EXPLAINER_PATH.exists():
+        path = find_model_file("bhoomi_shap_explainer.joblib")
+        if path and path.exists():
             try:
-                _shap_explainer = joblib.load(SHAP_EXPLAINER_PATH)
-                logger.info(f"Loaded SHAP explainer from {SHAP_EXPLAINER_PATH}")
+                _shap_explainer = joblib.load(path)
+                logger.info(f"Successfully loaded SHAP explainer from {path}")
             except Exception as e:
-                logger.warning(f"Could not load SHAP explainer: {e}")
+                logger.warning(f"Could not load SHAP explainer from {path}: {e}")
     return _shap_explainer
+
 
 def get_metadata() -> Dict[str, Any]:
     global _model_metadata
     if _model_metadata is None:
-        if METADATA_PATH.exists():
+        path = find_model_file("model_metadata.json")
+        if path and path.exists():
             try:
-                with open(METADATA_PATH, "r", encoding="utf-8") as f:
+                with open(path, "r", encoding="utf-8") as f:
                     _model_metadata = json.load(f)
-            except Exception:
+            except Exception as e:
+                logger.warning(f"Could not load metadata from {path}: {e}")
                 _model_metadata = {}
         else:
             _model_metadata = {}
     return _model_metadata or {}
+
 
 def build_features(data: Dict[str, Any]) -> pd.DataFrame:
     """Computes all B.L.A.S.T. domain features and interaction terms."""

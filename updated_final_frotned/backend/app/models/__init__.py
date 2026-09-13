@@ -23,6 +23,14 @@ from app.models.decisions import (
     InterventionStatusEnum,
 )
 from app.models.audit import AuditLog
+from app.models.group_land import (
+    GroupLandParcel,
+    ParcelCoOwner,
+    ShareSaleRequest,
+    BuyerInquiry,
+    OwnershipAuditTrail,
+    ShareStatusEnum,
+)
 
 __all__ = [
     "Base",

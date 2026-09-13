@@ -25,6 +25,7 @@ import { syncRealtimeDataToBackend } from '@/lib/syncService';
 import { clearStoredToken } from '@/lib/api';
 import { ProjectIndicatorMatrixModal } from '@/components/project-indicator-matrix-modal';
 import { LoginPage } from '@/components/login-page';
+import { GroupLandView } from '@/components/group-land-view';
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const navTabs = [
   { href: '/district-diagnostics', label: 'District diagnostics', icon: BarChart3 },
   { href: '/early-warning', label: 'Early warning center', icon: ShieldAlert },
   { href: '/fund-tracking', label: 'Fund tracking', icon: WalletCards },
+  { href: '/group-land', label: 'Group Land & Co-Ownership', icon: Users },
   { href: '/project/p-004', label: 'Projects 360', icon: Network },
   { href: '/intelligence', label: 'Intelligence modules', icon: Cpu },
   { href: '/state-benchmarking', label: 'State benchmarking', icon: BarChart2 },
@@ -781,6 +783,17 @@ function ShaderDemo() { return <div className="page-wrap"><PageHeader eyebrow="V
 function Placeholder({ title, eyebrow = 'Workspace' }: { title: string; eyebrow?: string }) { return <div className="page-wrap"><PageHeader eyebrow={eyebrow} title={title} description="This operational view is ready for the next data service connection." /><div className="surface" style={{ minHeight: 330, display: 'grid', placeItems: 'center', textAlign: 'center', padding: 28 }}><div><FileCheck2 size={34} className="muted" style={{ margin: '0 auto 13px' }} /><h2 style={{ fontSize: 17, margin: 0, color: '#102A43' }}>No records to display</h2><p className="muted tiny" style={{ maxWidth: 360, lineHeight: 1.5 }}>The service boundary is in place. Connect the district feed to populate this workspace.</p><Link href="/dashboard" className="btn btn-primary" style={{ marginTop: 11 }}>Back to state overview</Link></div></div></div>; }
 function NotFound() { return <div className="page-wrap" style={{ minHeight: 'calc(100dvh - 76px)', display: 'grid', placeItems: 'center' }}><div style={{ textAlign: 'center' }}><div className="mono" style={{ fontSize: 86, lineHeight: .9, color: 'rgba(15, 168, 154, 0.2)', fontWeight: 700 }}>404</div><h1 className="display" style={{ fontSize: 30, margin: '20px 0 8px', color: '#102A43' }}>This parcel is not on the map.</h1><p className="muted" style={{ fontSize: 13 }}>The view you requested does not exist in this control room.</p><Link className="btn btn-primary" style={{ marginTop: 16 }} href="/dashboard">Return to state overview</Link></div></div>; }
 
+function GroupLandPage() {
+  const [notice, setNotice] = useState('');
+  const notify = (message: string) => { setNotice(message); window.setTimeout(() => setNotice(''), 3400); };
+  return (
+    <div>
+      <GroupLandView onNotify={notify} />
+      {notice && <div className="toast-note" role="status" data-testid="status-group-land-toast"><Check size={16} color="#16A878" /> {notice}</div>}
+    </div>
+  );
+}
+
 function Router() {
   return (
     <Switch>
@@ -794,6 +807,7 @@ function Router() {
             <Route path="/district-diagnostics" component={DiagnosticsGujarat} />
             <Route path="/early-warning" component={EarlyWarning} />
             <Route path="/fund-tracking" component={Funds} />
+            <Route path="/group-land" component={GroupLandPage} />
             <Route path="/project/:id" component={Project360} />
             <Route path="/intelligence" component={Intelligence} />
             <Route path="/policy-briefing" component={PolicyBriefingPage} />

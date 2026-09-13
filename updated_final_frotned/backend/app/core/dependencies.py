@@ -40,6 +40,31 @@ async def get_current_user(
     return user
 
 
+async def get_optional_user(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security_scheme),
+    db: AsyncSession = Depends(get_db),
+) -> Optional[User]:
+    """
+    Returns the authenticated user if valid token is provided, otherwise None.
+    Permits public read exploration without throwing 401 exceptions.
+    """
+    if not credentials or credentials.scheme.lower() != "bearer":
+        return None
+
+    try:
+        token = credentials.credentials
+        payload = decode_access_token(token)
+        user_id = payload.get("sub")
+        if not user_id:
+            return None
+
+        stmt = select(User).where(User.id == user_id, User.is_active == True)
+        result = await db.execute(stmt)
+        return result.scalar_one_or_none()
+    except Exception:
+        return None
+
+
 def require_roles(*allowed_roles: RoleEnum) -> Callable[..., Any]:
     """
     Role-Based Access Control (RBAC) dependency factory.

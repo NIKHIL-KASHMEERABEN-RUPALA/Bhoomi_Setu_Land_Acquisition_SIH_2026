@@ -15,6 +15,8 @@ from app.api.v1.rr import router as rr_router
 from app.api.v1.simulation import router as simulation_router
 from app.api.v1.stakeholders import router as stakeholders_router
 
+from app.api.v1.group_land import router as group_land_router
+
 api_v1_router = APIRouter()
 
 # Register domain sub-routers
@@ -33,3 +35,4 @@ api_v1_router.include_router(stakeholders_router)
 api_v1_router.include_router(map_router)
 api_v1_router.include_router(alerts_router)
 api_v1_router.include_router(audit_router)
+api_v1_router.include_router(group_land_router)
