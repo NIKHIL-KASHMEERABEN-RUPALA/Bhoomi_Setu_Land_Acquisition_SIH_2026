@@ -319,12 +319,12 @@ function CommandPalette({ commands, onClose, onNavigate }: { commands: Array<{ h
             <button
               key={href}
               onClick={() => onNavigate(href)}
-              style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 11, padding: '11px 10px', border: 0, borderRadius: 7, background: 'transparent', color: '#102A43', textAlign: 'left' }}
+              className="palette-item"
               data-testid={`command-${label.toLowerCase().replaceAll(' ', '-')}`}
             >
-              <Icon size={16} color="#0FA89A" />
-              <span style={{ fontSize: 13, fontWeight: 500 }}>{label}</span>
-              <span style={{ marginLeft: 'auto', fontSize: 11, color: '#78909C' }}>Open view</span>
+              <span className="palette-item-icon"><Icon size={16} /></span>
+              <span className="palette-item-label">{label}</span>
+              <span className="palette-item-hint">Open view</span>
             </button>
           ))}
           {!filtered.length && <div style={{ padding: 22, textAlign: 'center', fontSize: 13, color: '#78909C' }}>No matching operational view.</div>}

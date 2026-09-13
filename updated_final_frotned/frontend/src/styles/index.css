@@ -1138,6 +1138,70 @@ a { color: inherit; text-decoration: none; }
   overflow: hidden;
 }
 
+.palette-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #102A43;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+  outline: none;
+}
+
+.palette-item:hover {
+  background: #EDF6F5;
+  color: #064C55;
+}
+
+.palette-item:hover .palette-item-label {
+  color: #064C55;
+  font-weight: 600;
+}
+
+.palette-item:hover .palette-item-hint {
+  color: #0FA89A;
+}
+
+.palette-item:active {
+  background: #D0EFEC;
+  transform: scale(0.99);
+}
+
+.palette-item:focus-visible {
+  background: #EDF6F5;
+  box-shadow: 0 0 0 2px #0FA89A;
+}
+
+.palette-item-icon {
+  flex-shrink: 0;
+  color: #0FA89A;
+  transition: color 0.12s ease;
+}
+
+.palette-item:hover .palette-item-icon {
+  color: #064C55;
+}
+
+.palette-item-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #102A43;
+  transition: color 0.12s ease;
+}
+
+.palette-item-hint {
+  margin-left: auto;
+  font-size: 11px;
+  color: #78909C;
+  transition: color 0.12s ease;
+}
+
 .toast-note {
   position: fixed;
   right: 24px;
