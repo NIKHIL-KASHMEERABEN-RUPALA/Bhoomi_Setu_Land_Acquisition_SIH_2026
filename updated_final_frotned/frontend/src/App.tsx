@@ -7,7 +7,7 @@ import {
   Activity, AlertCircle, ArrowDownRight, ArrowUpRight, BarChart2, BarChart3, Bell, BookOpen, Briefcase, BriefcaseBusiness,
   Building2, Check, CheckCircle2, ChevronDown, CircleHelp, ClipboardList, Clock3, Command, Cpu, Download,
   ExternalLink, FileCheck2, FileSearch2, FileText, Filter, Gauge, Globe2, Landmark, LayoutDashboard,
-  ListFilter, LockKeyhole, Map as MapIcon, MapPinned, Menu, Moon, MoreHorizontal, Network, PanelLeftClose,
+  ListFilter, LockKeyhole, LogOut, Map as MapIcon, MapPinned, Menu, Moon, MoreHorizontal, Network, PanelLeftClose,
   Search, Send, Server, Settings2, ShieldAlert, SlidersHorizontal, Sparkles, Sun, Target, TrendingDown,
   TrendingUp, Users, WalletCards, X, Zap, Route as RouteIcon,
 } from 'lucide-react';
@@ -22,13 +22,14 @@ import { Project360View } from '@/components/project-360-view';
 import { FundTrackingView } from '@/components/fund-tracking-view';
 import { StateBenchmarkingView } from '@/components/state-benchmarking-view';
 import { syncRealtimeDataToBackend } from '@/lib/syncService';
+import { clearStoredToken } from '@/lib/api';
 import { ProjectIndicatorMatrixModal } from '@/components/project-indicator-matrix-modal';
 import { LoginPage } from '@/components/login-page';
 
 const queryClient = new QueryClient();
 
 const navTabs = [
-  { href: '/', label: 'Command center', icon: LayoutDashboard },
+  { href: '/dashboard', label: 'Command center', icon: LayoutDashboard },
   { href: '/corridor-map', label: 'National corridor map', icon: RouteIcon },
   { href: '/district-diagnostics', label: 'District diagnostics', icon: BarChart3 },
   { href: '/early-warning', label: 'Early warning center', icon: ShieldAlert },
@@ -129,7 +130,7 @@ function AppShell({ children }: { children: ReactNode }) {
         <div className="top-tier-1">
           <div className="top-tier-1-inner">
             <div className="brand-section">
-              <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div className="logo-box">
                   <Landmark size={20} />
                 </div>
@@ -203,6 +204,19 @@ function AppShell({ children }: { children: ReactNode }) {
               >
                 RK
               </Link>
+
+              <button
+                className="icon-btn"
+                onClick={() => {
+                  clearStoredToken();
+                  setLocation('/login');
+                }}
+                aria-label="Logout"
+                title="Logout of BhoomiSetu"
+                data-testid="button-logout"
+              >
+                <LogOut size={18} />
+              </button>
             </div>
           </div>
         </div>
@@ -210,7 +224,7 @@ function AppShell({ children }: { children: ReactNode }) {
         <div className="top-tier-2">
           <nav className="nav-tabs">
             {navTabs.map(({ href, label, icon: Icon }) => {
-              const isActive = href === '/' ? location === '/' : location.startsWith(href);
+              const isActive = location === href || (href !== '/dashboard' && location.startsWith(href));
               return (
                 <Link
                   key={href}
@@ -763,18 +777,19 @@ function AuditLog() {
     <div className="grid-main"><Section title="Activity stream" subtitle="Timestamp · actor · action · resource · status"><div className="table-wrap"><table className="data-table" style={{ minWidth: 740 }}><thead><tr><th>Timestamp</th><th>Actor</th><th>Action</th><th>Resource</th><th>Status</th><th aria-label="Inspect event" /></tr></thead><tbody>{filtered.map((entry) => <tr key={entry.id} onClick={() => setSelected(entry)} style={{ cursor: 'pointer', background: selected?.id === entry.id ? '#EDF6F5' : undefined }} data-testid={`row-audit-${entry.id}`}><td className="mono tiny">{entry.timestamp}</td><td><strong>{entry.actor}</strong><div className="tiny muted">{entry.role}</div></td><td>{entry.action}</td><td className="mono tiny">{entry.resource}</td><td><span className={`tag ${entry.status === 'Success' ? 'risk-low' : entry.status === 'Review' ? 'risk-moderate' : 'risk-critical'}`}>{entry.status}</span></td><td><button className="btn btn-quiet" onClick={(event) => { event.stopPropagation(); setSelected(entry); }} aria-label={`Inspect audit event ${entry.id}`} data-testid={`button-inspect-${entry.id}`}><MoreHorizontal size={16} /></button></td></tr>)}</tbody></table></div>{!filtered.length && <div className="muted" style={{ padding: 28, textAlign: 'center' }}>No audit events match these filters.</div>}</Section><Section title={selected ? 'Event detail' : 'Inspect an event'} subtitle={selected ? selected.id : 'Select a row to review the recorded context'}>{selected ? <div className="reveal"><div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'start' }}><div><div className="eyebrow">{selected.action}</div><div style={{ fontSize: 20, fontWeight: 700, marginTop: 6, color: '#102A43' }}>{selected.resource}</div></div><span className={`tag ${selected.status === 'Success' ? 'risk-low' : selected.status === 'Review' ? 'risk-moderate' : 'risk-critical'}`}>{selected.status}</span></div><div className="audit-detail" style={{ marginTop: 20 }}><div className="tiny muted">Recorded detail</div><p style={{ fontSize: 13, lineHeight: 1.55, margin: '6px 0 0', color: '#526B82' }}>{selected.detail}</p></div><div style={{ display: 'grid', gap: 9, marginTop: 18 }}>{[['Actor', selected.actor], ['Role', selected.role], ['Timestamp', selected.timestamp]].map(([label, value]) => <div key={label} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E5EFEE', paddingBottom: 8 }}><span className="tiny muted">{label}</span><span className="tiny" style={{ color: '#102A43' }}>{value}</span></div>)}</div></div> : <div style={{ padding: '45px 12px', textAlign: 'center' }}><ClipboardList size={27} className="muted" /><p className="muted tiny">Select an event to inspect its evidence and status.</p></div>}</Section></div>
   </div>;
 }
-function ShaderDemo() { return <div className="page-wrap"><PageHeader eyebrow="Visual lab · isolated demo" title="A quiet visual instrument." description="A separate exploration space for the BhoomiSetu signal language. Nothing here changes operational data." actions={<Link className="btn btn-soft" href="/">Return to operations</Link>} /><div className="surface" style={{ overflow: 'hidden', minHeight: 440, background: '#042E35', position: 'relative' }}><div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 25% 40%, rgba(15, 168, 154, 0.22), transparent 30%), radial-gradient(circle at 78% 60%, rgba(6, 76, 85, 0.5), transparent 35%)' }} /><div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px)', backgroundSize: '42px 42px', transform: 'perspective(500px) rotateX(54deg) scale(1.35)', transformOrigin: 'center bottom' }} /><div style={{ position: 'relative', zIndex: 1, padding: 45, color: '#F5FAF9' }}><div className="eyebrow" style={{ color: '#0FA89A' }}>Signal / terrain / action</div><div style={{ fontSize: 'clamp(36px, 8vw, 88px)', maxWidth: 760, letterSpacing: '-.07em', lineHeight: .9, marginTop: 17 }}>See the <span style={{ color: '#0FA89A' }}>terrain</span><br />before you move.</div><p style={{ maxWidth: 480, fontSize: 14, lineHeight: 1.6, color: '#A3C6C4', marginTop: 24 }}>The visual language is grounded in Deep Teal, Ocean Teal, and Clean Navy — an institutional GovTech framework for national infrastructure intelligence that values evidence over spectacle.</p><div style={{ display: 'flex', gap: 8, marginTop: 30 }}><span className="tag" style={{ color: '#E85D68', borderColor: 'rgba(232, 93, 104, 0.4)', background: 'transparent' }}>Critical signal</span><span className="tag" style={{ color: '#16A878', borderColor: 'rgba(22, 168, 120, 0.4)', background: 'transparent' }}>Actionable</span></div></div></div></div>; }
-function Placeholder({ title, eyebrow = 'Workspace' }: { title: string; eyebrow?: string }) { return <div className="page-wrap"><PageHeader eyebrow={eyebrow} title={title} description="This operational view is ready for the next data service connection." /><div className="surface" style={{ minHeight: 330, display: 'grid', placeItems: 'center', textAlign: 'center', padding: 28 }}><div><FileCheck2 size={34} className="muted" style={{ margin: '0 auto 13px' }} /><h2 style={{ fontSize: 17, margin: 0, color: '#102A43' }}>No records to display</h2><p className="muted tiny" style={{ maxWidth: 360, lineHeight: 1.5 }}>The service boundary is in place. Connect the district feed to populate this workspace.</p><Link href="/" className="btn btn-primary" style={{ marginTop: 11 }}>Back to state overview</Link></div></div></div>; }
-function NotFound() { return <div className="page-wrap" style={{ minHeight: 'calc(100dvh - 76px)', display: 'grid', placeItems: 'center' }}><div style={{ textAlign: 'center' }}><div className="mono" style={{ fontSize: 86, lineHeight: .9, color: 'rgba(15, 168, 154, 0.2)', fontWeight: 700 }}>404</div><h1 className="display" style={{ fontSize: 30, margin: '20px 0 8px', color: '#102A43' }}>This parcel is not on the map.</h1><p className="muted" style={{ fontSize: 13 }}>The view you requested does not exist in this control room.</p><Link className="btn btn-primary" style={{ marginTop: 16 }} href="/">Return to state overview</Link></div></div>; }
+function ShaderDemo() { return <div className="page-wrap"><PageHeader eyebrow="Visual lab · isolated demo" title="A quiet visual instrument." description="A separate exploration space for the BhoomiSetu signal language. Nothing here changes operational data." actions={<Link className="btn btn-soft" href="/dashboard">Return to operations</Link>} /><div className="surface" style={{ overflow: 'hidden', minHeight: 440, background: '#042E35', position: 'relative' }}><div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 25% 40%, rgba(15, 168, 154, 0.22), transparent 30%), radial-gradient(circle at 78% 60%, rgba(6, 76, 85, 0.5), transparent 35%)' }} /><div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px)', backgroundSize: '42px 42px', transform: 'perspective(500px) rotateX(54deg) scale(1.35)', transformOrigin: 'center bottom' }} /><div style={{ position: 'relative', zIndex: 1, padding: 45, color: '#F5FAF9' }}><div className="eyebrow" style={{ color: '#0FA89A' }}>Signal / terrain / action</div><div style={{ fontSize: 'clamp(36px, 8vw, 88px)', maxWidth: 760, letterSpacing: '-.07em', lineHeight: .9, marginTop: 17 }}>See the <span style={{ color: '#0FA89A' }}>terrain</span><br />before you move.</div><p style={{ maxWidth: 480, fontSize: 14, lineHeight: 1.6, color: '#A3C6C4', marginTop: 24 }}>The visual language is grounded in Deep Teal, Ocean Teal, and Clean Navy — an institutional GovTech framework for national infrastructure intelligence that values evidence over spectacle.</p><div style={{ display: 'flex', gap: 8, marginTop: 30 }}><span className="tag" style={{ color: '#E85D68', borderColor: 'rgba(232, 93, 104, 0.4)', background: 'transparent' }}>Critical signal</span><span className="tag" style={{ color: '#16A878', borderColor: 'rgba(22, 168, 120, 0.4)', background: 'transparent' }}>Actionable</span></div></div></div></div>; }
+function Placeholder({ title, eyebrow = 'Workspace' }: { title: string; eyebrow?: string }) { return <div className="page-wrap"><PageHeader eyebrow={eyebrow} title={title} description="This operational view is ready for the next data service connection." /><div className="surface" style={{ minHeight: 330, display: 'grid', placeItems: 'center', textAlign: 'center', padding: 28 }}><div><FileCheck2 size={34} className="muted" style={{ margin: '0 auto 13px' }} /><h2 style={{ fontSize: 17, margin: 0, color: '#102A43' }}>No records to display</h2><p className="muted tiny" style={{ maxWidth: 360, lineHeight: 1.5 }}>The service boundary is in place. Connect the district feed to populate this workspace.</p><Link href="/dashboard" className="btn btn-primary" style={{ marginTop: 11 }}>Back to state overview</Link></div></div></div>; }
+function NotFound() { return <div className="page-wrap" style={{ minHeight: 'calc(100dvh - 76px)', display: 'grid', placeItems: 'center' }}><div style={{ textAlign: 'center' }}><div className="mono" style={{ fontSize: 86, lineHeight: .9, color: 'rgba(15, 168, 154, 0.2)', fontWeight: 700 }}>404</div><h1 className="display" style={{ fontSize: 30, margin: '20px 0 8px', color: '#102A43' }}>This parcel is not on the map.</h1><p className="muted" style={{ fontSize: 13 }}>The view you requested does not exist in this control room.</p><Link className="btn btn-primary" style={{ marginTop: 16 }} href="/dashboard">Return to state overview</Link></div></div>; }
 
 function Router() {
   return (
     <Switch>
+      <Route path="/" component={LoginPage} />
       <Route path="/login" component={LoginPage} />
       <Route>
         <AppShell>
           <Switch>
-            <Route path="/" component={Overview} />
+            <Route path="/dashboard" component={Overview} />
             <Route path="/corridor-map" component={CorridorMap} />
             <Route path="/district-diagnostics" component={DiagnosticsGujarat} />
             <Route path="/early-warning" component={EarlyWarning} />

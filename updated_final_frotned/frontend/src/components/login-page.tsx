@@ -303,7 +303,7 @@ export function LoginPage() {
         clearInterval(progressInterval);
         setLogoProgress(100);
         setTimeout(() => {
-          navigate('/');
+          navigate('/dashboard');
         }, 550);
       }, 1600);
     } catch (err: any) {
@@ -662,7 +662,7 @@ export function LoginPage() {
                   setTimeout(() => setLogoProgress(70), 400);
                   setTimeout(() => {
                     setLogoProgress(100);
-                    setTimeout(() => navigate('/'), 500);
+                    setTimeout(() => navigate('/dashboard'), 500);
                   }, 1200);
                 }}
                 className="portal-instant-demo-btn"
