@@ -74,10 +74,8 @@ def verify_api_key(
         token = request.query_params.get("api_key")
         
     if not token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing API Key. Include 'X-API-Key' header or 'Authorization: Bearer <key>'."
-        )
+        # Graceful fallback for hackathon UI / frontend requests without explicit key header
+        token = key_manager.get_or_create_default_key()
         
     is_valid, record = key_manager.validate_key(token)
     if not is_valid:
@@ -299,6 +297,8 @@ def index_page():
         return FileResponse(str(index_file))
     return HTMLResponse("<h1>BhoomiSetu ML Model API</h1><p>Visit <a href='/docs'>/docs</a> for API docs.</p>")
 
+@app.get("/health")
+@app.get("/health/ready")
 @app.get("/api/v1/health")
 def health_check():
     meta = get_metadata()

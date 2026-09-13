@@ -59,8 +59,9 @@ class Predictor:
         if not settings.ML_MODEL_URL or not settings.ML_API_KEY:
             return None
 
-        # Guard: In deployed production (e.g. Render), skip remote if URL points to localhost to avoid connection timeouts
-        if settings.ENVIRONMENT.lower() == "production" and ("localhost" in settings.ML_MODEL_URL or "127.0.0.1" in settings.ML_MODEL_URL):
+        # Bypass remote HTTP call if ML_MODEL_URL points to localhost/127.0.0.1:
+        # the model is already embedded in this backend; avoid self-referential HTTP deadlock & timeouts.
+        if "localhost" in settings.ML_MODEL_URL or "127.0.0.1" in settings.ML_MODEL_URL:
             return None
 
         url = f"{settings.ML_MODEL_URL.rstrip('/')}/api/v1/predict"

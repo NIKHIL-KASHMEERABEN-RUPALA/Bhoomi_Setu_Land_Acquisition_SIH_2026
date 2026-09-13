@@ -96,11 +96,13 @@ app.add_exception_handler(Exception, unhandled_exception_handler)  # type: ignor
 # CORS Configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_origins=[o.strip() for o in settings.BACKEND_CORS_ORIGINS if o.strip()],
+    allow_origin_regex=r"^https?://.*",
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 
 @app.middleware("http")

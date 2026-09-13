@@ -196,23 +196,24 @@ def classify_risk_tier(prob: float) -> Tuple[str, str, str, str]:
         return (
             "Critical",
             "8–12 months severe delay",
-            "🚨 Immediate Collector Escalation: Clear pending compensation tranches and file counter-affidavit on active High Court stays within 72 hours.",
+            "[CRITICAL] Immediate Collector Escalation: Clear pending compensation tranches and file counter-affidavit on active High Court stays within 72 hours.",
             "#E85D68"
         )
     elif prob >= 0.50:
         return (
             "High",
             "4–7 months predicted hold-up",
-            "⚠️ District Collector Review: Reconcile village land registers and convene compensation disbursement camp to unblock critical ROW.",
+            "[HIGH] District Collector Review: Reconcile village land registers and convene compensation disbursement camp to unblock critical ROW.",
             "#F2A51A"
         )
     elif prob >= 0.30:
         return (
             "Moderate",
             "2–4 months potential friction",
-            "⚡ Monitor Grievance Timeline: Facilitate joint measurement survey review and expedite inter-agency NOC clearances.",
+            "[MODERATE] Monitor Grievance Timeline: Facilitate joint measurement survey review and expedite inter-agency NOC clearances.",
             "#5BA7D9"
         )
+
     else:
         return (
             "Low",
