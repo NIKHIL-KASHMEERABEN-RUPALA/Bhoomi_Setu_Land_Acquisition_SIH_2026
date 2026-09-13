@@ -382,14 +382,11 @@ a { color: inherit; text-decoration: none; }
 /* Header Tier 2: Dark Teal #063F49 */
 .top-tier-2 {
   background: var(--header-sub-bg);
-  padding: 0 24px;
-  overflow-x: auto;
-  scrollbar-width: none;
   border-bottom: 1px solid var(--header-border);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .top-tier-2::-webkit-scrollbar {
@@ -400,25 +397,28 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  height: 48px;
-  min-width: max-content;
+  gap: 2px;
+  height: 46px;
+  max-width: 1440px;
   margin: 0 auto;
+  padding: 0 24px;
+  width: 100%;
 }
 
 .nav-tab {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 8px 16px;
+  gap: 5px;
+  padding: 6px 10px;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--header-muted);
   transition: all 0.15s ease;
   white-space: nowrap;
   border-bottom: 2px solid transparent;
+  flex-shrink: 0;
 }
 
 .nav-tab:hover {
