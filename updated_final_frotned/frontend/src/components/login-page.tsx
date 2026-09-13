@@ -1,28 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import {
-  Shield,
-  Lock,
-  Mail,
-  Eye,
-  EyeOff,
-  Landmark,
-  CheckCircle2,
-  AlertCircle,
-  ArrowRight,
-  Sparkles,
-  Fingerprint,
-  Building2,
-  ShieldCheck,
-  Compass,
-  Cpu,
-  RefreshCw,
-  ChevronDown,
-  Layers,
-  Globe,
-  Activity,
-  Zap,
-  Route as RouteIcon,
+  Shield, Lock, Mail, Eye, EyeOff, Landmark, CheckCircle2,
+  AlertCircle, ArrowRight, Sparkles, Building2, ShieldCheck, Compass,
+  RefreshCw, ChevronDown, MapPin, Users, TrendingUp,
+  AlertTriangle, ClipboardCheck, Banknote,
 } from 'lucide-react';
 import { login, setStoredToken } from '@/lib/api';
 
@@ -44,7 +26,7 @@ const DEMO_ACCOUNTS: DemoAccount[] = [
     name: 'R. K. Shah, IAS',
     email: 'admin@bhoomisetu.gov.in',
     pass: 'Bhoomi#Admin2026!',
-    jurisdiction: 'Gujarat Statewide • All 33 Districts',
+    jurisdiction: 'Gujarat Statewide \u2022 All 33 Districts',
     description: 'Full statutory portfolio oversight, Task Force escalations, inter-departmental clearances.',
     icon: Landmark,
   },
@@ -54,7 +36,7 @@ const DEMO_ACCOUNTS: DemoAccount[] = [
     name: 'Dr. Sourabh Zaveri, IAS',
     email: 'collector.surat@bhoomisetu.gov.in',
     pass: 'Surat#Collector2026!',
-    jurisdiction: 'Surat District • Diamond & Bullet Train Corridors',
+    jurisdiction: 'Surat District \u2022 Diamond & Bullet Train Corridors',
     description: 'Section 23 Award approval, DBT tranche authorization, land compensation disbursements.',
     icon: Building2,
   },
@@ -64,7 +46,7 @@ const DEMO_ACCOUNTS: DemoAccount[] = [
     name: 'P. M. Patel, GAS',
     email: 'officer.bharuch@bhoomisetu.gov.in',
     pass: 'Bharuch#Officer2026!',
-    jurisdiction: 'Bharuch & Ankleshwar • Chemical Belt & NH-48',
+    jurisdiction: 'Bharuch & Ankleshwar \u2022 Chemical Belt & NH-48',
     description: 'Joint Measurement Surveys, cadastral verification, mauza-level hearing records.',
     icon: Compass,
   },
@@ -74,10 +56,83 @@ const DEMO_ACCOUNTS: DemoAccount[] = [
     name: 'V. K. Meena, IA&AS',
     email: 'auditor.state@bhoomisetu.gov.in',
     pass: 'Bhoomi#Audit2026!',
-    jurisdiction: 'State Auditor General Office • Escrow Reconciliation',
+    jurisdiction: 'State Auditor General Office \u2022 Escrow Reconciliation',
     description: 'DBT ledger aging verification (>90 days), statutory compliance and financial audit.',
     icon: ShieldCheck,
   },
+];
+
+// Cadastral parcels for background grid
+const PARCEL_STATUS = ['clear','clear','clear','survey','acquired','disputed','compensated'];
+const PARCELS = Array.from({ length: 48 }, (_, i) => ({
+  id: i,
+  col: (i % 8) + 1,
+  row: Math.floor(i / 8) + 1,
+  status: PARCEL_STATUS[i % PARCEL_STATUS.length],
+  delay: (i * 0.07).toFixed(2),
+}));
+
+const STATUS_COLORS: Record<string, string> = {
+  clear: 'rgba(22,168,120,0.10)',
+  survey: 'rgba(242,165,26,0.18)',
+  acquired: 'rgba(15,168,154,0.22)',
+  disputed: 'rgba(232,93,104,0.18)',
+  compensated: 'rgba(78,224,209,0.18)',
+};
+const STATUS_BORDER: Record<string, string> = {
+  clear: 'rgba(22,168,120,0.28)',
+  survey: 'rgba(242,165,26,0.45)',
+  acquired: 'rgba(15,168,154,0.55)',
+  disputed: 'rgba(232,93,104,0.45)',
+  compensated: 'rgba(78,224,209,0.55)',
+};
+
+const PIPELINE_STAGES = [
+  {
+    icon: ClipboardCheck,
+    code: 'SEC. 4',
+    title: 'Preliminary Notification',
+    sub: 'Section 4 / Section 11 RFCTLARR',
+    color: '#F2A51A',
+    count: '2,847 notices',
+    desc: 'Intent-to-acquire published in district gazette. Objection window of 60 days activated.',
+  },
+  {
+    icon: Compass,
+    code: 'SURVEY',
+    title: 'Joint Measurement Survey',
+    sub: 'Cadastral Verification & Mauza Records',
+    color: '#4EE0D1',
+    count: '1,203 plots',
+    desc: 'Field officers map plot boundaries, ownership chains, and encumbrances on ground.',
+  },
+  {
+    icon: MapPin,
+    code: 'SEC. 19',
+    title: 'Award Declaration',
+    sub: 'Section 19 / Section 23 Collector Award',
+    color: '#0FA89A',
+    count: '889 awarded',
+    desc: 'Collector passes final award. Market-rate compensation computed with solatium & annuity.',
+  },
+  {
+    icon: Banknote,
+    code: 'DBT',
+    title: 'Direct Benefit Transfer',
+    sub: 'Escrow Vault \u2192 Beneficiary Account',
+    color: '#16A878',
+    count: '\u20b94,250 Cr',
+    desc: 'Statutory compensation disbursed via DBT. Delayed tranches flagged automatically by AI.',
+  },
+];
+
+const SEAL_TEXTS = [
+  'Verifying identity...',
+  'Validating jurisdiction scope...',
+  'Loading cadastral mesh...',
+  'Binding statutory roles...',
+  'Initialising district feed...',
+  'Access granted. Welcome.',
 ];
 
 export function LoginPage() {
@@ -92,639 +147,392 @@ export function LoginPage() {
   const [captchaChecked, setCaptchaChecked] = useState(true);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [hoveredParcel, setHoveredParcel] = useState<number | null>(null);
 
-  // Cinematic Logo Animation Modal State
-  const [showLogoSequence, setShowLogoSequence] = useState(false);
-  const [logoProgress, setLogoProgress] = useState(0);
+  // Seal transition
+  const [showSeal, setShowSeal] = useState(false);
+  const [sealPhase, setSealPhase] = useState<'draw' | 'stamp' | 'exit'>('draw');
+  const [sealProgress, setSealProgress] = useState(0);
+  const [sealText, setSealText] = useState(SEAL_TEXTS[0]);
 
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  // Track scroll position
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Track mouse movement for 3D parallax tilt
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const { innerWidth, innerHeight } = window;
-      const x = (e.clientX / innerWidth - 0.5) * 2;
-      const y = (e.clientY / innerHeight - 0.5) * 2;
-      setMousePos({ x, y });
+    const onMouse = (e: MouseEvent) => {
+      setMousePos({ x: (e.clientX / window.innerWidth - 0.5) * 2, y: (e.clientY / window.innerHeight - 0.5) * 2 });
     };
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', onMouse, { passive: true });
+    return () => window.removeEventListener('mousemove', onMouse);
   }, []);
 
-  // 3D Canvas Wireframe & Particle Sphere Animation
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let animationFrameId: number;
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
-
-    const handleResize = () => {
-      if (!canvas) return;
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    };
-    window.addEventListener('resize', handleResize);
-
-    // Create 3D Nodes
-    const numPoints = 120;
-    const points: Array<{ x: number; y: number; z: number; origX: number; origY: number; origZ: number; size: number }> = [];
-    const radius = Math.min(width, height) * 0.38;
-
-    for (let i = 0; i < numPoints; i++) {
-      const phi = Math.acos(-1 + (2 * i) / numPoints);
-      const theta = Math.sqrt(numPoints * Math.PI) * phi;
-      const x = radius * Math.cos(theta) * Math.sin(phi);
-      const y = radius * Math.sin(theta) * Math.sin(phi);
-      const z = radius * Math.cos(phi);
-      points.push({ x, y, z, origX: x, origY: y, origZ: z, size: Math.random() * 2 + 1.5 });
-    }
-
-    let rotX = 0;
-    let rotY = 0;
-
-    const render = () => {
-      ctx.clearRect(0, 0, width, height);
-
-      // Rotation derived from time, mouse, and scroll
-      const scrollFactor = window.scrollY * 0.0025;
-      rotY += 0.004 + mousePos.x * 0.003;
-      rotX = mousePos.y * 0.35 + scrollFactor * 0.75;
-
-      const cosX = Math.cos(rotX);
-      const sinX = Math.sin(rotX);
-      const cosY = Math.cos(rotY);
-      const sinY = Math.sin(rotY);
-
-      // Camera center shifts slightly with scroll
-      const centerX = width * 0.5 + mousePos.x * 30;
-      const centerY = height * 0.48 - window.scrollY * 0.35 + mousePos.y * 20;
-      const fov = 500;
-
-      // Project points to 2D
-      const projected: Array<{ px: number; py: number; pz: number; size: number; alpha: number }> = [];
-
-      for (let i = 0; i < points.length; i++) {
-        const p = points[i];
-
-        // Rotate Y
-        const x1 = p.origX * cosY - p.origZ * sinY;
-        const z1 = p.origZ * cosY + p.origX * sinY;
-
-        // Rotate X
-        const y2 = p.origY * cosX - z1 * sinX;
-        const z2 = z1 * cosX + p.origY * sinX;
-
-        // Dynamic depth transformation with scroll
-        const depthZ = z2 + 650 - window.scrollY * 0.4;
-        if (depthZ <= 0) continue;
-
-        const scale = fov / depthZ;
-        const px = centerX + x1 * scale;
-        const py = centerY + y2 * scale;
-        const alpha = Math.max(0.12, Math.min(0.88, (z2 + radius) / (2 * radius)));
-
-        projected.push({ px, py, pz: z2, size: p.size * scale, alpha });
-      }
-
-      // Draw connecting wireframe lines between close nodes
-      ctx.lineWidth = 1;
-      for (let i = 0; i < projected.length; i++) {
-        for (let j = i + 1; j < projected.length; j++) {
-          const p1 = projected[i];
-          const p2 = projected[j];
-          const dist = Math.hypot(p1.px - p2.px, p1.py - p2.py);
-          if (dist < 85) {
-            const lineAlpha = (1 - dist / 85) * 0.28 * Math.min(p1.alpha, p2.alpha);
-            ctx.strokeStyle = `rgba(15, 168, 154, ${lineAlpha})`;
-            ctx.beginPath();
-            ctx.moveTo(p1.px, p1.py);
-            ctx.lineTo(p2.px, p2.py);
-            ctx.stroke();
-          }
-        }
-      }
-
-      // Draw glowing nodes
-      for (let i = 0; i < projected.length; i++) {
-        const p = projected[i];
-        ctx.beginPath();
-        ctx.arc(p.px, p.py, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(78, 224, 209, ${p.alpha})`;
-        ctx.shadowColor = '#0FA89A';
-        ctx.shadowBlur = 8;
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      }
-
-      animationFrameId = requestAnimationFrame(render);
-    };
-
-    render();
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [mousePos]);
-
-  const selectRole = (index: number) => {
-    setSelectedRoleIndex(index);
-    const account = DEMO_ACCOUNTS[index];
-    setEmail(account.email);
-    setPassword(account.pass);
+  const selectRole = (idx: number) => {
+    setSelectedRoleIndex(idx);
+    setEmail(DEMO_ACCOUNTS[idx].email);
+    setPassword(DEMO_ACCOUNTS[idx].pass);
     setErrorMessage('');
-    setSuccessMessage('');
   };
 
-  const scrollToAuth = () => {
-    const el = document.getElementById('auth-section');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+  const triggerSeal = (onDone: () => void) => {
+    setShowSeal(true);
+    setSealPhase('draw');
+    setSealProgress(0);
+    let step = 0;
+    const iv = setInterval(() => {
+      step++;
+      const pct = Math.min(step * 17, 100);
+      setSealProgress(pct);
+      setSealText(SEAL_TEXTS[Math.min(step - 1, SEAL_TEXTS.length - 1)]);
+      if (pct >= 100) {
+        clearInterval(iv);
+        setSealPhase('stamp');
+        setTimeout(() => { setSealPhase('exit'); setTimeout(onDone, 350); }, 650);
+      }
+    }, 250);
   };
 
   const handleLogin = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setErrorMessage('');
-    setSuccessMessage('');
-
-    if (!email || !password) {
-      setErrorMessage('Please enter both administrative email and password.');
-      return;
-    }
-
-    if (!captchaChecked) {
-      setErrorMessage('Please confirm you are an authorized government user.');
-      return;
-    }
-
+    if (!email || !password) { setErrorMessage('Please enter both administrative email and password.'); return; }
+    if (!captchaChecked) { setErrorMessage('Please confirm SSO clearance.'); return; }
     setLoading(true);
-
-    // Trigger the Cinematic 3D BhoomiSetu Logo Sequence
-    setShowLogoSequence(true);
-    setLogoProgress(10);
-
-    const progressInterval = setInterval(() => {
-      setLogoProgress((prev) => {
-        if (prev >= 95) {
-          clearInterval(progressInterval);
-          return 95;
-        }
-        return prev + 18;
-      });
-    }, 240);
-
     try {
-      // Backend login or resilient demo fallback
-      const response = await login(email, password).catch(() => null);
-      if (response?.access_token) {
-        setStoredToken(response.access_token);
-      } else {
-        const mockToken = `bhoomi_jwt_demo_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-        setStoredToken(mockToken);
-      }
-
-      // Complete progress and navigate after cinematic animation
-      setTimeout(() => {
-        clearInterval(progressInterval);
-        setLogoProgress(100);
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 550);
-      }, 1600);
+      const res = await login(email, password).catch(() => null);
+      if (res?.access_token) setStoredToken(res.access_token);
+      else setStoredToken(`bhoomi_jwt_demo_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`);
+      triggerSeal(() => navigate('/dashboard'));
     } catch (err: any) {
-      clearInterval(progressInterval);
-      setShowLogoSequence(false);
       setLoading(false);
       setErrorMessage(err?.message || 'Authentication error. Check server status.');
     }
   };
 
   const currentRole = DEMO_ACCOUNTS[selectedRoleIndex];
+  const heroOpacity = Math.max(0, 1 - scrollY / 550);
+  const heroTranslate = -scrollY * 0.22;
+  const pipelineIn = scrollY > 280;
 
-  // Dynamic 3D transform values for Page 1 elements based on scroll and mouse tilt
-  const tiltX = mousePos.y * 12 - scrollY * 0.05;
-  const tiltY = mousePos.x * -14;
-  const page1Opacity = Math.max(0, 1 - scrollY / 700);
-  const page1TranslateZ = -scrollY * 0.6;
+  // Seal circle animation: circumference of r=72 circle = 2*pi*72 ≈ 452
+  const circumference = 452;
+  const strokeOffset = circumference - (circumference * sealProgress) / 100;
 
   return (
-    <div className="portal-3d-master">
-      {/* Interactive 3D Holographic Canvas Background */}
-      <canvas ref={canvasRef} className="portal-3d-canvas" />
+    <div className="lp-master">
 
-      {/* Floating Ambient Glowing Lighting */}
-      <div className="portal-ambient-light light-teal" />
-      <div className="portal-ambient-light light-emerald" />
-      <div className="portal-ambient-light light-navy" />
+      {/* Cadastral grid background */}
+      <div className="lp-cadastral-bg" style={{ transform: `translateY(${scrollY * 0.15}px)` }}>
+        {PARCELS.map((p) => (
+          <div
+            key={p.id}
+            className="lp-parcel"
+            style={{
+              gridColumn: p.col,
+              gridRow: p.row,
+              background: hoveredParcel === p.id ? STATUS_BORDER[p.status] : STATUS_COLORS[p.status],
+              borderColor: STATUS_BORDER[p.status],
+              animationDelay: `${p.delay}s`,
+            }}
+            onMouseEnter={() => setHoveredParcel(p.id)}
+            onMouseLeave={() => setHoveredParcel(null)}
+          />
+        ))}
+      </div>
 
-      {/* Sticky Top Navigation Bar */}
-      <header className="portal-nav-bar">
-        <div className="portal-nav-inner">
-          <div className="portal-nav-brand">
-            <div className="portal-nav-emblem">
-              <Landmark size={20} />
-            </div>
+      {/* Glow blobs */}
+      <div className="lp-glow lp-glow--teal" style={{ transform: `translate(${mousePos.x * 22}px, ${mousePos.y * 16}px)` }} />
+      <div className="lp-glow lp-glow--emerald" style={{ transform: `translate(${mousePos.x * -16}px, ${mousePos.y * 20}px)` }} />
+      <div className="lp-glow lp-glow--amber" />
+
+      {/* Sticky nav */}
+      <header className="lp-nav">
+        <div className="lp-nav-inner">
+          <div className="lp-nav-brand">
+            <div className="lp-nav-emblem"><Landmark size={20} /></div>
             <div>
-              <div className="portal-nav-title">BhoomiSetu</div>
-              <div className="portal-nav-sub">NATIONAL LAND INTELLIGENCE NETWORK</div>
+              <div className="lp-nav-title">BhoomiSetu</div>
+              <div className="lp-nav-sub">NATIONAL LAND INTELLIGENCE NETWORK</div>
             </div>
           </div>
-
-          <div className="portal-nav-actions">
-            <div className="portal-nav-status">
-              <span className="portal-live-dot" />
-              <span>Gujarat State Server • Live</span>
-            </div>
-            <button
-              onClick={scrollToAuth}
-              className="portal-nav-cta"
-              data-testid="button-nav-sign-in"
-            >
-              <Lock size={13} />
-              <span>Access Control Room</span>
+          <div className="lp-nav-right">
+            <span className="lp-live-pill"><span className="lp-live-dot" />Gujarat Server \u2022 Live</span>
+            <button className="lp-nav-cta" onClick={() => document.getElementById('auth-section')?.scrollIntoView({ behavior: 'smooth' })} data-testid="button-nav-sign-in">
+              <Lock size={13} />Access Control Room
             </button>
           </div>
         </div>
       </header>
 
-      {/* =========================================================================
-          PAGE 1: 3D SPATIAL HERO & TELEMETRY SHOWCASE (Viewport 1)
-          ========================================================================= */}
-      <section
-        className="portal-page-section page-1-hero"
-        style={{
-          opacity: page1Opacity,
-          transform: `perspective(1200px) rotateX(${tiltX * 0.4}deg) rotateY(${tiltY * 0.4}deg) translateZ(${page1TranslateZ}px)`,
-          transition: 'transform 0.1s ease-out',
-        }}
-      >
-        <div className="portal-hero-content">
-          {/* Top Tagline Badge */}
-          <div className="portal-hero-badge">
-            <Sparkles size={14} className="portal-sparkle-icon" />
-            <span>SMART INDIA HACKATHON 2026 • GUJARAT STATE CORRIDOR COMMAND</span>
+      {/* ═══ SECTION 1: HERO ═══ */}
+      <section className="lp-section lp-hero" style={{ opacity: heroOpacity, transform: `translateY(${heroTranslate}px)` }}>
+        <div className="lp-hero-inner">
+          <div className="lp-legend-row">
+            {[{ l: 'Clear', c: '#16A878' },{ l: 'Survey Active', c: '#F2A51A' },{ l: 'Acquired', c: '#0FA89A' },{ l: 'Disputed', c: '#E85D68' },{ l: 'Compensated', c: '#4EE0D1' }].map(({ l, c }) => (
+              <span key={l} className="lp-legend-pill" style={{ borderColor: c, color: c }}>
+                <i className="lp-dot" style={{ background: c }} />{l}
+              </span>
+            ))}
           </div>
 
-          {/* Main 3D Title */}
-          <h1 className="portal-hero-headline">
-            Predictive Land Intelligence
-            <span className="portal-hero-gradient-text"> in 3D Spatial Matrix</span>
+          <div className="lp-hero-badge">
+            <Sparkles size={13} style={{ color: '#F2A51A' }} />
+            SMART INDIA HACKATHON 2026 \u2022 GUJARAT STATE CORRIDOR COMMAND
+          </div>
+
+          <h1 className="lp-headline">
+            Every Parcel. Every Owner.<br />
+            <span className="lp-headline-accent">Every Rupee. Accounted For.</span>
           </h1>
 
-          <p className="portal-hero-description">
-            Autonomous 500-Tree XGBoost delay forecasting, real-time cadastral conflict resolution, and statutory SLA
-            tracking for Gujarat's high-stakes mega-infrastructure corridors.
+          <p className="lp-hero-sub">
+            BhoomiSetu digitises the entire RFCTLARR land acquisition lifecycle — from Section 4 preliminary
+            notification through Section 23 collector award and direct DBT compensation — across Gujarat's
+            four mega-infrastructure corridors.
           </p>
 
-          {/* 3D Floating Interactive Cards Matrix */}
-          <div className="portal-3d-cards-matrix">
-            {/* 3D Card 1 */}
-            <div
-              className="portal-3d-card card-corridor"
-              style={{
-                transform: `perspective(800px) rotateX(${tiltX * 0.8}deg) rotateY(${tiltY * 0.8}deg) translateZ(40px)`,
-              }}
-            >
-              <div className="portal-card-glow" />
-              <div className="portal-card-header">
-                <RouteIcon size={16} color="#0FA89A" />
-                <span className="portal-card-tag">CORRIDOR GIS</span>
+          <div className="lp-stat-row">
+            {[
+              { icon: MapPin, val: '68', sub: 'Active Projects', c: '#0FA89A' },
+              { icon: Users, val: '2,847', sub: 'Affected Families', c: '#4EE0D1' },
+              { icon: TrendingUp, val: '\u20b94,250 Cr', sub: 'Compensation Tracked', c: '#16A878' },
+              { icon: AlertTriangle, val: '12', sub: 'Delay Alerts', c: '#F2A51A' },
+            ].map(({ icon: Icon, val, sub, c }) => (
+              <div key={sub} className="lp-stat-card" style={{ borderColor: c + '44' }}>
+                <span className="lp-stat-icon" style={{ background: c + '22', color: c }}><Icon size={15} /></span>
+                <span className="lp-stat-val" style={{ color: c }}>{val}</span>
+                <span className="lp-stat-sub">{sub}</span>
               </div>
-              <div className="portal-card-val">4 Major Routes</div>
-              <div className="portal-card-sub">Vadodara-Mumbai Expressway • Dholera SIR • Bullet Train • DFC</div>
-            </div>
-
-            {/* 3D Card 2 */}
-            <div
-              className="portal-3d-card card-ai"
-              style={{
-                transform: `perspective(800px) rotateX(${tiltX * 0.9}deg) rotateY(${tiltY * 0.9}deg) translateZ(70px)`,
-              }}
-            >
-              <div className="portal-card-glow" />
-              <div className="portal-card-header">
-                <Cpu size={16} color="#4EE0D1" />
-                <span className="portal-card-tag">ML INFERENCE ENGINE</span>
-              </div>
-              <div className="portal-card-val">91.67% Acc • 0.9749 AUC</div>
-              <div className="portal-card-sub">500-Tree Ensemble with Automated B.L.A.S.T. Feature Engineering</div>
-            </div>
-
-            {/* 3D Card 3 */}
-            <div
-              className="portal-3d-card card-finance"
-              style={{
-                transform: `perspective(800px) rotateX(${tiltX * 0.85}deg) rotateY(${tiltY * 0.85}deg) translateZ(50px)`,
-              }}
-            >
-              <div className="portal-card-glow" />
-              <div className="portal-card-header">
-                <Activity size={16} color="#16A878" />
-                <span className="portal-card-tag">DBT ESCROW VAULT</span>
-              </div>
-              <div className="portal-card-val">₹4,250 Cr Tracked</div>
-              <div className="portal-card-sub">Real-time statutory aging & multi-district compensation ledgers</div>
-            </div>
+            ))}
           </div>
 
-          {/* Scroll Down Action Capsule */}
-          <div className="portal-scroll-cta-wrap">
-            <button onClick={scrollToAuth} className="portal-scroll-cta" data-testid="button-scroll-to-auth">
-              <span>Scroll Down to Authenticate</span>
-              <ChevronDown size={16} className="portal-bounce-arrow" />
-            </button>
+          <button className="lp-scroll-cta" onClick={() => document.getElementById('auth-section')?.scrollIntoView({ behavior: 'smooth' })} data-testid="button-scroll-to-auth">
+            Authenticate to Enter Command Room
+            <ChevronDown size={15} className="lp-bounce" />
+          </button>
+        </div>
+      </section>
+
+      {/* ═══ SECTION 2: ACQUISITION PIPELINE ═══ */}
+      <section className="lp-section lp-pipeline-section">
+        <div className={`lp-pipeline-inner${pipelineIn ? ' lp-visible' : ''}`}>
+          <div className="lp-eyebrow-row">
+            <span className="lp-eyebrow-line" />LAND ACQUISITION PIPELINE<span className="lp-eyebrow-line" />
+          </div>
+          <h2 className="lp-section-title">From Notification to Compensation</h2>
+          <p className="lp-section-sub">Four statutory stages. One transparent platform.</p>
+
+          <div className="lp-pipeline-track">
+            <div className="lp-pipeline-rail" />
+            {PIPELINE_STAGES.map((stage, i) => {
+              const Icon = stage.icon;
+              return (
+                <div key={stage.code} className="lp-pipeline-step" style={{ animationDelay: `${i * 0.12}s` }}>
+                  <div className="lp-pipeline-node" style={{ borderColor: stage.color, boxShadow: `0 0 16px ${stage.color}44` }}>
+                    <Icon size={17} style={{ color: stage.color }} />
+                  </div>
+                  <div className="lp-pipeline-card">
+                    <span className="lp-pipeline-code" style={{ color: stage.color, borderColor: stage.color + '44' }}>{stage.code}</span>
+                    <h3 className="lp-pipeline-title">{stage.title}</h3>
+                    <p className="lp-pipeline-legal">{stage.sub}</p>
+                    <div className="lp-pipeline-count" style={{ color: stage.color }}>{stage.count}</div>
+                    <p className="lp-pipeline-desc">{stage.desc}</p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* =========================================================================
-          PAGE 2: INSTITUTIONAL LOGIN & CREDENTIAL PORTAL (Viewport 2)
-          ========================================================================= */}
-      <section id="auth-section" className="portal-page-section page-2-auth">
-        <div className="portal-auth-layout">
-          {/* Left Column: Security Architecture & Operational Scope */}
-          <div className="portal-auth-showcase">
-            <div className="portal-auth-emblem-row">
-              <div className="portal-auth-emblem-box">
-                <Landmark size={28} />
-                <div className="portal-emblem-spin-ring" />
+      {/* ═══ SECTION 3: LOGIN ═══ */}
+      <section id="auth-section" className="lp-section lp-auth-section">
+        <div className="lp-auth-grid">
+
+          {/* Left context panel */}
+          <div className="lp-auth-context">
+            <div className="lp-context-emblem-row">
+              <div className="lp-context-emblem">
+                <Landmark size={26} />
+                <div className="lp-emblem-spin" />
               </div>
               <div>
-                <span className="portal-dept-tag">STATE REVENUE & DISASTER MANAGEMENT</span>
-                <h2 className="portal-showcase-title">Statutory Access Portal</h2>
-                <p className="portal-showcase-sub">Authorized Personnel Login • Section 4 to 23 Operational Workflow</p>
+                <div className="lp-context-dept">STATE REVENUE & DISASTER MANAGEMENT</div>
+                <h2 className="lp-context-title">Statutory Access Portal</h2>
+                <p className="lp-context-sub">Authorised Personnel Login \u2022 RFCTLARR Section 4\u201323</p>
               </div>
             </div>
 
-            <div className="portal-auth-radar-box">
-              <div className="portal-radar-head">
-                <div className="portal-live-indicator">
-                  <span className="portal-green-dot" />
-                  <span>NIC & STATE SSO TUNNEL ONLINE</span>
-                </div>
-                <span className="portal-badge-sih">SIH 2026 Production</span>
+            <div className="lp-intel-box">
+              <div className="lp-intel-header">
+                <span className="lp-intel-live"><span className="lp-live-dot" />NIC & STATE SSO TUNNEL ONLINE</span>
+                <span className="lp-intel-badge">SIH 2026 Production</span>
               </div>
-
-              <div className="portal-radar-metrics">
-                <div className="portal-radar-metric">
-                  <div className="portal-metric-num">33</div>
-                  <div className="portal-metric-txt">Gujarat Districts</div>
-                </div>
-                <div className="portal-radar-metric">
-                  <div className="portal-metric-num">100%</div>
-                  <div className="portal-metric-txt">RFCTLARR Compliant</div>
-                </div>
-                <div className="portal-radar-metric">
-                  <div className="portal-metric-num">Argon2id</div>
-                  <div className="portal-metric-txt">Memory-Hard Security</div>
-                </div>
+              <div className="lp-intel-grid">
+                {[{ n: '33', t: 'Gujarat Districts' },{ n: '100%', t: 'RFCTLARR Compliant' },{ n: 'Argon2id', t: 'Memory-Hard Security' }].map(m => (
+                  <div key={m.n} className="lp-intel-metric"><div className="lp-intel-num">{m.n}</div><div className="lp-intel-txt">{m.t}</div></div>
+                ))}
               </div>
-
-              <div className="portal-security-terminal">
-                <div className="portal-terminal-head">
-                  <ShieldCheck size={14} color="#16A878" />
-                  <span>Zero-Trust Cryptographic Defense</span>
-                </div>
-                <div className="portal-terminal-body">
-                  <div>[TLS] Strict HSTS & OWASP ASVS v4.0 Defense-in-Depth</div>
-                  <div>[ENC] Field-Level AES-256-GCM Envelope Encryption</div>
-                  <div>[RBAC] Hierarchical State & District Geographic Scoping</div>
+              <div className="lp-terminal">
+                <div className="lp-terminal-head"><ShieldCheck size={13} style={{ color: '#16A878' }} />Zero-Trust Cryptographic Defence</div>
+                <div className="lp-terminal-body">
+                  <span>[TLS] Strict HSTS & OWASP ASVS v4.0 Defence-in-Depth</span>
+                  <span>[ENC] Field-Level AES-256-GCM Envelope Encryption</span>
+                  <span>[RBAC] Hierarchical State & District Geographic Scoping</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Right Column: Glassmorphism Login Card */}
-          <div className="portal-auth-card">
-            <div className="portal-card-top-bar">
-              <span className="portal-card-eyebrow">OFFICIAL GOVERNMENT PORTAL</span>
-              <h3 className="portal-card-title">Sign In to Dashboard</h3>
-              <p className="portal-card-text">
-                Select an authorized administrative profile or provide official credentials to proceed.
-              </p>
+          {/* Right login card */}
+          <div className="lp-login-card">
+            <div className="lp-card-head">
+              <span className="lp-card-eyebrow">OFFICIAL GOVERNMENT PORTAL</span>
+              <h3 className="lp-card-title">Sign In to Dashboard</h3>
+              <p className="lp-card-text">Select an authorised administrative profile or enter official credentials.</p>
             </div>
 
-            {/* 1-Click Institutional Role Switcher */}
-            <div className="portal-role-selector-header">
-              <span>SELECT INSTITUTIONAL ROLE (1-CLICK SYNC)</span>
-              <span className="portal-auto-fill-hint">Auto-fills credentials</span>
+            <div className="lp-role-header">
+              <span>SELECT INSTITUTIONAL ROLE</span>
+              <span className="lp-autofill-hint">Auto-fills credentials</span>
             </div>
-
-            <div className="portal-role-grid">
+            <div className="lp-role-grid">
               {DEMO_ACCOUNTS.map((acc, idx) => {
                 const Icon = acc.icon;
-                const isSelected = selectedRoleIndex === idx;
+                const active = selectedRoleIndex === idx;
                 return (
-                  <button
-                    key={acc.role}
-                    type="button"
-                    onClick={() => selectRole(idx)}
-                    className={`portal-role-btn ${isSelected ? 'active' : ''}`}
-                    data-testid={`button-role-select-${idx}`}
-                  >
-                    <Icon size={14} className="portal-role-icon" />
-                    <div className="portal-role-info">
-                      <span className="portal-role-name">{acc.role}</span>
-                      <span className="portal-role-user">{acc.name}</span>
+                  <button key={acc.role} type="button" onClick={() => selectRole(idx)}
+                    className={`lp-role-btn${active ? ' active' : ''}`} data-testid={`button-role-select-${idx}`}>
+                    <Icon size={13} className="lp-role-icon" />
+                    <div className="lp-role-info">
+                      <span className="lp-role-name">{acc.role}</span>
+                      <span className="lp-role-user">{acc.name}</span>
                     </div>
-                    {isSelected && <CheckCircle2 size={14} className="portal-role-check" />}
+                    {active && <CheckCircle2 size={13} className="lp-role-check" />}
                   </button>
                 );
               })}
             </div>
 
-            {/* Selected Profile Banner */}
-            <div className="portal-profile-banner">
-              <div className="portal-profile-tag">{currentRole.badge}</div>
-              <div className="portal-profile-name">{currentRole.name}</div>
-              <div className="portal-profile-jurisdiction">{currentRole.jurisdiction}</div>
-              <div className="portal-profile-desc">{currentRole.description}</div>
+            <div className="lp-profile-banner">
+              <span className="lp-profile-tag">{currentRole.badge}</span>
+              <div className="lp-profile-name">{currentRole.name}</div>
+              <div className="lp-profile-jurisdiction">{currentRole.jurisdiction}</div>
+              <div className="lp-profile-desc">{currentRole.description}</div>
             </div>
 
-            {/* Login Form */}
-            <form onSubmit={handleLogin} className="portal-login-form">
+            <form onSubmit={handleLogin} className="lp-form">
               {errorMessage && (
-                <div className="portal-error-banner" role="alert">
-                  <AlertCircle size={15} />
-                  <span>{errorMessage}</span>
-                </div>
+                <div className="lp-error" role="alert"><AlertCircle size={13} />{errorMessage}</div>
               )}
 
-              {successMessage && (
-                <div className="portal-success-banner" role="status">
-                  <CheckCircle2 size={15} />
-                  <span>{successMessage}</span>
-                </div>
-              )}
-
-              <div className="portal-input-group">
-                <label className="portal-input-label">Official Email / ID</label>
-                <div className="portal-input-box">
-                  <Mail size={16} className="portal-field-icon" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="officer@bhoomisetu.gov.in"
-                    className="portal-input-field"
-                    required
-                  />
+              <div className="lp-field">
+                <label className="lp-label">Official Email / ID</label>
+                <div className="lp-input-wrap">
+                  <Mail size={14} className="lp-field-icon" />
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                    placeholder="officer@bhoomisetu.gov.in" className="lp-input" required />
                 </div>
               </div>
 
-              <div className="portal-input-group">
-                <div className="portal-input-label-row">
-                  <label className="portal-input-label">Security Passphrase</label>
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="portal-show-pass-btn"
-                  >
-                    {showPassword ? <EyeOff size={13} /> : <Eye size={13} />}
-                    <span>{showPassword ? 'Hide' : 'Show'}</span>
+              <div className="lp-field">
+                <div className="lp-label-row">
+                  <label className="lp-label">Security Passphrase</label>
+                  <button type="button" onClick={() => setShowPassword(v => !v)} className="lp-show-pass">
+                    {showPassword ? <EyeOff size={12} /> : <Eye size={12} />}{showPassword ? 'Hide' : 'Show'}
                   </button>
                 </div>
-                <div className="portal-input-box">
-                  <Lock size={16} className="portal-field-icon" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••••••••••"
-                    className="portal-input-field"
-                    required
-                  />
+                <div className="lp-input-wrap">
+                  <Lock size={14} className="lp-field-icon" />
+                  <input type={showPassword ? 'text' : 'password'} value={password}
+                    onChange={e => setPassword(e.target.value)} placeholder="••••••••••••••••"
+                    className="lp-input" required />
                 </div>
               </div>
 
-              <div className="portal-checkboxes-row">
-                <label className="portal-check-item">
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                  />
-                  <span>Trusted terminal</span>
-                </label>
-
-                <label className="portal-check-item">
-                  <input
-                    type="checkbox"
-                    checked={captchaChecked}
-                    onChange={(e) => setCaptchaChecked(e.target.checked)}
-                  />
-                  <span>SSO Clearance</span>
-                </label>
+              <div className="lp-check-row">
+                <label className="lp-check-item"><input type="checkbox" checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} />Trusted terminal</label>
+                <label className="lp-check-item"><input type="checkbox" checked={captchaChecked} onChange={e => setCaptchaChecked(e.target.checked)} />SSO Clearance</label>
               </div>
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="portal-submit-action-btn"
-                data-testid="button-portal-submit-login"
-              >
-                {loading ? (
-                  <>
-                    <RefreshCw size={16} className="portal-spin" />
-                    <span>Verifying Credentials & Launching 3D System...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Enter BhoomiSetu Intelligence Platform</span>
-                    <ArrowRight size={16} />
-                  </>
-                )}
+              <button type="submit" disabled={loading} className="lp-submit" data-testid="button-portal-submit-login">
+                {loading ? <><RefreshCw size={14} className="lp-spin" />Verifying & Entering Platform...</> : <>Enter BhoomiSetu Intelligence Platform<ArrowRight size={14} /></>}
               </button>
 
-              {/* Instant Evaluator 1-Click Access */}
-              <button
-                type="button"
-                onClick={() => {
-                  setStoredToken('bhoomi_guest_evaluator');
-                  setShowLogoSequence(true);
-                  setLogoProgress(30);
-                  setTimeout(() => setLogoProgress(70), 400);
-                  setTimeout(() => {
-                    setLogoProgress(100);
-                    setTimeout(() => navigate('/dashboard'), 500);
-                  }, 1200);
-                }}
-                className="portal-instant-demo-btn"
-                data-testid="button-instant-demo"
-              >
-                <Sparkles size={14} color="#0FA89A" />
-                <span>Instant Evaluator Demo Access (Skip Login)</span>
+              <button type="button" className="lp-demo-btn" data-testid="button-instant-demo"
+                onClick={() => { setStoredToken('bhoomi_guest_evaluator'); triggerSeal(() => navigate('/dashboard')); }}>
+                <Sparkles size={13} style={{ color: '#0FA89A' }} />Instant Evaluator Demo Access (Skip Login)
               </button>
             </form>
 
-            <div className="portal-legal-footer">
-              <Shield size={13} color="#16A878" />
-              <span>Restricted Government System • Audit logging active under IT Act 2000.</span>
+            <div className="lp-legal">
+              <Shield size={12} style={{ color: '#16A878' }} />
+              Restricted Government System • Audit logging active under IT Act 2000.
             </div>
           </div>
         </div>
       </section>
 
-      {/* =========================================================================
-          CINEMATIC 3D BHOOMISETU ANIMATED LOGO SEQUENCE MODAL
-          ========================================================================= */}
-      {showLogoSequence && (
-        <div className="bhoomi-logo-modal-overlay">
-          {/* Animated Shockwaves */}
-          <div className="logo-shockwave wave-1" />
-          <div className="logo-shockwave wave-2" />
-          <div className="logo-shockwave wave-3" />
+      {/* ═══ LAND DEED SEAL TRANSITION ═══ */}
+      {showSeal && (
+        <div className={`lp-seal-overlay${sealPhase === 'stamp' ? ' lp-seal--stamp' : ''}${sealPhase === 'exit' ? ' lp-seal--exit' : ''}`}>
+          <div className="lp-ink-ring lp-ink-ring--1" />
+          <div className="lp-ink-ring lp-ink-ring--2" />
+          <div className="lp-ink-ring lp-ink-ring--3" />
 
-          {/* Central Logo Emittance Card */}
-          <div className="bhoomi-logo-modal-card">
-            <div className="bhoomi-3d-emblem-wrap">
-              <div className="bhoomi-emblem-aura" />
-              <div className="bhoomi-emblem-rotating-ring outer-ring" />
-              <div className="bhoomi-emblem-rotating-ring inner-ring" />
-              <div className="bhoomi-emblem-core">
-                <Landmark size={44} className="bhoomi-emblem-landmark" />
-                <div className="bhoomi-emblem-spark" />
+          <div className={`lp-seal-card${sealPhase === 'stamp' ? ' lp-seal-card--stamped' : ''}`}>
+            <div className="lp-seal-emblem">
+              <svg viewBox="0 0 200 200" width="150" height="150" className="lp-seal-svg">
+                {/* Outer dashed cadastral boundary */}
+                <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(78,224,209,0.5)" strokeWidth="1.5" strokeDasharray="5 4" className="lp-seal-outer-dash" />
+                {/* Progress-driven draw circle */}
+                <circle cx="100" cy="100" r="72" fill="none" stroke="rgba(15,168,154,0.9)" strokeWidth="2.5"
+                  strokeDasharray={`${circumference}`} strokeDashoffset={`${strokeOffset}`}
+                  strokeLinecap="round" style={{ transform: 'rotate(-90deg)', transformOrigin: '100px 100px', transition: 'stroke-dashoffset 0.2s ease' }} />
+                {/* Grid lines */}
+                {[0,1,2,3].map(i => <line key={`v${i}`} x1={44+i*20} y1="44" x2={44+i*20} y2="156" stroke="rgba(78,224,209,0.2)" strokeWidth="0.7" />)}
+                {[0,1,2,3].map(i => <line key={`h${i}`} x1="44" y1={44+i*20} x2="156" y2={44+i*20} stroke="rgba(78,224,209,0.2)" strokeWidth="0.7" />)}
+                {/* Pin marker */}
+                <circle cx="100" cy="92" r="12" fill="rgba(15,168,154,0.25)" stroke="rgba(15,168,154,0.8)" strokeWidth="1.5" />
+                <circle cx="100" cy="92" r="5" fill="rgba(78,224,209,0.9)" />
+                <line x1="100" y1="104" x2="100" y2="120" stroke="rgba(15,168,154,0.8)" strokeWidth="2" strokeLinecap="round" />
+                <circle cx="100" cy="122" r="3" fill="rgba(15,168,154,0.6)" />
+                {/* Scan sweep */}
+                <line x1="28" y1="100" x2="172" y2="100" stroke="rgba(78,224,209,0.35)" strokeWidth="0.8" className="lp-seal-scan" />
+                {/* Arc label */}
+                <path id="lp-arc" d="M 28,100 A 72,72 0 0,0 172,100" fill="none" />
+                <text fontSize="7" fontWeight="700" letterSpacing="2.5" fill="rgba(78,224,209,0.75)" fontFamily="monospace">
+                  <textPath href="#lp-arc" startOffset="5%">GOVERNMENT OF GUJARAT • REVENUE DEPT</textPath>
+                </text>
+              </svg>
+              <div className="lp-seal-aura" />
+            </div>
+
+            <div className="lp-seal-text-group">
+              <div className="lp-seal-govt-tag">BHOOMISETU INTELLIGENCE PLATFORM</div>
+              <h2 className="lp-seal-title">BhoomiSetu</h2>
+              <div className="lp-seal-subtitle">Land Acquisition Command System</div>
+            </div>
+
+            <div className="lp-seal-verified">
+              <CheckCircle2 size={14} style={{ color: '#16A878' }} />
+              Access Clearance Verified — Role: {currentRole.role}
+            </div>
+
+            <div className="lp-seal-progress-wrap">
+              <div className="lp-seal-track">
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <div key={i} className="lp-track-tick" style={{ left: `${i * 10}%` }} />
+                ))}
+                <div className="lp-seal-fill" style={{ width: `${sealProgress}%` }}>
+                  <div className="lp-fill-pulse" />
+                </div>
               </div>
-            </div>
-
-            <div className="bhoomi-logo-title-group">
-              <div className="bhoomi-logo-gov-tag">GOVERNMENT OF GUJARAT • REVENUE DEPARTMENT</div>
-              <h2 className="bhoomi-logo-title">BhoomiSetu</h2>
-              <div className="bhoomi-logo-subtitle">Land Acquisition Early Warning System</div>
-            </div>
-
-            <div className="bhoomi-auth-badge-row">
-              <CheckCircle2 size={16} color="#16A878" />
-              <span>Access Clearance Verified • Role: {currentRole.role}</span>
-            </div>
-
-            {/* Futuristic Progress Bar */}
-            <div className="bhoomi-loading-bar-wrap">
-              <div className="bhoomi-loading-bar-track">
-                <div
-                  className="bhoomi-loading-bar-fill"
-                  style={{ width: `${logoProgress}%` }}
-                />
-              </div>
-              <div className="bhoomi-loading-status-text">
-                <span>Connecting to Gujarat Statewide Spatial Mesh...</span>
-                <span>{logoProgress}%</span>
+              <div className="lp-seal-status">
+                <span>{sealText}</span>
+                <span className="lp-seal-pct">{sealProgress}%</span>
               </div>
             </div>
           </div>
