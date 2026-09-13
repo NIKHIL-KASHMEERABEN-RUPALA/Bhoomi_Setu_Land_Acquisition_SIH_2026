@@ -20,8 +20,8 @@ const FALLBACK_BHARUCH_ALTERNATIVES: NearestParcel[] = [
     corridor: 'dmic',
     latitude: 21.718,
     longitude: 73.008,
-    map_x: 322,
-    map_y: 215,
+    map_x: 350,
+    map_y: 130,
     area_hectares: 18.2,
     classification: 'Government Fallow / Wasteland',
     habitation_status: 'none',
@@ -51,8 +51,8 @@ const FALLBACK_BHARUCH_ALTERNATIVES: NearestParcel[] = [
     corridor: 'dmic',
     latitude: 21.728,
     longitude: 73.014,
-    map_x: 345,
-    map_y: 195,
+    map_x: 440,
+    map_y: 105,
     area_hectares: 22.5,
     classification: 'Non-Forest Scrub Land',
     habitation_status: 'none',
@@ -82,8 +82,8 @@ const FALLBACK_BHARUCH_ALTERNATIVES: NearestParcel[] = [
     corridor: 'dmic',
     latitude: 21.738,
     longitude: 72.990,
-    map_x: 255,
-    map_y: 200,
+    map_x: 220,
+    map_y: 105,
     area_hectares: 31.0,
     classification: 'Saline Waste Land',
     habitation_status: 'none',
@@ -113,8 +113,8 @@ const FALLBACK_BHARUCH_ALTERNATIVES: NearestParcel[] = [
     corridor: 'dmic',
     latitude: 21.702,
     longitude: 72.985,
-    map_x: 235,
-    map_y: 260,
+    map_x: 130,
+    map_y: 175,
     area_hectares: 12.4,
     classification: 'Single-crop Agrarian',
     habitation_status: 'sparse',
@@ -144,8 +144,8 @@ const FALLBACK_BHARUCH_ALTERNATIVES: NearestParcel[] = [
     corridor: 'dmic',
     latitude: 21.712,
     longitude: 72.970,
-    map_x: 215,
-    map_y: 285,
+    map_x: 85,
+    map_y: 240,
     area_hectares: 9.6,
     classification: 'Gaothan Settlement',
     habitation_status: 'dense',
@@ -178,8 +178,8 @@ const FALLBACK_VADODARA_ALTERNATIVES: NearestParcel[] = [
     corridor: 'dmic',
     latitude: 22.316,
     longitude: 73.193,
-    map_x: 520,
-    map_y: 155,
+    map_x: 580,
+    map_y: 225,
     area_hectares: 20.4,
     classification: 'State Revenue Fallow',
     habitation_status: 'none',
@@ -209,8 +209,8 @@ const FALLBACK_VADODARA_ALTERNATIVES: NearestParcel[] = [
     corridor: 'dmic',
     latitude: 22.324,
     longitude: 73.204,
-    map_x: 545,
-    map_y: 140,
+    map_x: 670,
+    map_y: 240,
     area_hectares: 25.0,
     classification: 'Barren Rocky Ridge',
     habitation_status: 'none',
@@ -240,8 +240,8 @@ const FALLBACK_VADODARA_ALTERNATIVES: NearestParcel[] = [
     corridor: 'dmic',
     latitude: 22.298,
     longitude: 73.172,
-    map_x: 465,
-    map_y: 190,
+    map_x: 440,
+    map_y: 275,
     area_hectares: 11.2,
     classification: 'Private Agro Orchard',
     habitation_status: 'sparse',
@@ -271,8 +271,8 @@ const FALLBACK_VADODARA_ALTERNATIVES: NearestParcel[] = [
     corridor: 'dmic',
     latitude: 22.304,
     longitude: 73.158,
-    map_x: 440,
-    map_y: 200,
+    map_x: 360,
+    map_y: 310,
     area_hectares: 8.1,
     classification: 'Dense Residential Hamlet',
     habitation_status: 'dense',
@@ -316,8 +316,8 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
   // Selected waypoint or callout on map (Target Land Parcel)
   const [selectedCallout, setSelectedCallout] = useState<'vadodara' | 'bharuch'>('bharuch');
 
-  // Nearest Land Parcels & Habitation Priority State
-  const [habitationFilter, setHabitationFilter] = useState<'zero_habitation_only' | 'all'>('zero_habitation_only');
+  // Nearest Land Parcels & Habitation Priority State (High Priority: Zero Habitation)
+  const [habitationFilter, setHabitationFilter] = useState<'zero_habitation' | 'sparse_habitation' | 'dense_habitation' | 'all'>('zero_habitation');
   const [searchRadiusKm, setSearchRadiusKm] = useState<number>(25);
   const [nearestParcels, setNearestParcels] = useState<NearestParcel[]>(FALLBACK_BHARUCH_ALTERNATIVES);
   const [selectedAlternative, setSelectedAlternative] = useState<NearestParcel | null>(FALLBACK_BHARUCH_ALTERNATIVES[0]);
@@ -356,9 +356,14 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
       } catch (err) {
         // Fallback to rich built-in dataset
         const base = selectedCallout === 'bharuch' ? FALLBACK_BHARUCH_ALTERNATIVES : FALLBACK_VADODARA_ALTERNATIVES;
-        const filtered = habitationFilter === 'zero_habitation_only'
-          ? base.filter((p) => p.habitation_status === 'none')
-          : base;
+        let filtered = base;
+        if (habitationFilter === 'zero_habitation') {
+          filtered = base.filter((p) => p.habitation_status === 'none');
+        } else if (habitationFilter === 'sparse_habitation') {
+          filtered = base.filter((p) => p.habitation_status === 'sparse');
+        } else if (habitationFilter === 'dense_habitation') {
+          filtered = base.filter((p) => p.habitation_status === 'dense');
+        }
         if (!isCancelled) {
           setNearestParcels(filtered);
           setSelectedAlternative(filtered[0] || null);
@@ -375,13 +380,27 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
     };
   }, [selectedCallout, habitationFilter, searchRadiusKm, selectedCorridor]);
 
-  // Derived filtered parcels
+  // Priority count badges
+  const currentBaseParcels = selectedCallout === 'bharuch' ? FALLBACK_BHARUCH_ALTERNATIVES : FALLBACK_VADODARA_ALTERNATIVES;
+  const zeroHabCount = currentBaseParcels.filter((p) => p.habitation_status === 'none').length;
+  const sparseHabCount = currentBaseParcels.filter((p) => p.habitation_status === 'sparse').length;
+  const denseHabCount = currentBaseParcels.filter((p) => p.habitation_status === 'dense').length;
+  const allCount = currentBaseParcels.length;
+
+  // Derived filtered parcels according to user priority selection
   const displayedNearestParcels = useMemo(() => {
-    if (habitationFilter === 'zero_habitation_only') {
-      return nearestParcels.filter((p) => p.habitation_status === 'none');
+    const base = selectedCallout === 'bharuch' ? FALLBACK_BHARUCH_ALTERNATIVES : FALLBACK_VADODARA_ALTERNATIVES;
+    if (habitationFilter === 'zero_habitation') {
+      return base.filter((p) => p.habitation_status === 'none');
     }
-    return nearestParcels;
-  }, [nearestParcels, habitationFilter]);
+    if (habitationFilter === 'sparse_habitation') {
+      return base.filter((p) => p.habitation_status === 'sparse');
+    }
+    if (habitationFilter === 'dense_habitation') {
+      return base.filter((p) => p.habitation_status === 'dense');
+    }
+    return base;
+  }, [selectedCallout, habitationFilter]);
 
   // Anchor coords for SVG line drawing
   const anchorCoords = useMemo(() => {
@@ -743,26 +762,54 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
                 </div>
                 <span className="gis-sep-pipe">|</span>
                 <span className="gis-nearest-label">PRIORITY FILTER:</span>
+                
+                {/* 1. HIGH PRIORITY: ZERO HABITATION */}
                 <button
-                  className={`gis-priority-pill ${habitationFilter === 'zero_habitation_only' ? 'active-zero' : ''}`}
+                  className={`gis-priority-pill ${habitationFilter === 'zero_habitation' ? 'active-zero' : ''}`}
                   onClick={() => {
-                    setHabitationFilter('zero_habitation_only');
-                    triggerNotify('Filtered map to HIGH PRIORITY: Zero Habitation lands only (0 families displaced).');
+                    setHabitationFilter('zero_habitation');
+                    triggerNotify('Filtered to HIGH PRIORITY: Zero Habitation lands only (0 families displaced • Fast-Track).');
                   }}
-                  title="Show only uninhabited parcels with zero resettlement friction"
+                  title="HIGHEST PRIORITY: 100% uninhabited lands with zero R&R resettlement friction"
                 >
                   <Star size={11} className="gis-star-icon" />
-                  <span>High Priority: Zero Habitation Only ({nearestParcels.filter(p => p.habitation_status === 'none').length})</span>
+                  <span>⭐ High Priority: No Habitation ({zeroHabCount})</span>
                 </button>
+
+                {/* 2. MODERATE PRIORITY: SPARSE HABITATION */}
+                <button
+                  className={`gis-priority-pill ${habitationFilter === 'sparse_habitation' ? 'active-sparse' : ''}`}
+                  onClick={() => {
+                    setHabitationFilter('sparse_habitation');
+                    triggerNotify('Filtered to MODERATE PRIORITY: Sparse Habitation (1–3 agrarian outbuildings).');
+                  }}
+                  title="MODERATE PRIORITY: 1-3 rural families or farmsteads"
+                >
+                  <span>🟡 Sparse Habitation ({sparseHabCount})</span>
+                </button>
+
+                {/* 3. LOW PRIORITY: DENSE HABITATION */}
+                <button
+                  className={`gis-priority-pill ${habitationFilter === 'dense_habitation' ? 'active-dense' : ''}`}
+                  onClick={() => {
+                    setHabitationFilter('dense_habitation');
+                    triggerNotify('Filtered to LOW PRIORITY: Dense Habitation (Village settlements • Heavy R&R delay).');
+                  }}
+                  title="LOW PRIORITY: Village settlements with high displacement and litigation hold-ups"
+                >
+                  <span>🔴 Dense Habitation (Low Priority) ({denseHabCount})</span>
+                </button>
+
+                {/* 4. ALL ALTERNATIVES */}
                 <button
                   className={`gis-priority-pill ${habitationFilter === 'all' ? 'active-all' : ''}`}
                   onClick={() => {
                     setHabitationFilter('all');
-                    triggerNotify('Showing all nearest parcels ranked by Habitation Priority.');
+                    triggerNotify('Showing ALL nearest parcels ranked by Habitation Priority.');
                   }}
                   title="Show all parcels ranked from zero habitation to dense"
                 >
-                  <span>All Parcels (Ranked Priority)</span>
+                  <span>All Alternatives ({allCount})</span>
                 </button>
               </div>
 
@@ -975,48 +1022,54 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
                       const px = p.map_x ?? (anchorCoords.x + 35);
                       const py = p.map_y ?? (anchorCoords.y - 35);
                       const isSelected = selectedAlternative?.id === p.id;
+                      const isHovered = hoveredParcel?.id === p.id;
                       const isZeroHab = p.habitation_status === 'none';
-                      const strokeColor = isZeroHab ? '#16A878' : p.habitation_status === 'sparse' ? '#F2A51A' : '#E85D68';
+                      const isSparse = p.habitation_status === 'sparse';
+                      const strokeColor = isZeroHab ? '#16A878' : isSparse ? '#F2A51A' : '#E85D68';
                       const midX = (anchorCoords.x + px) / 2;
                       const midY = (anchorCoords.y + py) / 2;
 
                       return (
                         <g key={`vector-${p.id}`} className="gis-alternative-vector">
-                          {/* Dotted proximity measurement vector line */}
+                          {/* Proximity measurement vector line */}
                           <line
                             x1={anchorCoords.x}
                             y1={anchorCoords.y}
                             x2={px}
                             y2={py}
                             stroke={strokeColor}
-                            strokeWidth={isSelected ? '2.5' : '1.3'}
+                            strokeWidth={isSelected ? '2.5' : isHovered ? '2' : '1.2'}
                             strokeDasharray={isSelected ? 'none' : '3,3'}
-                            opacity={isSelected ? 0.95 : 0.65}
+                            opacity={isSelected ? 1 : isHovered ? 0.85 : 0.45}
                           />
 
-                          {/* Distance label pill on vector */}
-                          <rect
-                            x={midX - 18}
-                            y={midY - 7.5}
-                            width="36"
-                            height="15"
-                            rx="4"
-                            fill="#062F35"
-                            stroke={strokeColor}
-                            strokeWidth="0.8"
-                            opacity="0.92"
-                          />
-                          <text
-                            x={midX}
-                            y={midY + 3.5}
-                            fontSize="8"
-                            fontWeight="700"
-                            textAnchor="middle"
-                            fill="#FFFFFF"
-                            fontFamily="JetBrains Mono"
-                          >
-                            {p.distance_km}km
-                          </text>
+                          {/* Distance label pill on vector - ONLY shown on active or hovered parcel to prevent visual stacking */}
+                          {(isSelected || isHovered) && (
+                            <g>
+                              <rect
+                                x={midX - 22}
+                                y={midY - 8.5}
+                                width="44"
+                                height="17"
+                                rx="4"
+                                fill="#062F35"
+                                stroke={strokeColor}
+                                strokeWidth="1.2"
+                                opacity="0.95"
+                              />
+                              <text
+                                x={midX}
+                                y={midY + 3.5}
+                                fontSize="8.5"
+                                fontWeight="700"
+                                textAnchor="middle"
+                                fill="#FFFFFF"
+                                fontFamily="JetBrains Mono"
+                              >
+                                {p.distance_km}km
+                              </text>
+                            </g>
+                          )}
 
                           {/* Alternative Parcel Pin */}
                           <g
@@ -1024,16 +1077,16 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
                             onClick={(e) => {
                               e.stopPropagation();
                               setSelectedAlternative(p);
-                              triggerNotify(`Inspecting nearest land: ${p.survey_number} (${p.distance_km}km away • ${p.priority_badge})`);
+                              triggerNotify(`Selected nearest land: ${p.survey_number} (${p.distance_km}km away • ${p.priority_badge})`);
                             }}
                             onMouseEnter={() => setHoveredParcel(p)}
                             onMouseLeave={() => setHoveredParcel(null)}
                             style={{ cursor: 'pointer' }}
                           >
-                            {/* Pulse animation for high priority zero habitation */}
+                            {/* Glowing pulse ring for zero habitation */}
                             {isZeroHab && (
-                              <circle cx="0" cy="0" r="16" fill="#16A878" fillOpacity="0.25">
-                                <animate attributeName="r" values="9;22;9" dur="2s" repeatCount="indefinite" />
+                              <circle cx="0" cy="0" r={isSelected ? "18" : "14"} fill="#16A878" fillOpacity="0.22">
+                                <animate attributeName="r" values="10;22;10" dur="2s" repeatCount="indefinite" />
                                 <animate attributeName="opacity" values="0.8;0.1;0.8" dur="2s" repeatCount="indefinite" />
                               </circle>
                             )}
@@ -1042,42 +1095,72 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
                             <circle
                               cx="0"
                               cy="0"
-                              r={isSelected ? '9.5' : '7.5'}
+                              r={isSelected ? '11' : '8.5'}
                               fill={strokeColor}
                               stroke="#FFFFFF"
                               strokeWidth={isSelected ? '2.5' : '2'}
                             />
 
-                            {/* Priority Star / Core for Zero Habitation */}
+                            {/* Priority Icon inside circle */}
                             {isZeroHab ? (
-                              <text x="0" y="2.5" fontSize="7.5" textAnchor="middle" fill="#FFFFFF" fontWeight="900">
+                              <text x="0" y="3" fontSize="8" textAnchor="middle" fill="#FFFFFF" fontWeight="900">
                                 ★
                               </text>
                             ) : (
-                              <circle cx="0" cy="0" r="2.5" fill="#FFFFFF" />
+                              <text x="0" y="2.8" fontSize="7" textAnchor="middle" fill="#FFFFFF" fontWeight="700">
+                                {p.priority_rank}
+                              </text>
                             )}
 
-                            {/* Priority Rank Tag */}
-                            <rect
-                              x="9"
-                              y="-8"
-                              width={isZeroHab ? '72' : '56'}
-                              height="15"
-                              rx="3"
-                              fill={isZeroHab ? '#08483B' : '#2D1B05'}
-                              stroke={strokeColor}
-                              strokeWidth="0.8"
-                            />
-                            <text
-                              x="13"
-                              y="2.5"
-                              fontSize="7.5"
-                              fontWeight="700"
-                              fill={isZeroHab ? '#48E5B1' : '#F7C665'}
-                              fontFamily="Inter, sans-serif"
-                            >
-                              {isZeroHab ? `★ #${p.priority_rank} 0-Hab` : `#${p.priority_rank} ${p.habitation_status}`}
-                            </text>
+                            {/* Clean Priority Badge Tag */}
+                            {isSelected || isHovered ? (
+                              <g transform="translate(14, -10)">
+                                <rect
+                                  x="0"
+                                  y="0"
+                                  width={isZeroHab ? "130" : "105"}
+                                  height="20"
+                                  rx="4"
+                                  fill={isZeroHab ? '#053E32' : '#2D1B05'}
+                                  stroke={strokeColor}
+                                  strokeWidth="1.2"
+                                />
+                                <text
+                                  x="6"
+                                  y="13.5"
+                                  fontSize="8"
+                                  fontWeight="700"
+                                  fill={isZeroHab ? '#48E5B1' : '#F7C665'}
+                                  fontFamily="Inter, sans-serif"
+                                >
+                                  {isZeroHab ? `★ #${p.priority_rank} 0-Hab • ${p.distance_km}km` : `#${p.priority_rank} ${p.habitation_status} • ${p.distance_km}km`}
+                                </text>
+                              </g>
+                            ) : (
+                              <g transform="translate(11, -7.5)">
+                                <rect
+                                  x="0"
+                                  y="0"
+                                  width={isZeroHab ? "56" : "48"}
+                                  height="15"
+                                  rx="3"
+                                  fill={isZeroHab ? '#08483B' : '#2D1B05'}
+                                  stroke={strokeColor}
+                                  strokeWidth="0.8"
+                                  opacity="0.9"
+                                />
+                                <text
+                                  x="4"
+                                  y="10.5"
+                                  fontSize="7"
+                                  fontWeight="700"
+                                  fill={isZeroHab ? '#48E5B1' : '#F7C665'}
+                                  fontFamily="Inter, sans-serif"
+                                >
+                                  {isZeroHab ? `#${p.priority_rank} 0-Hab` : `#${p.priority_rank} ${p.habitation_status}`}
+                                </text>
+                              </g>
+                            )}
                           </g>
                         </g>
                       );
@@ -1111,6 +1194,37 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
                   <div style={{ fontSize: 11.5, fontWeight: 600, color: hoveredParcel.habitation_status === 'none' ? '#16A878' : '#D98A08', marginTop: 3 }}>
                     {hoveredParcel.habitation_status === 'none' ? '✓ Zero Habitation (0 Families)' : `⚠️ ${hoveredParcel.affected_families_count} Families Displaced`}
                   </div>
+                </div>
+              )}
+
+              {/* Floating Active Nearest Land Recommendation HUD on Map Canvas */}
+              {selectedAlternative && (
+                <div className="gis-map-active-rec-hud">
+                  <div className="gis-rec-hud-header">
+                    <span className={`gis-rec-tier-badge ${selectedAlternative.priority_tier.toLowerCase()}`}>
+                      {selectedAlternative.priority_tier === 'HIGH' ? '⭐ TOP PRIORITY: ZERO HABITATION' : selectedAlternative.priority_badge}
+                    </span>
+                    <span className="gis-rec-dist mono">{selectedAlternative.distance_km} km away</span>
+                  </div>
+                  <div className="gis-rec-hud-title">{selectedAlternative.survey_number} • {selectedAlternative.village}</div>
+                  <div className="gis-rec-hud-meta">
+                    <span className="gis-meta-item">
+                      <strong>Habitation:</strong> {selectedAlternative.habitation_status === 'none' ? '0 Displaced Families (Zero R&R Resettlement Friction)' : `${selectedAlternative.affected_families_count} Families Displaced`}
+                    </span>
+                    <span className="gis-meta-item">
+                      <strong>Time Saved:</strong> +{selectedAlternative.time_savings_days} Days vs Disputed Corridor
+                    </span>
+                  </div>
+                  <button
+                    className="gis-rec-adopt-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      triggerNotify(`Selected ${selectedAlternative.survey_number} (${selectedAlternative.village}) as the primary realignment alternative!`);
+                    }}
+                  >
+                    <CheckCheck size={13} />
+                    <span>Select This Nearest Land</span>
+                  </button>
                 </div>
               )}
 
@@ -1272,17 +1386,39 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
             <div className="gis-priority-controls-bar">
               <div className="gis-priority-tabs">
                 <button
-                  className={`gis-priority-tab-btn ${habitationFilter === 'zero_habitation_only' ? 'active-green' : ''}`}
+                  className={`gis-priority-tab-btn ${habitationFilter === 'zero_habitation' ? 'active-green' : ''}`}
                   onClick={() => {
-                    setHabitationFilter('zero_habitation_only');
+                    setHabitationFilter('zero_habitation');
                     triggerNotify('Active Filter: High Priority Zero-Habitation Lands Only (0 families displaced).');
                   }}
                 >
                   <ShieldCheck size={14} className="gis-icon-green" />
-                  <strong>High Priority: Zero Habitation Only</strong>
+                  <strong>⭐ High Priority: Zero Habitation</strong>
                   <span className="gis-tab-count green">
-                    {nearestParcels.filter((p) => p.habitation_status === 'none').length} Available
+                    {zeroHabCount} Available
                   </span>
+                </button>
+
+                <button
+                  className={`gis-priority-tab-btn ${habitationFilter === 'sparse_habitation' ? 'active-sparse' : ''}`}
+                  onClick={() => {
+                    setHabitationFilter('sparse_habitation');
+                    triggerNotify('Active Filter: Moderate Priority Sparse Habitation.');
+                  }}
+                >
+                  <span>🟡 Sparse Habitation</span>
+                  <span className="gis-tab-count amber">{sparseHabCount}</span>
+                </button>
+
+                <button
+                  className={`gis-priority-tab-btn ${habitationFilter === 'dense_habitation' ? 'active-dense' : ''}`}
+                  onClick={() => {
+                    setHabitationFilter('dense_habitation');
+                    triggerNotify('Active Filter: Low Priority Dense Habitation (Village settlements).');
+                  }}
+                >
+                  <span>🔴 Dense Habitation (Low Priority)</span>
+                  <span className="gis-tab-count red">{denseHabCount}</span>
                 </button>
 
                 <button
@@ -1293,8 +1429,8 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
                   }}
                 >
                   <Navigation size={14} />
-                  <span>All Parcels (Habitation Ranked)</span>
-                  <span className="gis-tab-count slate">{nearestParcels.length} Total</span>
+                  <span>All Alternatives</span>
+                  <span className="gis-tab-count slate">{allCount}</span>
                 </button>
               </div>
 
