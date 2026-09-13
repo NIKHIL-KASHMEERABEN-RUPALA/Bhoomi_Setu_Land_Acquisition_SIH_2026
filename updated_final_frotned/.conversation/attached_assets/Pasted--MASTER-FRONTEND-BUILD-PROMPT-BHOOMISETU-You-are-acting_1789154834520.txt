@@ -1,0 +1,1515 @@
+# MASTER FRONTEND BUILD PROMPT — BHOOMISETU
+
+You are acting as a **principal frontend architect + senior product designer + interaction designer + frontend performance engineer** building a production-quality government intelligence platform.
+
+Build the frontend for **BhoomiSetu — Predictive Land Acquisition Delay Intelligence Platform**.
+
+The product should look and behave like a serious **enterprise/government decision-intelligence system**, not a generic hackathon dashboard.
+
+The visual/product quality bar should feel comparable to modern products from **Google, Meta, Palantir, Stripe, Linear and Vercel**, while remaining appropriate for an Indian government/public-sector environment.
+
+---
+
+# 1. PRODUCT PURPOSE
+
+BhoomiSetu helps government authorities detect, understand and proactively mitigate **land acquisition delays**.
+
+The frontend must communicate:
+
+**DATA → RISK → EXPLANATION → INTERVENTION → ACTION → MONITORING**
+
+The interface should allow an officer/administrator to:
+
+* monitor statewide acquisition health
+* identify high-risk districts/projects
+* understand why a project is at risk
+* inspect project lifecycle stages
+* monitor compensation and financial bottlenecks
+* identify legal/documentation/ownership risks
+* compare districts and states
+* generate policy/action briefings
+* assign interventions
+* track intervention status
+* inspect geographic intelligence
+* make decisions quickly from dense information
+
+Do NOT make the UI look like a collection of unrelated cards.
+
+The entire application must feel like **one coherent intelligence operating system**.
+
+---
+
+# 2. TECHNOLOGY — USE THIS STACK
+
+Core:
+
+* React 18
+* TypeScript
+* Vite
+* React Router DOM
+
+Styling:
+
+* Tailwind CSS
+* Radix UI / shadcn/ui
+* Lucide React
+
+Animation:
+
+* Framer Motion
+* GSAP
+
+State/data:
+
+* TanStack React Query
+* React Hook Form
+* Zod
+
+Visualization:
+
+* Recharts
+* Three.js
+* React Three Fiber
+* React Three Drei
+
+Maps:
+
+* Leaflet
+* React Leaflet
+
+Utilities:
+
+* date-fns
+* sonner
+
+Use reusable components instead of page-specific duplicated markup.
+
+---
+
+# 3. ENGINEERING PRINCIPLES
+
+Write production-quality TypeScript.
+
+Prioritize:
+
+1. maintainability
+2. component reuse
+3. type safety
+4. accessibility
+5. responsive behavior
+6. performance
+7. predictable state management
+8. clean routing
+9. graceful loading/error/empty states
+10. backend/API readiness
+
+Do NOT create fake complexity merely to make the project appear sophisticated.
+
+Every visual element should have a purpose.
+
+Avoid:
+
+* excessive gradients
+* excessive glassmorphism
+* giant typography
+* unnecessary animations
+* random neon colors
+* excessive 3D
+* decorative charts with no meaning
+* inconsistent spacing
+* inconsistent border radii
+* generic SaaS landing-page aesthetics
+
+This is an **intelligence platform**, not a marketing website.
+
+---
+
+# 4. VISUAL DIRECTION
+
+Create a premium **institutional intelligence dashboard**.
+
+Design language:
+
+* dark/light professional interface
+* restrained neutral surfaces
+* strong information hierarchy
+* subtle borders
+* precise spacing
+* compact enterprise controls
+* high-density but readable dashboards
+* meaningful status colors
+* subtle elevation
+* restrained motion
+* excellent typography
+* clear data hierarchy
+
+Use a consistent design-token system for:
+
+* colors
+* typography
+* spacing
+* radii
+* shadows
+* borders
+* transitions
+* chart colors
+* risk levels
+* semantic statuses
+
+Risk semantics must remain consistent:
+
+* Critical → red
+* High → orange
+* Moderate → amber
+* Low → green
+* Neutral/informational → blue/gray
+
+Do not randomly change semantic colors between pages.
+
+---
+
+# 5. GLOBAL APPLICATION SHELL
+
+Create a reusable:
+
+`AppShell.tsx`
+
+It must contain:
+
+### Sidebar
+
+* BhoomiSetu identity/logo
+* Dashboard
+* District Diagnostics
+* Early Warning
+* Fund Tracking
+* Project 360
+* Intelligence Modules
+* State Benchmarking
+* Policy Briefing
+
+Sidebar should support:
+
+* active route highlighting
+* collapsible mode
+* icons
+* tooltips when collapsed
+* keyboard accessibility
+
+### Top bar
+
+Include:
+
+* breadcrumb
+* global search
+* command palette trigger
+* notification indicator
+* current scope/district selector
+* user/profile area
+* system status indicator
+
+### Main content
+
+Use consistent:
+
+* maximum-width strategy
+* page padding
+* vertical rhythm
+* responsive behavior
+
+---
+
+# 6. GLOBAL UX SYSTEM
+
+Implement:
+
+### Global Search
+
+Search across:
+
+* projects
+* districts
+* acquisition cases
+* alerts
+* interventions
+
+### Command Palette
+
+Keyboard shortcut:
+
+`Ctrl/Cmd + K`
+
+Support navigation and quick actions.
+
+### Notifications
+
+Use Sonner for:
+
+* successful action
+* generated briefing
+* intervention assignment
+* export completion
+* errors
+* sync events
+
+### Loading
+
+Use skeletons rather than blank screens.
+
+### Empty states
+
+Explain:
+
+* what is missing
+* why it matters
+* what action can be taken
+
+### Error states
+
+Never expose raw errors.
+
+Provide:
+
+* human-readable explanation
+* retry action
+* contextual fallback
+
+### Responsive design
+
+Desktop-first but fully responsive.
+
+Support:
+
+* desktop
+* laptop
+* tablet
+* mobile
+
+On mobile, transform:
+
+* sidebar → drawer
+* dense tables → responsive cards
+* multi-column layouts → stacked layouts
+* map controls → compact floating controls
+
+---
+
+# 7. ROUTING
+
+Create clean routes:
+
+`/`
+`/district-diagnostics`
+`/early-warning`
+`/fund-tracking`
+`/project/:id`
+`/intelligence`
+`/policy-briefing`
+`/state-benchmarking`
+`/shader-demo`
+
+Include:
+
+* route-level loading
+* 404 page
+* placeholder/fallback page
+* navigation transitions
+* preserved query/filter state where appropriate
+
+---
+
+# 8. PAGE — DISTRICT DIAGNOSTICS
+
+File:
+
+`DistrictDiagnostics.tsx`
+
+Purpose:
+
+Statewide KPI and district health intelligence.
+
+Create:
+
+### Header
+
+* title
+* description
+* statewide scope
+* date/time context
+* filter controls
+
+### KPI layer
+
+Use:
+
+* CardContainer
+* CardBody
+* Kpi
+* KpiCard
+* MiniRing
+* AnimatedCounter
+* TrendingUp
+* ArrowUpRight
+* Sparkles
+
+KPIs should include concepts such as:
+
+* projects monitored
+* projects at risk
+* average acquisition delay
+* compensation pending
+* legal-risk cases
+* documentation bottlenecks
+
+### District intelligence
+
+Provide:
+
+* district ranking
+* risk distribution
+* trend
+* affected-project count
+* delay severity
+
+### Geographic intelligence
+
+Use:
+
+`PulseMap`
+
+Show:
+
+* district risk intensity
+* high-risk clusters
+* selected district
+* map legend
+* hover state
+* click-to-inspect
+
+Include a clear:
+
+**"Gujarat statewide"**
+
+scope control.
+
+---
+
+# 9. PAGE — EARLY WARNING
+
+File:
+
+`EarlyWarning.tsx`
+
+Purpose:
+
+Prioritize emerging acquisition-delay risks.
+
+Create:
+
+`AlertCard`
+
+and:
+
+`NotificationStack`
+
+Each alert should communicate:
+
+* project/district
+* risk category
+* severity
+* predicted delay
+* confidence
+* primary cause
+* timestamp
+* recommended intervention
+
+Risk categories:
+
+* Legal
+* Compensation
+* Documentation
+* Ownership
+* Approval
+* Rehabilitation & Resettlement
+* Administrative
+
+Provide filters:
+
+* severity
+* district
+* category
+* time range
+* status
+
+Add sorting by:
+
+* risk
+* predicted delay
+* confidence
+* recency
+
+Include:
+
+`{alerts.length} active alerts`
+
+as a meaningful dynamic count.
+
+---
+
+# 10. PAGE — FUND TRACKING
+
+File:
+
+`FundTracking.tsx`
+
+Purpose:
+
+Understand financial bottlenecks contributing to acquisition delays.
+
+Include:
+
+* total sanctioned amount
+* released amount
+* utilized amount
+* pending compensation
+* aging payments
+* district-level comparison
+
+Components:
+
+* KpiCard
+* AgingBar
+* BlockStatus
+* SortIcon
+
+Actions:
+
+### Download financial briefing
+
+### View recommended interventions
+
+Use realistic financial visualization.
+
+Do not fabricate overly precise numbers unless clearly represented as demo/mock data.
+
+Clearly separate:
+
+* demo data
+* API-ready data
+
+---
+
+# 11. PAGE — PROJECT 360
+
+File:
+
+`Project360.tsx`
+
+Purpose:
+
+Provide complete project-level acquisition intelligence.
+
+Use:
+
+`RingGauge`
+
+for overall project risk.
+
+Include:
+
+### Project header
+
+* project name
+* project ID
+* district
+* current phase
+* risk level
+* last updated
+
+### Lifecycle
+
+Create:
+
+`LifecycleStep`
+
+Stages:
+
+1. Notification
+2. Survey
+3. Objection/claims
+4. Award
+5. Compensation
+6. Possession
+7. R&R
+8. Closure
+
+Each stage should show:
+
+* status
+* duration
+* expected duration
+* delay
+* responsible authority
+* blockers
+
+### Risk explanation
+
+Show:
+
+* overall risk
+* delay probability
+* predicted delay window
+* confidence
+* major contributing factors
+
+### Intervention
+
+Primary CTA:
+
+**Accept & Track**
+
+The interaction should update the intervention state visually.
+
+---
+
+# 12. PAGE — INTELLIGENCE MODULES
+
+File:
+
+`IntelligenceModules.tsx`
+
+This is the analytical core.
+
+Use:
+
+`MapCanvas`
+
+to visualize spatial/project intelligence.
+
+Include modules such as:
+
+### Delay Risk
+
+Predict probability of delay.
+
+### Legal Risk
+
+Identify dispute/legal bottlenecks.
+
+### Compensation Risk
+
+Identify payment-related delay.
+
+### Documentation Risk
+
+Identify missing/inconsistent records.
+
+### Ownership Conflict
+
+Identify title/ownership complexity.
+
+### R&R Risk
+
+Identify rehabilitation and resettlement bottlenecks.
+
+Each module must have:
+
+* risk score
+* explanation
+* contributing factors
+* affected projects
+* recommended action
+
+Actions:
+
+* `{action}`
+* Open full explanation
+* Assign →
+* Create action brief
+
+Use:
+
+* Target
+* FileText
+* Gauge
+* Clock3
+* Users
+* Send
+* Info
+* SearchIcon
+
+Avoid making every module look identical.
+
+---
+
+# 13. PAGE — POLICY BRIEFING
+
+File:
+
+`PolicyBriefing.tsx`
+
+Purpose:
+
+Convert intelligence into decision-ready communication.
+
+Provide:
+
+### Scope
+
+* statewide
+* district
+* project
+* custom selection
+
+### Time range
+
+### Briefing generation
+
+Primary action:
+
+**Generate Briefing**
+
+During generation show:
+
+**Generating briefing…**
+
+Generate a structured briefing preview containing:
+
+1. Executive Summary
+2. Current Situation
+3. Highest-Risk Areas
+4. Root Causes
+5. Financial Exposure
+6. Legal/Administrative Risks
+7. Recommended Interventions
+8. Priority Actions
+9. Monitoring Indicators
+
+Actions:
+
+* Share via Email
+* Export as PDF
+* Send to WhatsApp
+
+Include:
+
+* generation timestamp
+* selected scope
+* confidence/disclaimer
+* source/data freshness indicator
+
+Use realistic mock generation state.
+
+---
+
+# 14. PAGE — STATE BENCHMARKING
+
+File:
+
+`StateBenchmarking.tsx`
+
+Purpose:
+
+Compare districts/states using normalized indicators.
+
+Use:
+
+`KpiCard`
+
+and:
+
+`AnimatedCounter`
+
+Include:
+
+* average acquisition delay
+* risk rate
+* compensation efficiency
+* legal dispute rate
+* documentation completeness
+* project completion rate
+
+Actions:
+
+**View affected districts**
+
+Include:
+
+* rankings
+* trend comparison
+* percentile indicators
+* district drill-down
+
+Avoid misleading comparisons by clearly labeling:
+
+* metric
+* time period
+* sample size where appropriate
+
+---
+
+# 15. PAGE — MINI MAP / INDEX
+
+File:
+
+`Index.tsx`
+
+Create a polished intelligence landing/dashboard experience.
+
+Include:
+
+`MiniMap`
+
+with:
+
+* project markers
+* risk states
+* selected project
+* popup details
+
+Actions:
+
+* Replay Intro
+* Last synced 2 mins ago
+* More options
+
+Use:
+
+`HeroScrollSequence`
+
+only if it improves storytelling.
+
+Do not allow animation to interfere with dashboard usability.
+
+---
+
+# 16. PAGE — SHADER DEMO
+
+File:
+
+`ShaderDemo.tsx`
+
+Purpose:
+
+Controlled visual demonstration area.
+
+Use:
+
+* ATCShader
+* Tabs
+* TabsList
+* TabsTrigger
+* TabsContent
+
+This page should remain isolated from the operational dashboard.
+
+Keep GPU-heavy visual effects optional and performance-safe.
+
+---
+
+# 17. NOT FOUND
+
+File:
+
+`NotFound.tsx`
+
+Create a premium but minimal 404.
+
+Include:
+
+* 404
+* short explanation
+* Return to Dashboard
+* Go Back
+
+No unnecessary animation.
+
+---
+
+# 18. PLACEHOLDER
+
+File:
+
+`Placeholder.tsx`
+
+Use for unfinished modules.
+
+Include:
+
+* clear title
+* short explanation
+* construction state
+* back navigation
+* AppShell
+
+Never leave broken blank pages.
+
+---
+
+# 19. REUSABLE COMPONENT SYSTEM
+
+Create reusable components where repeated patterns exist.
+
+At minimum support:
+
+### Data
+
+* KpiCard
+* Kpi
+* AnimatedCounter
+* RingGauge
+* MiniRing
+* Sparkline
+* AgingBar
+* BlockStatus
+
+### Risk
+
+* RiskBadge
+* RiskScore
+* RiskBreakdown
+* RiskTrend
+* ConfidenceIndicator
+
+### Intelligence
+
+* MapCanvas
+* PulseMap
+* AlertCard
+* NotificationStack
+* LifecycleStep
+* InterventionCard
+
+### Navigation
+
+* AppShell
+* Sidebar
+* Breadcrumb
+* CommandPalette
+* PageHeader
+
+### Feedback
+
+* EmptyState
+* ErrorState
+* LoadingState
+* Skeleton
+* Toast
+
+### Data controls
+
+* Filter
+* Search
+* Sort
+* DateRange
+* ScopeSelector
+
+---
+
+# 20. SHADCN/RADIX COMPONENTS
+
+Use existing primitives wherever appropriate:
+
+* accordion
+* alert
+* alert-dialog
+* avatar
+* badge
+* breadcrumb
+* button
+* calendar
+* card
+* carousel
+* chart
+* checkbox
+* collapsible
+* command
+* context-menu
+* dialog
+* drawer
+* dropdown-menu
+* form
+* hover-card
+* input
+* label
+* menubar
+* pagination
+* popover
+* progress
+* radio-group
+* resizable
+* scroll-area
+* select
+* separator
+* sheet
+* sidebar
+* skeleton
+* slider
+* switch
+* table
+* tabs
+* textarea
+* toast
+* toggle
+* toggle-group
+* tooltip
+
+Do not introduce unnecessary UI libraries.
+
+---
+
+# 21. DATA ARCHITECTURE
+
+The frontend must be **backend-ready**.
+
+Do not hardcode data directly throughout components.
+
+Create a clear separation:
+
+`UI → hooks → service/API layer → data`
+
+For example:
+
+`services/`
+`hooks/`
+`types/`
+`mock/`
+
+Use TanStack Query for server-state patterns.
+
+Create typed interfaces for:
+
+* Project
+* District
+* Alert
+* RiskAssessment
+* Intervention
+* FinancialRecord
+* LifecycleStage
+* PolicyBriefing
+* Benchmark
+* MapEntity
+
+Mock services should have the same interface expected from the future backend.
+
+This allows mock data to be replaced by real APIs without rewriting UI components.
+
+---
+
+# 22. API READINESS
+
+Assume future backend endpoints such as:
+
+`GET /api/v1/dashboard`
+`GET /api/v1/districts`
+`GET /api/v1/projects`
+`GET /api/v1/projects/:id`
+`GET /api/v1/alerts`
+`GET /api/v1/risks`
+`GET /api/v1/funds`
+`GET /api/v1/benchmarks`
+`POST /api/v1/interventions`
+`POST /api/v1/briefings`
+
+Do not actually require these endpoints to exist.
+
+Create a clean service abstraction so the frontend can later consume the backend.
+
+Never couple components directly to fetch/axios implementation.
+
+---
+
+# 23. INTERACTION DESIGN
+
+Every meaningful action must provide feedback.
+
+Examples:
+
+### Assign
+
+Show:
+
+* confirmation
+* assigned status
+* responsible person/team
+* timestamp
+
+### Generate Briefing
+
+Show:
+
+* progress/loading
+* generation completion
+* preview
+
+### Export
+
+Show:
+
+* preparing
+* completed
+* failure fallback
+
+### Accept & Track
+
+Change:
+
+* button state
+* intervention status
+* timeline state
+
+### Filters
+
+Update:
+
+* KPI values
+* charts
+* map
+* tables
+* alert counts
+
+Avoid fake buttons that do nothing.
+
+If functionality is intentionally mocked, create realistic simulated behavior.
+
+---
+
+# 24. MAP UX
+
+Maps must be analytical, not decorative.
+
+Support:
+
+* zoom
+* pan
+* markers
+* clusters where appropriate
+* district boundaries if available
+* selected state/district/project
+* hover information
+* click drill-down
+* legend
+* risk filtering
+* reset view
+
+Map colors must correspond to the global risk system.
+
+Do not overwhelm the map with labels.
+
+---
+
+# 25. DATA VISUALIZATION
+
+Charts must answer a question.
+
+Use appropriate chart types:
+
+* line → trend
+* bar → comparison
+* stacked bar → composition
+* area → accumulation
+* donut/ring → proportion/status
+* scatter → relationship
+* map → spatial distribution
+
+Every chart should have:
+
+* title
+* context
+* units
+* time range where applicable
+* tooltip
+* empty state
+
+Avoid chart junk.
+
+---
+
+# 26. ACCESSIBILITY
+
+Follow WCAG-oriented practices.
+
+Include:
+
+* semantic HTML
+* keyboard navigation
+* visible focus states
+* aria labels
+* accessible dialogs
+* accessible dropdowns
+* adequate contrast
+* screen-reader-friendly controls
+* no color-only communication
+
+All interactive icons must have accessible labels/tooltips.
+
+---
+
+# 27. PERFORMANCE
+
+Treat performance as a first-class requirement.
+
+Implement where appropriate:
+
+* lazy-loaded routes
+* lazy-loaded heavy Three.js modules
+* memoization
+* stable callbacks
+* virtualization for large tables/lists
+* efficient chart rendering
+* avoid unnecessary re-renders
+* avoid loading heavy assets unnecessarily
+* avoid running expensive animations continuously
+
+Three.js/WebGL effects must never block the primary application.
+
+---
+
+# 28. ANIMATION PRINCIPLES
+
+Use Framer Motion/GSAP selectively.
+
+Good animations:
+
+* page transitions
+* card entrance
+* KPI number transitions
+* hover feedback
+* map selection
+* modal transitions
+* alert appearance
+* progress transitions
+
+Avoid:
+
+* constant movement
+* excessive parallax
+* bouncing UI
+* slow transitions
+* animations on every element
+
+Animation should communicate **state, hierarchy or causality**.
+
+Respect:
+
+`prefers-reduced-motion`
+
+---
+
+# 29. SECURITY / TRUST UX
+
+The frontend must visually communicate that this is a sensitive government intelligence platform.
+
+Include appropriate:
+
+* session/status indicators
+* data freshness
+* audit timestamps
+* permission-aware action patterns
+* confirmation dialogs for consequential actions
+* safe error messages
+* no secrets in frontend
+* no API keys hardcoded
+* environment variables for configuration
+
+Never put credentials, tokens or private backend secrets into frontend code.
+
+Frontend security must not be represented as merely cosmetic UI.
+
+---
+
+# 30. TRUST & EXPLAINABILITY
+
+Because this system uses predictive analytics, never present predictions as unquestionable facts.
+
+Where appropriate show:
+
+* prediction
+* confidence
+* contributing factors
+* data freshness
+* model/data disclaimer
+* explanation
+
+Example:
+
+`Delay Risk: 78%`
+
+`Confidence: High`
+
+`Primary contributors: Compensation backlog, legal dispute, documentation gap`
+
+Use language such as:
+
+**"Predicted risk"**
+
+rather than:
+
+**"Certain delay"**
+
+This is critical for responsible decision-support UX.
+
+---
+
+# 31. DEMO DATA
+
+Create believable Indian administrative/project data.
+
+Use realistic examples such as:
+
+* Gujarat districts
+* acquisition projects
+* INR amounts
+* dates
+* lifecycle stages
+* administrative statuses
+
+Do not use meaningless lorem ipsum.
+
+Do not imply that demo values are official government data.
+
+Clearly structure mock/demo data so it can later be replaced.
+
+---
+
+# 32. DESIGN DETAILS
+
+Use consistent:
+
+* 4/8px spacing rhythm
+* typography scale
+* icon sizing
+* card padding
+* border radius
+* hover states
+* focus states
+* shadows
+* chart dimensions
+
+Do not randomly mix styles.
+
+Cards should primarily organize information rather than become decorative containers.
+
+Prefer:
+
+* hierarchy
+* whitespace
+* alignment
+* density control
+
+over decoration.
+
+---
+
+# 33. RESPONSIVE BEHAVIOR
+
+At desktop:
+
+Use:
+
+* sidebar
+* multi-column analytics
+* map + insights
+* dense tables
+
+At tablet:
+
+Collapse:
+
+* secondary panels
+* excessive columns
+* sidebar
+
+At mobile:
+
+Prioritize:
+
+1. critical KPI
+2. alerts
+3. project status
+4. primary action
+
+Convert dense visualizations into horizontally scrollable or simplified representations where necessary.
+
+---
+
+# 34. CODE ORGANIZATION
+
+Use a scalable structure similar to:
+
+`src/`
+
+* `components/`
+
+  * `ui/`
+  * `dashboard/`
+  * `charts/`
+  * `maps/`
+  * `risk/`
+  * `projects/`
+  * `briefing/`
+* `pages/`
+* `layouts/`
+* `hooks/`
+* `services/`
+* `types/`
+* `mock/`
+* `lib/`
+* `constants/`
+* `routes/`
+
+Keep business logic out of purely presentational components.
+
+Use TypeScript types instead of `any`.
+
+---
+
+# 35. QUALITY GATE
+
+Before considering the frontend complete, verify:
+
+### Architecture
+
+* reusable components
+* clean separation of concerns
+* typed data
+* API-ready services
+
+### UX
+
+* every major workflow is understandable
+* buttons work
+* filters work
+* navigation works
+* loading/error/empty states exist
+
+### Visual
+
+* consistent design system
+* professional typography
+* consistent spacing
+* consistent risk semantics
+* no accidental visual clutter
+
+### Technical
+
+* no TypeScript errors
+* no broken imports
+* no console errors
+* no obvious React warnings
+* no unnecessary dependencies
+* responsive layout works
+
+### Accessibility
+
+* keyboard navigation
+* accessible controls
+* focus states
+* semantic structure
+
+### Performance
+
+* heavy components lazy-loaded
+* no unnecessary render loops
+* animations optimized
+* WebGL isolated
+
+---
+
+# 36. IMPORTANT IMPLEMENTATION RULE
+
+Do NOT attempt to build every advanced feature simultaneously if doing so risks incomplete or unstable code.
+
+Build in this order:
+
+## PHASE 1 — FOUNDATION
+
+* Vite + React + TypeScript
+* Tailwind
+* routing
+* AppShell
+* design tokens
+* shadcn primitives
+* responsive layout
+
+## PHASE 2 — CORE DASHBOARD
+
+* District Diagnostics
+* Early Warning
+* Fund Tracking
+* Project 360
+
+## PHASE 3 — INTELLIGENCE
+
+* Intelligence Modules
+* MapCanvas
+* risk visualization
+* explanations
+* interventions
+
+## PHASE 4 — DECISION SUPPORT
+
+* Policy Briefing
+* State Benchmarking
+* exports/share UI
+
+## PHASE 5 — POLISH
+
+* animations
+* micro-interactions
+* command palette
+* loading states
+* error states
+* accessibility
+* performance optimization
+
+Do not sacrifice architectural quality for feature count.
+
+---
+
+# 37. FINAL PRODUCT STANDARD
+
+The final result should feel like:
+
+**"A real government-grade predictive decision intelligence platform that could plausibly be deployed to district/state authorities."**
+
+It must NOT feel like:
+
+* a student dashboard
+* a template
+* a generic admin panel
+* a collection of flashy cards
+* an AI-generated UI with random gradients
+* a static Figma prototype
+
+The strongest differentiator should be:
+
+**clarity + explainability + operational usefulness + visual precision.**
+
+Build the frontend so that an evaluator can understand the entire BhoomiSetu workflow within approximately 60 seconds:
+
+**Where is the problem?
+How serious is it?
+Why is it happening?
+Which projects are affected?
+What should the authority do?
+Has the intervention been assigned?
+Is the situation improving?**
+
+Prioritize this decision loop above decorative complexity.
+
+---
+
+# 38. FINAL INSTRUCTION
+
+First inspect the existing project structure and reuse compatible existing components/assets instead of unnecessarily rewriting them.
+
+Do not delete working functionality without reason.
+
+Implement incrementally and keep the application runnable after each major phase.
+
+Use mock data initially, but architect every data flow so the mock layer can later be replaced by the BhoomiSetu backend/API with minimal frontend changes.
+
+**Do not ask unnecessary questions. Make strong, professional engineering decisions when details are unspecified.**
+
+The final code must be clean, understandable, scalable, responsive, accessible, performant and visually polished.

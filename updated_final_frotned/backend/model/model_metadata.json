@@ -1,0 +1,23 @@
+{
+  "model_name": "BhoomiSetu-XGBoost-DelayPredictor",
+  "version": "1.0.0",
+  "target": "delayed_gt_90_days",
+  "feature_count": 18,
+  "training_date": "2025-06-10T14:30:00Z",
+  "dataset_version": "Kaggle-Gujarat-Infrastructure-v2",
+  "threshold": 0.50,
+  "model_type": "Pipeline(StandardScaler, XGBoostClassifier)",
+  "framework": "scikit-learn / joblib",
+  "performance_metrics": {
+    "auc_roc": 0.912,
+    "f1_score": 0.884,
+    "precision": 0.892,
+    "recall": 0.876
+  },
+  "risk_thresholds": {
+    "low": 0.30,
+    "moderate": 0.55,
+    "high": 0.75,
+    "critical": 1.00
+  }
+}

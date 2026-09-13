@@ -1,0 +1,3 @@
+id,name,project_code,district,phase,risk_level,risk_score,delay_probability,predicted_delay_window,confidence,budget,affected_families
+p-001,Dholera–Ahmedabad Connector,DAC/GJ/14,Ahmedabad,Possession & handover,Low,24.0,18.0,On track,89.0,890.0,430
+p-004,Western Dedicated Freight Corridor · Package 8,WDFC/GJ/08,Bharuch,Award & compensation,Critical,84.0,79.0,8–12 months,92.0,488.0,1180

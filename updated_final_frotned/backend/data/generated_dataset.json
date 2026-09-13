@@ -1,0 +1,149 @@
+{
+  "timestamp": "2026-09-13T02:10:00Z",
+  "source": "frontend-realtime-test",
+  "projects": [
+    {
+      "id": "p-001",
+      "name": "Dholera\u2013Ahmedabad Connector",
+      "projectCode": "DAC/GJ/14",
+      "district": "Ahmedabad",
+      "phase": "Possession & handover",
+      "riskLevel": "Low",
+      "riskScore": 24.0,
+      "delayProbability": 18.0,
+      "predictedDelayWindow": "On track",
+      "confidence": 89.0,
+      "lastUpdated": null,
+      "budget": 890.0,
+      "affectedFamilies": 430,
+      "contributors": [
+        {
+          "label": "Residual cases",
+          "value": 34.0
+        }
+      ],
+      "lifecycleStages": []
+    },
+    {
+      "id": "p-004",
+      "name": "Western Dedicated Freight Corridor \u00b7 Package 8",
+      "projectCode": "WDFC/GJ/08",
+      "district": "Bharuch",
+      "phase": "Award & compensation",
+      "riskLevel": "Critical",
+      "riskScore": 84.0,
+      "delayProbability": 79.0,
+      "predictedDelayWindow": "8\u201312 months",
+      "confidence": 92.0,
+      "lastUpdated": null,
+      "budget": 488.0,
+      "affectedFamilies": 1180,
+      "contributors": [
+        {
+          "label": "Title disputes",
+          "value": 38.0
+        }
+      ],
+      "lifecycleStages": []
+    }
+  ],
+  "districts": [
+    {
+      "id": "d-01",
+      "name": "Kutch",
+      "monitoredProjects": 14,
+      "atRiskProjects": 7,
+      "averageDelay": 6.4,
+      "riskRate": 50.0,
+      "compensationPending": 22.8,
+      "legalCases": 31,
+      "trend": [
+        31.0,
+        34.0,
+        38.0,
+        43.0,
+        48.0,
+        50.0
+      ],
+      "mapPosition": {
+        "x": 19.0,
+        "y": 39.0
+      }
+    },
+    {
+      "id": "d-02",
+      "name": "Bharuch",
+      "monitoredProjects": 12,
+      "atRiskProjects": 5,
+      "averageDelay": 4.6,
+      "riskRate": 41.7,
+      "compensationPending": 16.2,
+      "legalCases": 24,
+      "trend": [
+        27.0,
+        30.0,
+        33.0,
+        35.0,
+        39.0,
+        42.0
+      ],
+      "mapPosition": {
+        "x": 47.0,
+        "y": 69.0
+      }
+    },
+    {
+      "id": "d-04",
+      "name": "Ahmedabad",
+      "monitoredProjects": 18,
+      "atRiskProjects": 4,
+      "averageDelay": 3.2,
+      "riskRate": 22.2,
+      "compensationPending": 14.5,
+      "legalCases": 12,
+      "trend": [
+        25.0,
+        24.0,
+        23.0,
+        23.0,
+        22.0,
+        22.0
+      ],
+      "mapPosition": {
+        "x": 44.0,
+        "y": 52.0
+      }
+    }
+  ],
+  "alerts": [
+    {
+      "id": "alt-001",
+      "projectId": "p-004",
+      "projectName": "Western Dedicated Freight Corridor \u00b7 Package 8",
+      "district": "Bharuch",
+      "category": "Legal",
+      "severity": "Critical",
+      "predictedDelay": "8\u201312 months",
+      "confidence": 92.0,
+      "primaryCause": "High Court writ challenging land valuation in 3 talukas",
+      "timestamp": null,
+      "recommendedIntervention": "Approve revised valuation table & file expedited counter-affidavit",
+      "status": "Open"
+    }
+  ],
+  "financials": [],
+  "corridors": [],
+  "interventions": [
+    {
+      "id": "int-001",
+      "title": "Expedite High Court valuation affidavit",
+      "owner": "Legal Cell \u2013 Bharuch Collectorate",
+      "status": "Open",
+      "dueDate": null,
+      "due": "18 Jun 2025",
+      "assignedAt": null,
+      "projectId": "p-004"
+    }
+  ],
+  "ingested_at": "2026-09-12T23:58:29.238426+00:00"
+}

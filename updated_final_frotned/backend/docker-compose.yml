@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: bhoomi_postgis
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: bhoomi_setu
+      POSTGRES_USER: bhoomi
+      POSTGRES_PASSWORD: bhoomi_secure_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bhoomi -d bhoomi_setu"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bhoomi_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: bhoomi_redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bhoomi_net
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bhoomi_backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      ENVIRONMENT: production
+      POSTGRES_SERVER: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: bhoomi_setu
+      POSTGRES_USER: bhoomi
+      POSTGRES_PASSWORD: bhoomi_secure_password_2026
+      USE_SQLITE_FALLBACK: "false"
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET_KEY: bhoomi_setu_super_secret_jwt_key_gujarat_2026_change_in_prod
+      BACKEND_CORS_ORIGINS: '["http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"]'
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/live"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - bhoomi_net
+
+volumes:
+  pgdata:
+  redisdata:
+
+networks:
+  bhoomi_net:
+    driver: bridge

@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "BhoomiSetu Intelligence Platform"
+description = "A government-grade predictive land acquisition intelligence platform for monitoring statewide acquisition health, explaining delay risk, and coordinating interventions."
+version = "1.0.0"
+id = "artifacts/bhoomi-setu"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25304
+
+[services.development]
+run = "pnpm --filter @workspace/bhoomi-setu run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/bhoomi-setu", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/bhoomi-setu/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25304"
+BASE_PATH = "/"

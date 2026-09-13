@@ -1,0 +1,12 @@
+{
+  "name": "bhoomi-setu-backend",
+  "version": "1.0.0",
+  "description": "BhoomiSetu Enterprise FastAPI Backend with Supabase PostgreSQL",
+  "scripts": {
+    "dev": "python run_backend.py",
+    "start": "python run_backend.py",
+    "test": "python -m pytest app/tests/ -v",
+    "seed": "python scripts/seed_demo_data.py",
+    "test:supabase": "python scripts/test_supabase_connection.py"
+  }
+}

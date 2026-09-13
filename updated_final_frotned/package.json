@@ -1,0 +1,25 @@
+{
+  "name": "workspace",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "dev": "npx pnpm --filter @workspace/bhoomi-setu dev",
+    "dev:frontend": "npx pnpm --filter @workspace/frontend dev",
+    "dev:backend": "cd backend && python run_backend.py",
+    "test:backend": "cd backend && python -m pytest app/tests/ -v",
+    "seed:backend": "cd backend && python scripts/seed_demo_data.py",
+    "dev:api": "npx pnpm --filter @workspace/api-server dev",
+    "dev:sandbox": "npx pnpm --filter @workspace/mockup-sandbox dev",
+    "build": "pnpm run typecheck && pnpm -r --if-present run build",
+    "typecheck:libs": "tsc --build",
+    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
+  },
+  "private": true,
+  "dependencies": {
+    "@replit/connectors-sdk": "^0.4.3"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.6",
+    "typescript": "~5.9.3"
+  }
+}

@@ -1,0 +1,89 @@
+Read this fully before doing anything, and follow it for the rest of this project.
+
+PROJECT
+BhoomiSetu — a predictive land-acquisition delay intelligence platform for Gujarat
+state/district authorities (SIH 2026 project). This must look and function like an
+enterprise/government decision-intelligence system — visual and interaction quality
+comparable to Palantir, Linear, Stripe, and Vercel. It must NOT look like a generic
+admin template, a hackathon dashboard, or a collection of unrelated cards. An
+evaluator should understand the entire workflow — where the problem is, how bad it
+is, why it's happening, which projects are affected, what to do about it, whether
+it's being tracked — within about 60 seconds of looking at it.
+
+STACK (do not substitute without asking first)
+React 18, TypeScript, Vite, React Router DOM, Tailwind CSS, shadcn/ui + Radix UI,
+Lucide React icons, Framer Motion, TanStack React Query, React Hook Form + Zod,
+Recharts, Leaflet + React Leaflet, date-fns, sonner. Three.js/React Three Fiber is
+allowed ONLY on an isolated /shader-demo route, lazy-loaded, never on operational
+dashboard pages.
+
+DESIGN SYSTEM
+- Single design-token source for color, spacing, typography, radii, shadows,
+  motion — no ad hoc values in components.
+- Spacing on a strict 4/8px rhythm.
+- Risk semantics fixed everywhere, never varied by page: Critical = red,
+  High = orange, Moderate = amber, Low = green, Neutral/informational = blue-gray.
+- One typography scale; tabular figures for all numbers; monospace for IDs and
+  timestamps.
+- Light and dark theme via CSS variables, not per-component overrides.
+- Motion is purposeful only — entrance, hover, state-change, selection. No idle or
+  looping animation on dashboard pages. Respect prefers-reduced-motion.
+- Avoid: excessive gradients, glassmorphism, giant type, decorative charts,
+  random neon colors, generic SaaS-landing-page look.
+
+INFORMATION ARCHITECTURE
+Command Center (landing/overview) · National Corridor Map (infra-corridor risk
+map) · District Diagnostics (statewide KPIs, district health, PulseMap) · Early
+Warning Center (prioritized risk alerts) · Fund Tracking (financial bottlenecks) ·
+Project 360 (single-project lifecycle + risk explanation) · Intelligence Modules
+(Delay / Legal / Compensation / Documentation / Ownership / R&R risk) · Policy
+Briefing (generated decision briefs) · State Benchmarking (district/state
+comparison) · Settings & Access (roles/permissions) · Audit Log (who did what,
+when) · /shader-demo (isolated, GPU-heavy, optional).
+
+DATA RULES
+- UI never calls fetch/axios directly: UI → hooks → services/ → types/.
+- Every entity (Project, District, Alert, RiskAssessment, Intervention,
+  FinancialRecord, LifecycleStage, PolicyBriefing, Benchmark) is a typed
+  TypeScript interface. Mock data sits behind the same interface a real API
+  would use, so it can be swapped later with no UI changes.
+- Predictions are never shown as certainty: always pair a risk percentage with a
+  confidence level and the top contributing factors. Say "predicted risk," never
+  "certain delay."
+- Believable Gujarat district/project/INR demo data only — no lorem ipsum —
+  clearly marked as demo data.
+- No dead buttons: every mocked action (assign, generate briefing, export,
+  accept & track) shows a realistic loading state and a realistic result state.
+- No blank screens: skeleton loaders while loading, empty states that explain
+  what's missing and what to do, error states with a human-readable message and
+  a retry action.
+- Accessible: full keyboard navigation, visible focus states, aria labels on
+  every icon-only control, no color-only signaling.
+
+HOW YOU SHOULD WORK ON THIS PROJECT (follow every time, not just now)
+1. Before writing new code, check whether something in the repo already does
+   close to what's being asked, and extend or reuse it instead of duplicating it.
+2. Stay strictly inside the scope of whatever specific task I give you in a given
+   message — don't refactor, restyle, or "improve" anything outside that scope,
+   even if you notice something else you'd change.
+3. Don't add, remove, or swap packages already in package.json unless I
+   explicitly ask.
+4. If a request is ambiguous, make one reasonable assumption, state it in one
+   line, and proceed — don't run broad exploratory passes over the codebase to
+   figure it out.
+5. Group a task's file edits into one checkpoint rather than splitting one
+   logical change into several small back-to-back checkpoints.
+6. When you finish a task, stop and report what changed. Don't automatically
+   continue into further tasks or start additional polishing.
+7. If a build or test fails, tell me what failed before attempting a fix —
+   don't chain a repair attempt onto the same task automatically.
+
+YOUR FIRST TASK ONLY — DO NOT BUILD ANY PAGES YET
+Scaffold the Vite + React + TypeScript + Tailwind + React Router project structure
+(reuse it if it already exists — inspect first). Set up the design tokens above as
+CSS variables / Tailwind config. Then build AppShell.tsx: a sidebar listing the
+information architecture above with active-route highlighting and collapse
+support, and a top bar with breadcrumb, global search input, a scope/district
+selector, and a profile area. Add route stubs for every page in the information
+architecture, each rendering a simple placeholder — no real page content yet.
+Stop after this and report what you built before I give you the next task.

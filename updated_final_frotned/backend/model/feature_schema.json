@@ -1,0 +1,132 @@
+{
+  "version": "1.0.0",
+  "target": "delayed_gt_90_days",
+  "features": [
+    {
+      "name": "budget_crores",
+      "type": "float",
+      "min": 0.0,
+      "max": 50000.0,
+      "description": "Total sanctioned project capital budget in Crores INR"
+    },
+    {
+      "name": "land_acquired_pct",
+      "type": "float",
+      "min": 0.0,
+      "max": 100.0,
+      "description": "Percentage of total project land parcels acquired"
+    },
+    {
+      "name": "land_pending_pct",
+      "type": "float",
+      "min": 0.0,
+      "max": 100.0,
+      "description": "Percentage of project land parcels pending acquisition"
+    },
+    {
+      "name": "row_available_pct",
+      "type": "float",
+      "min": 0.0,
+      "max": 100.0,
+      "description": "Continuous encumbrance-free Right of Way available"
+    },
+    {
+      "name": "possession_pct",
+      "type": "float",
+      "min": 0.0,
+      "max": 100.0,
+      "description": "Physical possession handed over to executing authority"
+    },
+    {
+      "name": "affected_families_count",
+      "type": "int",
+      "min": 0,
+      "max": 50000,
+      "description": "Total families affected by land acquisition"
+    },
+    {
+      "name": "families_relocated_count",
+      "type": "int",
+      "min": 0,
+      "max": 50000,
+      "description": "Number of families successfully relocated"
+    },
+    {
+      "name": "compensation_sanctioned_cr",
+      "type": "float",
+      "min": 0.0,
+      "max": 20000.0,
+      "description": "Sanctioned compensation award amount in Crores INR"
+    },
+    {
+      "name": "compensation_released_cr",
+      "type": "float",
+      "min": 0.0,
+      "max": 20000.0,
+      "description": "Released compensation funds in Crores INR"
+    },
+    {
+      "name": "compensation_pending_cr",
+      "type": "float",
+      "min": 0.0,
+      "max": 20000.0,
+      "description": "Undisbursed compensation pending in Crores INR"
+    },
+    {
+      "name": "compensation_pending_pct",
+      "type": "float",
+      "min": 0.0,
+      "max": 100.0,
+      "description": "Ratio of pending compensation to total sanctioned"
+    },
+    {
+      "name": "disputed_amount_cr",
+      "type": "float",
+      "min": 0.0,
+      "max": 10000.0,
+      "description": "Compensation amount under litigation or arbitration"
+    },
+    {
+      "name": "awards_pending_count",
+      "type": "int",
+      "min": 0,
+      "max": 10000,
+      "description": "Count of individual compensation awards pending payment"
+    },
+    {
+      "name": "aging_gt_60_days_cr",
+      "type": "float",
+      "min": 0.0,
+      "max": 10000.0,
+      "description": "Undisbursed awards pending for more than 60 days"
+    },
+    {
+      "name": "legal_cases_total",
+      "type": "int",
+      "min": 0,
+      "max": 500,
+      "description": "Total active court cases challenging acquisition or awards"
+    },
+    {
+      "name": "interim_stays_active",
+      "type": "int",
+      "min": 0,
+      "max": 100,
+      "description": "Count of court interim stay orders in effect"
+    },
+    {
+      "name": "unresolved_grievances",
+      "type": "int",
+      "min": 0,
+      "max": 500,
+      "description": "Count of open public objections or partition grievances"
+    },
+    {
+      "name": "days_in_current_stage",
+      "type": "int",
+      "min": 0,
+      "max": 2000,
+      "description": "Elapsed days in current RFCTLARR acquisition phase"
+    }
+  ]
+}
