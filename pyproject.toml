@@ -1,0 +1,7 @@
+[project]
+name = "bhoomi-setu"
+version = "1.0.0"
+description = "BhoomiSetu — Land Acquisition Early Warning System ML Engine"
+
+[tool.vercel]
+entrypoint = "ml.main_fastapi:app"
