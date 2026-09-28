@@ -119,14 +119,45 @@ Predictive Land Acquisition Delay Intelligence Platform for Gujarat state and di
 ## Development
 
 ```bash
-# Start Vite development server
-pnpm dev
-# or from workspace root:
-pnpm --filter @workspace/frontend dev
+# Install dependencies
+bun install
 
-# Build for production
-pnpm build
+# Start the frontend dev server
+bun run dev
 
-# Typecheck
-pnpm typecheck
+# Build the frontend for production
+bun run build
+
+# Preview the production build locally
+bun run preview
+
+# Type-check the frontend app
+bun run typecheck
+
+# Lint the frontend app
+bun run lint
+```
+
+```bash
+# Enter the ML workspace
+cd ml
+
+# Create a Python virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Train the XGBoost model
+python3 train.py
+
+# Run prediction inference
+python3 predict.py
+
+# Run counterfactual simulations
+python3 what_if.py
+
+# Start the FastAPI service
+uvicorn main_fastapi:app --host 0.0.0.0 --port 8000 --reload
 ```
