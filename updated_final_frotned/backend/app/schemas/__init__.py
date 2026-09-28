@@ -1,1 +1,0 @@
-# BhoomiSetu Pydantic Schemas package

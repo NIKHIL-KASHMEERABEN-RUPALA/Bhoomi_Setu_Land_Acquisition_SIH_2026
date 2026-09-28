@@ -1,9 +1,5 @@
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.env
-cloudflared.exe
-.system_generated/
-.idea/
-.vscode/
+node_modules
+dist
+.tsbuildinfo
+*.local
+.DS_Store

@@ -1,0 +1,8 @@
+{
+  "name": "BhoomiSetu Intelligence Platform",
+  "description": "AI-Powered Early Warning System for Infrastructure Land Acquisition Delays, Corridor GIS Diagnostics, and Statutory Compensation Tracking.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,1 +1,0 @@
-# BhoomiSetu Services layer package

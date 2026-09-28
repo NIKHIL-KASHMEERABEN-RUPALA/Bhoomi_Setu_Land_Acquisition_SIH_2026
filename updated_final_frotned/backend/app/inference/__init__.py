@@ -1,1 +1,0 @@
-# BhoomiSetu ML Inference package

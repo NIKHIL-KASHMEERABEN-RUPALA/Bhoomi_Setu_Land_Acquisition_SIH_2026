@@ -1,6 +1,0 @@
-id,name,project_code,district,phase,risk_level,risk_score,delay_probability,predicted_delay_window,confidence,budget,affected_families
-p-001,Dholera–Ahmedabad Connector,DAC/GJ/14,Ahmedabad,Possession & handover,Low,24.0,18.0,On track,89.0,890.0,430
-p-002,Mumbai–Ahmedabad High-Speed Rail · GJ-2,MAHSR/GJ/02,Anand,Award & compensation,High,69.0,64.0,4–7 months,86.0,1260.0,920
-p-003,Delhi–Mumbai Expressway · Gujarat Package,DME/GJ/07,Bharuch,Social impact assessment,Moderate,49.0,42.0,2–4 months,78.0,742.0,610
-p-004,Western Dedicated Freight Corridor · Package 8,WDFC/GJ/08,Kutch,Award & compensation,Critical,84.0,79.0,8–12 months,92.0,488.0,1180
-p-005,Surat Metro · North–South Extension,SM/NSE/GJ,Surat,Documentation review,Moderate,43.0,37.0,2–4 months,81.0,384.0,260

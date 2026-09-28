@@ -1,1 +1,0 @@
-# BhoomiSetu Tests package
