@@ -4,7 +4,7 @@ import {
   Shield, Lock, Mail, Eye, EyeOff, Landmark, CheckCircle2,
   AlertCircle, ArrowRight, Sparkles, Building2, ShieldCheck, Compass,
   RefreshCw, ChevronDown, MapPin, Users, TrendingUp,
-  AlertTriangle, ClipboardCheck, Banknote,
+  AlertTriangle, ClipboardCheck, Banknote, Cpu,
 } from 'lucide-react';
 import { login, setStoredToken } from '@/lib/api';
 
@@ -257,10 +257,13 @@ export function LoginPage() {
               <div className="lp-nav-sub">NATIONAL LAND INTELLIGENCE NETWORK</div>
             </div>
           </div>
-          <div className="lp-nav-right">
-            <span className="lp-live-pill"><span className="lp-live-dot" />Gujarat Server \u2022 Live</span>
-            <button className="lp-nav-cta" onClick={() => document.getElementById('auth-section')?.scrollIntoView({ behavior: 'smooth' })} data-testid="button-nav-sign-in">
-              <Lock size={13} />Access Control Room
+          <div className="lp-nav-right" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <span className="lp-live-pill"><span className="lp-live-dot" />Server \u2022 Live</span>
+            <button className="lp-nav-cta" onClick={() => navigate('/ml-models')} style={{ background: '#042E35', border: '1px solid #0FA89A' }} data-testid="button-nav-ml-models">
+              <Cpu size={13} style={{ color: '#4EE0D1' }} />ML Models & Backend
+            </button>
+            <button className="lp-nav-cta" onClick={() => navigate('/dashboard')} data-testid="button-nav-dashboard">
+              <Sparkles size={13} style={{ color: '#F2A51A' }} />Live Command Center
             </button>
           </div>
         </div>
@@ -308,10 +311,32 @@ export function LoginPage() {
             ))}
           </div>
 
-          <button className="lp-scroll-cta" onClick={() => document.getElementById('auth-section')?.scrollIntoView({ behavior: 'smooth' })} data-testid="button-scroll-to-auth">
-            Authenticate to Enter Command Room
-            <ChevronDown size={15} className="lp-bounce" />
-          </button>
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginTop: 8 }}>
+            <button
+              className="btn btn-primary"
+              style={{ padding: '10px 22px', fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 8 }}
+              onClick={() => navigate('/dashboard')}
+              data-testid="button-hero-enter-dashboard"
+            >
+              <Sparkles size={15} /> Enter Live Command Center
+            </button>
+            <button
+              className="btn btn-soft"
+              style={{ padding: '10px 20px', fontSize: 13, background: 'rgba(255,255,255,0.12)', color: '#FFF', borderColor: 'rgba(78,224,209,0.3)', display: 'inline-flex', alignItems: 'center', gap: 8 }}
+              onClick={() => navigate('/ml-models')}
+              data-testid="button-hero-ml-models"
+            >
+              <Cpu size={15} style={{ color: '#4EE0D1' }} /> Inspect ML Backend & Models
+            </button>
+            <button
+              className="btn btn-quiet"
+              style={{ padding: '10px 16px', fontSize: 13, color: '#A3C6C4' }}
+              onClick={() => document.getElementById('auth-section')?.scrollIntoView({ behavior: 'smooth' })}
+              data-testid="button-scroll-to-auth"
+            >
+              Role Logins <ChevronDown size={14} />
+            </button>
+          </div>
         </div>
       </section>
 

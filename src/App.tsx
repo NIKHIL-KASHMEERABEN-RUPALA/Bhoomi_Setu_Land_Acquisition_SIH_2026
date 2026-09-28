@@ -26,11 +26,13 @@ import { clearStoredToken } from '@/lib/api';
 import { ProjectIndicatorMatrixModal } from '@/components/project-indicator-matrix-modal';
 import { LoginPage } from '@/components/login-page';
 import { GroupLandView } from '@/components/group-land-view';
+import { MlModelsView } from '@/components/ml-models-view';
 
 const queryClient = new QueryClient();
 
 const navTabs = [
   { href: '/dashboard', label: 'Command center', icon: LayoutDashboard },
+  { href: '/ml-models', label: 'ML Models & Backend', icon: Cpu },
   { href: '/corridor-map', label: 'National corridor map', icon: RouteIcon },
   { href: '/district-diagnostics', label: 'District diagnostics', icon: BarChart3 },
   { href: '/early-warning', label: 'Early warning center', icon: ShieldAlert },
@@ -886,6 +888,7 @@ function Router() {
         <AppShell>
           <Switch>
             <Route path="/dashboard" component={Overview} />
+            <Route path="/ml-models" component={MlModelsView} />
             <Route path="/corridor-map" component={CorridorMap} />
             <Route path="/district-diagnostics" component={DiagnosticsGujarat} />
             <Route path="/early-warning" component={EarlyWarning} />
