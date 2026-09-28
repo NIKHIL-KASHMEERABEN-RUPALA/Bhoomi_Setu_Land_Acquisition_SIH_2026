@@ -57,19 +57,19 @@ const PRESETS: Record<string, { title: string; badge: string; color: string; inp
     color: '#F2A51A',
     inputs: {
       project_id: 'P0091',
-      project_type: 'Water/Irrigation',
+      project_type: 'Highway',
       state: 'Maharashtra',
       district: 'Maharashtra_Dist_13',
-      acquisition_stage: 'Compensation Disbursement',
+      acquisition_stage: 'Award Declaration',
       project_cost: 427.97,
-      land_acquired_pct: 34.68,
-      possession_pct: 30.37,
-      compensation_pending_pct: 75.01,
-      court_case_count: 6,
-      legal_case_count: 12,
-      public_objection_count: 14,
-      days_in_current_stage: 97,
-      days_since_notification: 60,
+      land_acquired_pct: 38.0,
+      possession_pct: 28.0,
+      compensation_pending_pct: 62.0,
+      court_case_count: 5,
+      legal_case_count: 9,
+      public_objection_count: 12,
+      days_in_current_stage: 90,
+      days_since_notification: 110,
     },
   },
   MODERATE: {
@@ -83,13 +83,13 @@ const PRESETS: Record<string, { title: string; badge: string; color: string; inp
       district: 'Karnataka_Dist_03',
       acquisition_stage: 'Compensation Disbursement',
       project_cost: 166.82,
-      land_acquired_pct: 67.64,
-      possession_pct: 58.86,
-      compensation_pending_pct: 47.17,
-      court_case_count: 1,
+      land_acquired_pct: 65.0,
+      possession_pct: 58.0,
+      compensation_pending_pct: 32.0,
+      court_case_count: 2,
       legal_case_count: 3,
-      public_objection_count: 22,
-      days_in_current_stage: 16,
+      public_objection_count: 6,
+      days_in_current_stage: 35,
       days_since_notification: 120,
     },
   },
@@ -102,16 +102,16 @@ const PRESETS: Record<string, { title: string; badge: string; color: string; inp
       project_type: 'Industrial Corridor',
       state: 'Gujarat',
       district: 'Gujarat_Dist_05',
-      acquisition_stage: 'Compensation Disbursement',
+      acquisition_stage: 'Possession Handover',
       project_cost: 266.95,
-      land_acquired_pct: 27.49,
-      possession_pct: 13.77,
-      compensation_pending_pct: 12.5,
+      land_acquired_pct: 92.0,
+      possession_pct: 88.0,
+      compensation_pending_pct: 10.0,
       court_case_count: 0,
-      legal_case_count: 0,
-      public_objection_count: 4,
-      days_in_current_stage: 101,
-      days_since_notification: 30,
+      legal_case_count: 1,
+      public_objection_count: 1,
+      days_in_current_stage: 20,
+      days_since_notification: 180,
     },
   },
 };
@@ -150,13 +150,16 @@ export function ProjectIndicatorMatrixModal({ onClose }: { onClose: () => void }
 
     try {
       // 1. Attempt server-side inference API
-      const response = await fetch('/api/v1/predict', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(currentInputs),
-      });
+      const [response] = await Promise.all([
+        fetch('/api/v1/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(currentInputs),
+        }),
+        new Promise((resolve) => setTimeout(resolve, 320)), // Smooth animation feedback
+      ]);
 
-      if (response.ok) {
+      if (response && response.ok) {
         const data: PredictionResult = await response.json();
         setResult(mapResultToView(data));
         setIsLoading(false);
@@ -167,6 +170,7 @@ export function ProjectIndicatorMatrixModal({ onClose }: { onClose: () => void }
     }
 
     // 2. Direct client-side embedded inference fallback
+    await new Promise((resolve) => setTimeout(resolve, 200));
     const directResult = runBhoomiSetuInference(currentInputs);
     setResult(mapResultToView(directResult));
     setIsLoading(false);

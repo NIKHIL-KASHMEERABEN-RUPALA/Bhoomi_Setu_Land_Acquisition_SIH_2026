@@ -410,7 +410,7 @@ export function Project360View({ onNotify }: Project360ViewProps) {
             {/* Recommendation Box */}
             <div style={{ padding: '12px 14px', borderRadius: 8, background: '#F8FAFB', borderLeft: `4px solid ${riskColor}`, fontSize: 12.5, lineHeight: 1.5, color: '#102A43' }}>
               <strong>Prescribed Intervention:</strong><br />
-              {aiResult?.recommended_action ?? 'Clear pending compensation tranches and file counter-affidavit within 72 hours.'}
+              {aiResult?.recommended_strategy || aiResult?.recommended_action || 'Clear pending compensation tranches and file counter-affidavit within 72 hours.'}
             </div>
           </div>
 
