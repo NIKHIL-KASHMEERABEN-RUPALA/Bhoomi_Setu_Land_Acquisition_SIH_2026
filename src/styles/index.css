@@ -1233,15 +1233,27 @@ a { color: inherit; text-decoration: none; }
   .grid-main { grid-template-columns: 1fr; }
   .search-section { display: none; }
   .permission-layout { grid-template-columns: 1fr; }
+  .nav-tabs { justify-content: flex-start; padding: 0 16px; }
+  .top-tier-1-inner { padding: 0 20px; }
+}
+
+@media (max-width: 768px) {
+  .top-tier-1-inner { padding: 0 14px; height: 58px; }
+  .app-footer-inner { flex-direction: column; height: auto; padding: 12px 16px; gap: 8px; text-align: center; }
+  .footer-right { flex-wrap: wrap; justify-content: center; }
+  .grid-2 { grid-template-columns: 1fr !important; }
+  .grid-3 { grid-template-columns: 1fr !important; }
 }
 
 @media (max-width: 640px) {
   .grid-kpis { grid-template-columns: 1fr; }
   .grid-thirds { grid-template-columns: 1fr; }
-  .top-tier-1 { padding: 0 16px; }
-  .top-tier-2 { padding: 0 16px; }
-  .page-wrap { padding: 18px 16px 36px; }
+  .top-tier-1 { padding: 0 8px; }
+  .top-tier-2 { padding: 0; }
+  .network-badge, .brand-subtext, .status-indicator { display: none; }
+  .page-wrap { padding: 14px 12px 36px; max-width: 100vw; overflow-x: clip; }
   .app-footer { flex-direction: column; height: auto; padding: 12px 16px; gap: 8px; text-align: center; }
+  .table-wrap { margin: 0 -12px; width: calc(100% + 24px); padding: 0 12px; }
 }
 
 /* ==========================================================================
@@ -8735,13 +8747,15 @@ a { color: inherit; text-decoration: none; }
 .matrix-gauge-container {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
   padding: 12px 0;
+  flex-wrap: wrap;
 }
 
 .matrix-gauge-circle {
-  width: 96px;
-  height: 96px;
+  width: clamp(80px, 18vw, 96px);
+  height: clamp(80px, 18vw, 96px);
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   border: 4px solid #E85D68;
   display: flex;
@@ -8750,6 +8764,7 @@ a { color: inherit; text-decoration: none; }
   justify-content: center;
   flex-shrink: 0;
   background: #FFFFFF;
+  box-sizing: border-box;
 }
 
 .dark .matrix-gauge-circle {
@@ -9568,4 +9583,123 @@ a { color: inherit; text-decoration: none; }
   color: #D8E8E6;
   border-left-color: #4EE0D1;
 }
+
+/* ==================================================
+   BHOOMISETU ADVANCED RESPONSIVE GRID & GAUGE UTILITIES
+   Mobile-First (320px -> 1440px+ Ultrawide)
+   ================================================== */
+
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Main 2-Column Dashboard Grid with Graceful 1-Column Fallback */
+.bhoomi-ml-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .bhoomi-ml-grid {
+    grid-template-columns: minmax(320px, 1fr) minmax(360px, 1.25fr);
+    gap: 20px;
+  }
+}
+
+/* Responsive Code Viewer Grid */
+.bhoomi-code-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .bhoomi-code-grid {
+    grid-template-columns: 240px 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .bhoomi-code-grid {
+    grid-template-columns: 260px 1fr;
+  }
+}
+
+/* Circular Delay Probability Gauge - Zero Distortion */
+.bhoomi-gauge-circle {
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* TreeSHAP Local Attribution Responsive Row */
+.bhoomi-shap-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px 12px;
+  background: #FAFCFC;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #E5EFEE;
+  width: 100%;
+}
+
+.bhoomi-shap-track {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .bhoomi-shap-row {
+    grid-template-columns: minmax(130px, 1.2fr) 2fr 60px;
+    gap: 10px;
+    padding: 8px 10px;
+  }
+  .bhoomi-shap-track {
+    grid-column: auto;
+  }
+}
+
+/* Smooth Touch-Scroll for Navigation and Tabs */
+.bhoomi-tab-scroll {
+  display: flex;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  max-width: 100%;
+}
+
+.bhoomi-tab-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Table Responsive Overflow Container */
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+/* Touch targets for mobile controls */
+@media (pointer: coarse) {
+  input[type="range"] {
+    min-height: 28px;
+  }
+  .btn, .select, button {
+    min-height: 38px;
+  }
+}
+
 

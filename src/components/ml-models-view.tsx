@@ -321,7 +321,7 @@ export function MlModelsView() {
           <div className="eyebrow" style={{ color: '#0FA89A', display: 'flex', alignItems: 'center', gap: 6 }}>
             <Cpu size={14} /> Production ML Engine & Architecture
           </div>
-          <h1 className="display" style={{ fontSize: 'clamp(24px, 3.2vw, 34px)', margin: '6px 0 6px', color: '#102A43' }}>
+          <h1 className="display" style={{ fontSize: 'clamp(22px, 3.2vw, 34px)', margin: '6px 0 6px', color: '#102A43' }}>
             XGBoost & TreeSHAP Land Acquisition EWS
           </h1>
           <p className="muted" style={{ fontSize: 13.5, margin: 0, maxWidth: 760 }}>
@@ -330,32 +330,32 @@ export function MlModelsView() {
         </div>
 
         {/* Tab Switcher */}
-        <div style={{ display: 'flex', background: '#E5EFEE', padding: 4, borderRadius: 8, gap: 4 }}>
+        <div className="bhoomi-tab-scroll" style={{ background: '#E5EFEE', padding: 4, borderRadius: 8, gap: 4, width: '100%', maxWidth: '100%' }}>
           <button
             onClick={() => setActiveTab('playground')}
             className={`btn ${activeTab === 'playground' ? 'btn-primary' : 'btn-quiet'}`}
-            style={{ fontSize: 12, padding: '6px 12px' }}
+            style={{ fontSize: 12, padding: '8px 12px', whiteSpace: 'nowrap', flexShrink: 0 }}
           >
             <Sliders size={13} /> Live Prediction Sandbox
           </button>
           <button
             onClick={() => setActiveTab('whatif')}
             className={`btn ${activeTab === 'whatif' ? 'btn-primary' : 'btn-quiet'}`}
-            style={{ fontSize: 12, padding: '6px 12px' }}
+            style={{ fontSize: 12, padding: '8px 12px', whiteSpace: 'nowrap', flexShrink: 0 }}
           >
             <Sparkles size={13} /> Counterfactual "What-If"
           </button>
           <button
             onClick={() => setActiveTab('architecture')}
             className={`btn ${activeTab === 'architecture' ? 'btn-primary' : 'btn-quiet'}`}
-            style={{ fontSize: 12, padding: '6px 12px' }}
+            style={{ fontSize: 12, padding: '8px 12px', whiteSpace: 'nowrap', flexShrink: 0 }}
           >
             <BarChart3 size={13} /> Model Metrics & Scorecard
           </button>
           <button
             onClick={() => setActiveTab('code')}
             className={`btn ${activeTab === 'code' ? 'btn-primary' : 'btn-quiet'}`}
-            style={{ fontSize: 12, padding: '6px 12px' }}
+            style={{ fontSize: 12, padding: '8px 12px', whiteSpace: 'nowrap', flexShrink: 0 }}
           >
             <FileCode2 size={13} /> Python Backend Code
           </button>
@@ -388,7 +388,7 @@ export function MlModelsView() {
 
       {/* TAB 1: LIVE INFERENCE PLAYGROUND */}
       {activeTab === 'playground' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 1fr) minmax(360px, 1.25fr)', gap: 20 }}>
+        <div className="bhoomi-ml-grid">
           {/* Left: Input Parameters Panel */}
           <div className="surface surface-pad">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
@@ -400,10 +400,10 @@ export function MlModelsView() {
             </div>
 
             <div style={{ display: 'grid', gap: 14 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10 }}>
                 <div>
                   <label className="eyebrow" style={{ display: 'block', marginBottom: 4 }}>State</label>
-                  <select className="select" value={state} onChange={(e) => setState(e.target.value)} style={{ width: '100%' }}>
+                  <select className="select" value={state} onChange={(e) => setState(e.target.value)} style={{ width: '100%', minHeight: 38 }}>
                     <option>Gujarat</option>
                     <option>Maharashtra</option>
                     <option>Madhya Pradesh</option>
@@ -414,7 +414,7 @@ export function MlModelsView() {
                 </div>
                 <div>
                   <label className="eyebrow" style={{ display: 'block', marginBottom: 4 }}>Sector</label>
-                  <select className="select" value={projectType} onChange={(e) => setProjectType(e.target.value)} style={{ width: '100%' }}>
+                  <select className="select" value={projectType} onChange={(e) => setProjectType(e.target.value)} style={{ width: '100%', minHeight: 38 }}>
                     <option>Highway</option>
                     <option>Railway</option>
                     <option>Metro</option>
@@ -426,7 +426,7 @@ export function MlModelsView() {
 
               <div>
                 <label className="eyebrow" style={{ display: 'block', marginBottom: 4 }}>Statutory Acquisition Stage</label>
-                <select className="select" value={stage} onChange={(e) => setStage(e.target.value)} style={{ width: '100%' }}>
+                <select className="select" value={stage} onChange={(e) => setStage(e.target.value)} style={{ width: '100%', minHeight: 38 }}>
                   <option>Pre-Notification</option>
                   <option>Joint Measurement</option>
                   <option>Award Declaration</option>
@@ -445,7 +445,7 @@ export function MlModelsView() {
                 <input
                   type="range" min="0" max="100" value={compPendingPct}
                   onChange={(e) => setCompPendingPct(Number(e.target.value))}
-                  style={{ width: '100%', accentColor: '#0FA89A' }}
+                  style={{ width: '100%', accentColor: '#0FA89A', minHeight: 28 }}
                 />
               </div>
 
@@ -457,11 +457,11 @@ export function MlModelsView() {
                 <input
                   type="range" min="0" max="100" value={possessionPct}
                   onChange={(e) => setPossessionPct(Number(e.target.value))}
-                  style={{ width: '100%', accentColor: '#0FA89A' }}
+                  style={{ width: '100%', accentColor: '#0FA89A', minHeight: 28 }}
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 10 }}>
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                     <span className="tiny" style={{ fontWeight: 600, color: '#102A43' }}>Court Writs / Stays</span>
@@ -470,7 +470,7 @@ export function MlModelsView() {
                   <input
                     type="range" min="0" max="25" value={courtCases}
                     onChange={(e) => setCourtCases(Number(e.target.value))}
-                    style={{ width: '100%', accentColor: '#0FA89A' }}
+                    style={{ width: '100%', accentColor: '#0FA89A', minHeight: 28 }}
                   />
                 </div>
                 <div>
@@ -481,7 +481,7 @@ export function MlModelsView() {
                   <input
                     type="range" min="0" max="50" value={publicObjections}
                     onChange={(e) => setPublicObjections(Number(e.target.value))}
-                    style={{ width: '100%', accentColor: '#0FA89A' }}
+                    style={{ width: '100%', accentColor: '#0FA89A', minHeight: 28 }}
                   />
                 </div>
               </div>
@@ -494,16 +494,16 @@ export function MlModelsView() {
                 <input
                   type="range" min="5" max="180" value={daysInStage}
                   onChange={(e) => setDaysInStage(Number(e.target.value))}
-                  style={{ width: '100%', accentColor: '#0FA89A' }}
+                  style={{ width: '100%', accentColor: '#0FA89A', minHeight: 28 }}
                 />
               </div>
 
               {/* Preset buttons */}
-              <div style={{ paddingTop: 8, borderTop: '1px solid #E5EFEE', display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              <div style={{ paddingTop: 10, borderTop: '1px solid #E5EFEE', display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 <span className="tiny muted" style={{ display: 'block', width: '100%', marginBottom: 4 }}>Quick Presets:</span>
                 <button
                   className="btn btn-quiet"
-                  style={{ fontSize: 11, padding: '4px 8px' }}
+                  style={{ fontSize: 11, padding: '6px 10px', minHeight: 32 }}
                   onClick={() => {
                     setCompPendingPct(15); setPossessionPct(78); setCourtCases(0); setDaysInStage(25);
                   }}
@@ -512,7 +512,7 @@ export function MlModelsView() {
                 </button>
                 <button
                   className="btn btn-quiet"
-                  style={{ fontSize: 11, padding: '4px 8px' }}
+                  style={{ fontSize: 11, padding: '6px 10px', minHeight: 32 }}
                   onClick={() => {
                     setCompPendingPct(45); setPossessionPct(38); setCourtCases(3); setDaysInStage(55);
                   }}
@@ -521,7 +521,7 @@ export function MlModelsView() {
                 </button>
                 <button
                   className="btn btn-quiet"
-                  style={{ fontSize: 11, padding: '4px 8px' }}
+                  style={{ fontSize: 11, padding: '6px 10px', minHeight: 32 }}
                   onClick={() => {
                     setCompPendingPct(74); setPossessionPct(12); setCourtCases(9); setDaysInStage(95);
                   }}
@@ -536,11 +536,11 @@ export function MlModelsView() {
           <div style={{ display: 'grid', gap: 16 }}>
             {/* Primary Result Card */}
             <div className="surface surface-pad" style={{ borderLeft: `5px solid ${prediction.delay_probability >= 0.75 ? '#E85D68' : prediction.delay_probability >= 0.5 ? '#F2A51A' : prediction.delay_probability >= 0.3 ? '#D98A08' : '#16A878'}` }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
                 <div>
                   <div className="eyebrow" style={{ color: '#526B82' }}>Predicted 90-Day Delay Probability</div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginTop: 4 }}>
-                    <span className="stat-value" style={{ fontSize: 34, color: prediction.delay_probability >= 0.75 ? '#E85D68' : prediction.delay_probability >= 0.5 ? '#F2A51A' : '#16A878' }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginTop: 4, flexWrap: 'wrap' }}>
+                    <span className="stat-value" style={{ fontSize: 'clamp(28px, 4vw, 36px)', color: prediction.delay_probability >= 0.75 ? '#E85D68' : prediction.delay_probability >= 0.5 ? '#F2A51A' : '#16A878' }}>
                       {(prediction.delay_probability * 100).toFixed(1)}%
                     </span>
                     <span className={`tag ${prediction.risk_level === 'Critical' ? 'risk-critical' : prediction.risk_level === 'High' ? 'risk-high' : prediction.risk_level === 'Moderate' ? 'risk-moderate' : 'risk-low'}`} style={{ fontSize: 13, padding: '4px 10px' }}>
@@ -549,7 +549,7 @@ export function MlModelsView() {
                   </div>
                 </div>
 
-                <div style={{ textAlign: 'right' }}>
+                <div style={{ textAlign: 'left' }}>
                   <div className="tiny muted">Predicted Delay Window</div>
                   <div className="mono" style={{ fontSize: 14, fontWeight: 700, color: '#102A43', marginTop: 2 }}>
                     {prediction.predicted_delay_window}
@@ -560,22 +560,22 @@ export function MlModelsView() {
               {/* Risk Trajectory Horizon */}
               <div style={{ marginTop: 18, background: '#EDF6F5', padding: '12px 14px', borderRadius: 8 }}>
                 <div className="eyebrow" style={{ color: '#064C55', marginBottom: 8 }}>Risk Trajectory Horizon (EWS Stagnation Velocity)</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, textAlign: 'center' }}>
-                  <div style={{ background: '#FFF', padding: '8px', borderRadius: 6, border: '1px solid #D8E8E6' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, textAlign: 'center' }}>
+                  <div style={{ background: '#FFF', padding: '8px 4px', borderRadius: 6, border: '1px solid #D8E8E6' }}>
                     <div className="tiny muted">Day 30</div>
-                    <div className="mono" style={{ fontSize: 16, fontWeight: 700, color: '#102A43', marginTop: 2 }}>
+                    <div className="mono" style={{ fontSize: 'clamp(14px, 2vw, 16px)', fontWeight: 700, color: '#102A43', marginTop: 2 }}>
                       {Math.round(prediction.delay_probability * 78)}%
                     </div>
                   </div>
-                  <div style={{ background: '#FFF', padding: '8px', borderRadius: 6, border: '1px solid #D8E8E6' }}>
+                  <div style={{ background: '#FFF', padding: '8px 4px', borderRadius: 6, border: '1px solid #D8E8E6' }}>
                     <div className="tiny muted">Day 60</div>
-                    <div className="mono" style={{ fontSize: 16, fontWeight: 700, color: '#102A43', marginTop: 2 }}>
+                    <div className="mono" style={{ fontSize: 'clamp(14px, 2vw, 16px)', fontWeight: 700, color: '#102A43', marginTop: 2 }}>
                       {Math.round(prediction.delay_probability * 91)}%
                     </div>
                   </div>
-                  <div style={{ background: '#FFF', padding: '8px', borderRadius: 6, border: '1px solid #D8E8E6' }}>
+                  <div style={{ background: '#FFF', padding: '8px 4px', borderRadius: 6, border: '1px solid #D8E8E6' }}>
                     <div className="tiny muted">Day 90</div>
-                    <div className="mono" style={{ fontSize: 16, fontWeight: 700, color: prediction.delay_probability >= 0.75 ? '#E85D68' : '#0FA89A', marginTop: 2 }}>
+                    <div className="mono" style={{ fontSize: 'clamp(14px, 2vw, 16px)', fontWeight: 700, color: prediction.delay_probability >= 0.75 ? '#E85D68' : '#0FA89A', marginTop: 2 }}>
                       {Math.round(prediction.delay_probability * 100)}%
                     </div>
                   </div>
@@ -591,12 +591,12 @@ export function MlModelsView() {
 
                 <div style={{ display: 'grid', gap: 8 }}>
                   {prediction.top_shap_drivers.map((driver, idx) => (
-                    <div key={idx} style={{ display: 'grid', gridTemplateColumns: 'minmax(140px, 1.2fr) 2fr 60px', alignItems: 'center', gap: 10, background: '#FAFCFC', padding: '8px 10px', borderRadius: 6, border: '1px solid #E5EFEE' }}>
+                    <div key={idx} className="bhoomi-shap-row">
                       <div>
                         <div style={{ fontSize: 12, fontWeight: 600, color: '#102A43' }}>{driver.label}</div>
                         <div className="tiny muted">{driver.value}</div>
                       </div>
-                      <div className="bar-track" style={{ height: 6 }}>
+                      <div className="bar-track bhoomi-shap-track" style={{ height: 6 }}>
                         <div
                           className="bar-fill"
                           style={{
@@ -627,7 +627,7 @@ export function MlModelsView() {
 
       {/* TAB 2: COUNTERFACTUAL WHAT-IF SIMULATOR */}
       {activeTab === 'whatif' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 1fr) minmax(360px, 1.2fr)', gap: 20 }}>
+        <div className="bhoomi-ml-grid">
           {/* Sliders Panel */}
           <div className="surface surface-pad">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
@@ -650,7 +650,7 @@ export function MlModelsView() {
                 <input
                   type="range" min="0" max="60" value={simCompPending}
                   onChange={(e) => setSimCompPending(Number(e.target.value))}
-                  style={{ width: '100%', accentColor: '#0FA89A' }}
+                  style={{ width: '100%', accentColor: '#0FA89A', minHeight: 28 }}
                 />
               </div>
 
@@ -665,7 +665,7 @@ export function MlModelsView() {
                 <input
                   type="range" min="0" max={courtCases} value={simCourtCases}
                   onChange={(e) => setSimCourtCases(Number(e.target.value))}
-                  style={{ width: '100%', accentColor: '#0FA89A' }}
+                  style={{ width: '100%', accentColor: '#0FA89A', minHeight: 28 }}
                 />
               </div>
 
@@ -680,7 +680,7 @@ export function MlModelsView() {
                 <input
                   type="range" min={possessionPct} max="100" value={simPossession}
                   onChange={(e) => setSimPossession(Number(e.target.value))}
-                  style={{ width: '100%', accentColor: '#0FA89A' }}
+                  style={{ width: '100%', accentColor: '#0FA89A', minHeight: 28 }}
                 />
               </div>
             </div>
@@ -691,10 +691,10 @@ export function MlModelsView() {
             <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 14px', color: '#102A43' }}>Intervention Impact Assessment</h3>
 
             {/* Before vs After Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 12, marginBottom: 16 }}>
               <div style={{ background: '#FDECEE', padding: 14, borderRadius: 8, border: '1px solid rgba(232, 93, 104, 0.3)' }}>
                 <div className="eyebrow" style={{ color: '#E85D68' }}>Status Quo (Baseline)</div>
-                <div className="stat-value" style={{ fontSize: 26, color: '#E85D68', marginTop: 4 }}>
+                <div className="stat-value" style={{ fontSize: 'clamp(20px, 3.5vw, 26px)', color: '#E85D68', marginTop: 4 }}>
                   {(prediction.delay_probability * 100).toFixed(1)}%
                 </div>
                 <div className="tiny muted" style={{ marginTop: 2 }}>{prediction.risk_level} Risk Band</div>
@@ -702,7 +702,7 @@ export function MlModelsView() {
 
               <div style={{ background: '#E8F7F1', padding: 14, borderRadius: 8, border: '1px solid rgba(22, 168, 120, 0.3)' }}>
                 <div className="eyebrow" style={{ color: '#16A878' }}>Post-Intervention (Simulated)</div>
-                <div className="stat-value" style={{ fontSize: 26, color: '#16A878', marginTop: 4 }}>
+                <div className="stat-value" style={{ fontSize: 'clamp(20px, 3.5vw, 26px)', color: '#16A878', marginTop: 4 }}>
                   {(simulatedPrediction.delay_probability * 100).toFixed(1)}%
                 </div>
                 <div className="tiny muted" style={{ marginTop: 2 }}>{simulatedPrediction.risk_level} Risk Band</div>
@@ -710,9 +710,9 @@ export function MlModelsView() {
             </div>
 
             {/* Projected Risk Reduction */}
-            <div style={{ background: '#EDF6F5', padding: 16, borderRadius: 8, marginBottom: 16, textAlign: 'center' }}>
+            <div style={{ background: '#EDF6F5', padding: '14px 16px', borderRadius: 8, marginBottom: 16, textAlign: 'center' }}>
               <div className="eyebrow" style={{ color: '#064C55' }}>Projected Net Risk Reduction</div>
-              <div style={{ fontSize: 32, fontWeight: 800, color: '#0FA89A', margin: '4px 0' }}>
+              <div style={{ fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: 800, color: '#0FA89A', margin: '4px 0' }}>
                 -{riskDeltaPoints} points ({riskDeltaPct}% relative drop)
               </div>
               <div className="tiny muted">
@@ -804,7 +804,7 @@ export function MlModelsView() {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
             <div className="surface surface-pad">
               <div className="eyebrow" style={{ color: '#0FA89A' }}>Feature Space Breakdown</div>
               <div style={{ marginTop: 12, display: 'grid', gap: 10 }}>
@@ -854,7 +854,7 @@ export function MlModelsView() {
 
       {/* TAB 4: PYTHON BACKEND CODE VIEWER */}
       {activeTab === 'code' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 16 }}>
+        <div className="bhoomi-code-grid">
           {/* File List */}
           <div className="surface surface-pad" style={{ padding: 12 }}>
             <div className="eyebrow" style={{ marginBottom: 10, padding: '0 4px' }}>Python ML Files</div>
@@ -876,6 +876,7 @@ export function MlModelsView() {
                     display: 'flex',
                     alignItems: 'center',
                     gap: 6,
+                    minHeight: 38,
                   }}
                 >
                   <FileCode2 size={13} />
@@ -887,19 +888,19 @@ export function MlModelsView() {
 
           {/* Code Display */}
           <div className="surface" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0F262A', padding: '10px 16px', color: '#FFF' }}>
-              <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0F262A', padding: '10px 14px', color: '#FFF', flexWrap: 'wrap', gap: 8 }}>
+              <div style={{ minWidth: 0 }}>
                 <span className="mono" style={{ fontSize: 13, fontWeight: 700, color: '#4EE0D1' }}>
                   {CODE_FILES[selectedCodeKey]?.filename}
                 </span>
-                <span className="tiny" style={{ color: '#A3C6C4', marginLeft: 12 }}>
+                <span className="tiny" style={{ color: '#A3C6C4', marginLeft: 8, display: 'inline-block' }}>
                   {CODE_FILES[selectedCodeKey]?.description}
                 </span>
               </div>
               <button
                 className="btn btn-quiet"
                 onClick={handleCopyCode}
-                style={{ color: '#FFF', fontSize: 11, padding: '4px 8px' }}
+                style={{ color: '#FFF', fontSize: 11, padding: '6px 10px', minHeight: 32 }}
               >
                 {copied ? <Check size={12} color="#16A878" /> : <Copy size={12} />}
                 {copied ? 'Copied' : 'Copy Code'}
@@ -907,14 +908,16 @@ export function MlModelsView() {
             </div>
             <pre style={{
               margin: 0,
-              padding: 16,
+              padding: 14,
               background: '#041E22',
               color: '#D8E8E6',
-              fontSize: 12,
+              fontSize: 'clamp(11px, 1.8vw, 12px)',
               lineHeight: 1.5,
               fontFamily: 'monospace',
               overflowX: 'auto',
               maxHeight: 520,
+              maxWidth: '100%',
+              boxSizing: 'border-box',
             }}>
               <code>{CODE_FILES[selectedCodeKey]?.code}</code>
             </pre>

@@ -390,17 +390,28 @@ export function Project360View({ onNotify }: Project360ViewProps) {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 1fr) 1.5fr', gap: 24, padding: '18px 0 0' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, padding: '18px 0 0' }}>
           {/* Gauge & Recommendation */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
               {/* Circular Gauge */}
-              <div style={{ width: 100, height: 100, borderRadius: '50%', border: `4px solid ${riskColor}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxShadow: `0 0 20px ${riskColor}33`, background: 'rgba(255,255,255,0.8)' }}>
-                <span style={{ fontSize: 28, fontWeight: 800, color: '#102A43', letterSpacing: '-0.03em' }}>{riskProbPct}%</span>
+              <div
+                className="bhoomi-gauge-circle"
+                style={{
+                  width: 'clamp(84px, 20vw, 100px)',
+                  height: 'clamp(84px, 20vw, 100px)',
+                  borderRadius: '50%',
+                  border: `4px solid ${riskColor}`,
+                  boxShadow: `0 0 20px ${riskColor}33`,
+                  background: 'rgba(255,255,255,0.8)',
+                  flexShrink: 0,
+                }}
+              >
+                <span style={{ fontSize: 'clamp(22px, 5vw, 28px)', fontWeight: 800, color: '#102A43', letterSpacing: '-0.03em' }}>{riskProbPct}%</span>
                 <span style={{ fontSize: 9, fontWeight: 700, color: '#526B82', letterSpacing: '0.04em' }}>DELAY PROB</span>
               </div>
 
-              <div>
+              <div style={{ minWidth: 140 }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: '#526B82', textTransform: 'uppercase' }}>Predicted Delay Window</div>
                 <div style={{ fontSize: 16, fontWeight: 700, color: '#102A43', marginTop: 2 }}>{aiResult?.predicted_delay_window ?? '8–12 months'}</div>
                 <div style={{ fontSize: 11, color: '#0FA89A', marginTop: 4 }}>Model Engine: 500-Tree Regularized XGBoost</div>
