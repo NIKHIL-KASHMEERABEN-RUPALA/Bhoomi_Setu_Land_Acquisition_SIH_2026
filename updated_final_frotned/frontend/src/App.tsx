@@ -93,6 +93,7 @@ function AppShell({ children }: { children: ReactNode }) {
   const [location, setLocation] = useLocation();
   const [palette, setPalette] = useState(false);
   const [aiModalOpen, setAiModalOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [toast, setToast] = useState('');
   const [dark, setDark] = useState(() => window.localStorage.getItem('bhoomi-theme') === 'dark');
 
@@ -189,8 +190,9 @@ function AppShell({ children }: { children: ReactNode }) {
 
               <button
                 className="icon-btn"
-                onClick={() => notify('Operational status: Normal. All monitoring channels synced.')}
+                onClick={() => setNotificationsOpen(true)}
                 aria-label="Notifications"
+                title="Open State Control Room Operational Notifications"
                 data-testid="button-notifications"
               >
                 <Bell size={18} />
@@ -292,6 +294,87 @@ function AppShell({ children }: { children: ReactNode }) {
 
       {aiModalOpen && (
         <ProjectIndicatorMatrixModal onClose={() => setAiModalOpen(false)} />
+      )}
+
+      {/* ═══ REAL-TIME OPERATIONAL NOTIFICATIONS & ALERTS MODAL ═══ */}
+      {notificationsOpen && (
+        <div className="gis-modal-overlay" onClick={() => setNotificationsOpen(false)}>
+          <div className="gis-modal-card" style={{ maxWidth: 640 }} onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <Bell size={13} color="#0FA89A" />
+                  <span>STATE-CONTROL ROOM NOTIFICATIONS • 12 JUN 2025</span>
+                </div>
+                <h2 className="gis-modal-title">Active Operational Signals &amp; Dispatch Alerts</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setNotificationsOpen(false)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div style={{ display: 'grid', gap: 12 }}>
+                <div style={{ padding: 14, borderRadius: 8, background: '#FDECEE', border: '1px solid rgba(232,93,104,0.35)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                    <strong style={{ color: '#E85D68', fontSize: 13 }}>HIGH COURT INTERIM STAY PETITION</strong>
+                    <span className="tiny mono" style={{ color: '#E85D68' }}>14 min ago</span>
+                  </div>
+                  <p style={{ margin: 0, fontSize: 12.5, color: '#102A43' }}>
+                    Bharuch GAT 412/A co-owners objection filed in High Court Division Bench. Hearing listed 18 Jun.
+                  </p>
+                  <button
+                    className="btn btn-secondary"
+                    style={{ marginTop: 8, padding: '4px 10px', fontSize: 11 }}
+                    onClick={() => {
+                      setNotificationsOpen(false);
+                      setLocation('/corridor-map');
+                    }}
+                  >
+                    Open Corridor Map &amp; Injunction Docket →
+                  </button>
+                </div>
+
+                <div style={{ padding: 14, borderRadius: 8, background: '#FEF5E7', border: '1px solid rgba(242,165,26,0.35)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                    <strong style={{ color: '#D98A08', fontSize: 13 }}>PFMS ESCROW TRANCHE AWAITING DUAL AUTHORIZATION</strong>
+                    <span className="tiny mono" style={{ color: '#D98A08' }}>1 hr ago</span>
+                  </div>
+                  <p style={{ margin: 0, fontSize: 12.5, color: '#102A43' }}>
+                    Amod Section ₹14.80 Cr compensation tranche ready for escrow release. Collector digital signature verified.
+                  </p>
+                  <button
+                    className="btn btn-secondary"
+                    style={{ marginTop: 8, padding: '4px 10px', fontSize: 11 }}
+                    onClick={() => {
+                      setNotificationsOpen(false);
+                      setLocation('/fund-tracking');
+                    }}
+                  >
+                    Review Fund Ledger &amp; DBT →
+                  </button>
+                </div>
+
+                <div style={{ padding: 14, borderRadius: 8, background: '#E8F7F1', border: '1px solid rgba(22,168,120,0.35)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                    <strong style={{ color: '#16A878', fontSize: 13 }}>SATELLITE INTERFEROMETRY PASS COMPLETE</strong>
+                    <span className="tiny mono" style={{ color: '#16A878' }}>2 hrs ago</span>
+                  </div>
+                  <p style={{ margin: 0, fontSize: 12.5, color: '#102A43' }}>
+                    Cartosat-3 &amp; Sentinel-2 dual-band differential telemetry pass completed across 3,840 km Gujarat infrastructure swath.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <span className="muted tiny">All channels synced with Gandhinagar Central StateLink Node.</span>
+              <button className="btn btn-primary" onClick={() => setNotificationsOpen(false)}>
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

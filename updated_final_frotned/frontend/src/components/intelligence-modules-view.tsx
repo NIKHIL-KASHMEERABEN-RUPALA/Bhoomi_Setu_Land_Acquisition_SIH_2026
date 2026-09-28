@@ -3,7 +3,7 @@ import {
   Satellite, RefreshCw, Sparkles, Bell, Shield, Globe2, Radio, Network,
   MessageSquare, Clock, AlertTriangle, AlertCircle, ArrowUpRight, Check,
   ExternalLink, ChevronDown, CheckCircle2, Sliders, Database, Cpu, Layers,
-  Server, FileText, Scale, Landmark, Eye, Filter, LockKeyhole
+  Server, FileText, Scale, Landmark, Eye, Filter, LockKeyhole, X, Download
 } from 'lucide-react';
 
 interface IntelligenceModulesViewProps {
@@ -13,6 +13,7 @@ interface IntelligenceModulesViewProps {
 export function IntelligenceModulesView({ onNotify }: IntelligenceModulesViewProps) {
   const [rescanLoading, setRescanLoading] = useState(false);
   const [feedFilter, setFeedFilter] = useState('live');
+  const [activeIntelModal, setActiveIntelModal] = useState<string | null>(null);
 
   const triggerNotify = (msg: string) => {
     if (onNotify) {
@@ -341,13 +342,13 @@ export function IntelligenceModulesView({ onNotify }: IntelligenceModulesViewPro
                   <div className="intel-item-actions">
                     <button
                       className="btn-intel-outline"
-                      onClick={() => triggerNotify('Overlaying 0.4m Cartosat-3 SAR interferometer raster for Bharuch Bypass.')}
+                      onClick={() => setActiveIntelModal('sar_layer')}
                     >
                       Inspect SAR Layer
                     </button>
                     <button
                       className="btn-intel-solid-dark"
-                      onClick={() => triggerNotify('Generated official Section 68 Removal Notice dispatched to Bharuch Municipal Collectorate.')}
+                      onClick={() => setActiveIntelModal('sec68_demolition')}
                     >
                       Issue Demolition Notice
                     </button>
@@ -403,13 +404,13 @@ export function IntelligenceModulesView({ onNotify }: IntelligenceModulesViewPro
                   <div className="intel-item-actions">
                     <button
                       className="btn-intel-outline"
-                      onClick={() => triggerNotify('Loaded AnyRoR syndication entity graph: GPoA holder #GJ-SR-8841.')}
+                      onClick={() => setActiveIntelModal('anyror_graph')}
                     >
                       View AnyRoR Graph
                     </button>
                     <button
                       className="btn-intel-solid-dark"
-                      onClick={() => triggerNotify('Sub-Registrar digital verification token frozen for Dholera Sector 8.')}
+                      onClick={() => setActiveIntelModal('freeze_token')}
                     >
                       Freeze Sub-Registrar Token
                     </button>
@@ -457,13 +458,13 @@ export function IntelligenceModulesView({ onNotify }: IntelligenceModulesViewPro
                   <div className="intel-item-actions">
                     <button
                       className="btn-intel-outline"
-                      onClick={() => triggerNotify('Opening 18 transcribed vernacular petitions for Vadodara Rural.')}
+                      onClick={() => setActiveIntelModal('verbatim_petitions')}
                     >
                       View Verbatim Petitions
                     </button>
                     <button
                       className="btn-intel-solid-teal"
-                      onClick={() => triggerNotify('Order issued: Lok Adalat Officer dispatched for proactive hearing.')}
+                      onClick={() => setActiveIntelModal('dispatch_lok_adalat')}
                     >
                       Dispatch Lok Adalat Officer
                     </button>
@@ -623,7 +624,7 @@ export function IntelligenceModulesView({ onNotify }: IntelligenceModulesViewPro
 
             <button
               className="intel-configure-btn"
-              onClick={() => triggerNotify('Opened API Key Management & Webhook Dispatch Gateway.')}
+              onClick={() => setActiveIntelModal('api_gateway')}
             >
               <Sliders size={13} />
               <span>Configure API Key Rotations &amp; Webhooks</span>
@@ -631,6 +632,346 @@ export function IntelligenceModulesView({ onNotify }: IntelligenceModulesViewPro
           </div>
         </div>
       </div>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          INTELLIGENCE MODULE ACTION MODALS
+          ══════════════════════════════════════════════════════════════════ */}
+
+      {/* 1. SAR Layer Inspection Modal */}
+      {activeIntelModal === 'sar_layer' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveIntelModal(null)}>
+          <div className="gis-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <Satellite size={13} color="#0FA89A" />
+                  <span>CARTOSAT-3 &amp; SENTINEL-2 SAR INTERFEROMETRY</span>
+                </div>
+                <h2 className="gis-modal-title">0.4m Sub-Meter SAR Interferometry: Bharuch Corridor</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveIntelModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">GROUND RESOLUTION</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#0FA89A' }}>0.4m Panchromatic</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">DETECTED CHANGE</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#E85D68' }}>+1,840 m² Tin Sheds</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">CONFIDENCE SCORE</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#16A878' }}>94.2% AI Matched</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">CONSTRUCTION SPEED</div>
+                  <div className="gis-modal-metric-value">Erected in 18 days</div>
+                </div>
+              </div>
+
+              <div className="gis-modal-info-box">
+                <strong>Interferometric Differential Analysis:</strong> Comparison between Cartosat pass 24 May 2025 and 11 Jun 2025 detected 8 unapproved commercial warehouse extensions on designated Section 20 RoW reserve plots (GAT 412/A).
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <button className="btn btn-secondary" onClick={() => triggerNotify('GeoTIFF 0.4m SAR Raster Tile downloaded.')}>
+                <Download size={14} /> Download GeoTIFF
+              </button>
+              <button className="btn btn-primary" onClick={() => setActiveIntelModal(null)}>Close Inspection</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Section 68 Removal Notice Modal */}
+      {activeIntelModal === 'sec68_demolition' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveIntelModal(null)}>
+          <div className="gis-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <AlertTriangle size={13} color="#E85D68" />
+                  <span>STATUTORY EVICTION NOTICE • GUJARAT LAND REVENUE CODE SEC 68</span>
+                </div>
+                <h2 className="gis-modal-title">Issue Section 68 Summary Removal &amp; Encroachment Notice</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveIntelModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-info-box">
+                <strong>Statutory Ground:</strong> Post-Section 4 unauthorized commercial erection in designated National Corridor RoW. Under Gujarat Land Revenue Code Section 68 and RFCTLARR Act Section 11(4), artificial improvements erected post-notification are barred from compensation valuation.
+              </div>
+
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">MUNICIPAL JURISDICTION</div>
+                  <div className="gis-modal-metric-value">Bharuch Urban Dev Authority</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">NOTICE COMPLIANCE PERIOD</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#E85D68' }}>72 Hours to Vacate</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">ENCROACHERS IDENTIFIED</div>
+                  <div className="gis-modal-metric-value">3 Commercial Entities</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <button className="btn btn-secondary" onClick={() => setActiveIntelModal(null)}>Cancel</button>
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  setActiveIntelModal(null);
+                  triggerNotify('Generated official Section 68 Removal Notice dispatched to Bharuch Municipal Collectorate.');
+                }}
+              >
+                Dispatch Enforcement Order
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3. AnyRoR Syndication Entity Graph Modal */}
+      {activeIntelModal === 'anyror_graph' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveIntelModal(null)}>
+          <div className="gis-modal-card" style={{ maxWidth: 880 }} onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <Network size={13} color="#F2A51A" />
+                  <span>BENAMI TRANSACTION DETECTION • ANYROR ENTITY GRAPH</span>
+                </div>
+                <h2 className="gis-modal-title">AnyRoR Syndication Entity Graph: GPoA #GJ-SR-8841</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveIntelModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">PARCEL TRANSFERS</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#E85D68' }}>14 Transfers / 72 hrs</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">SPECULATIVE EXPOSURE</div>
+                  <div className="gis-modal-metric-value">₹14.80 Cr</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">POWER OF ATTORNEY HOLDER</div>
+                  <div className="gis-modal-metric-value">Single Syndicated Entity</div>
+                </div>
+              </div>
+
+              <div className="gis-modal-info-box">
+                <strong>Entity Syndicate Identified:</strong> GPoA holder #GJ-SR-8841 acquired irrevocable power of attorney over 14 contiguous farm parcels in Dholera SIR Sector 8, exactly 11 days prior to scheduled preliminary notification. Transaction velocity is 800% higher than historical taluka mean.
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <span className="muted tiny">Referred to Benami Transactions (Prohibition) Authority.</span>
+              <button className="btn btn-primary" onClick={() => setActiveIntelModal(null)}>Close Graph</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. Freeze Token Modal */}
+      {activeIntelModal === 'freeze_token' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveIntelModal(null)}>
+          <div className="gis-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <LockKeyhole size={13} color="#E85D68" />
+                  <span>PRE-NOTIFICATION REGISTRATION EMBARGO</span>
+                </div>
+                <h2 className="gis-modal-title">Sub-Registrar Digital Token Freeze (Dholera Sector 8)</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveIntelModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-info-box">
+                <strong>Embargo Action:</strong> Temporarily halts deed registration and title transfers for identified survey numbers in Dholera Sector 8 in the Inspector General of Registration (IGR) Gujarat registry pending scrutiny by the Competent Authority.
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <button className="btn btn-secondary" onClick={() => setActiveIntelModal(null)}>Cancel</button>
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  setActiveIntelModal(null);
+                  triggerNotify('Sub-Registrar digital verification token frozen for Dholera Sector 8.');
+                }}
+              >
+                Confirm Token Freeze
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 5. Verbatim Petitions Modal */}
+      {activeIntelModal === 'verbatim_petitions' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveIntelModal(null)}>
+          <div className="gis-modal-card" style={{ maxWidth: 840 }} onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <MessageSquare size={13} color="#0FA89A" />
+                  <span>NLP SENTIMENT &amp; GRIEVANCE TRANSCRIPTION</span>
+                </div>
+                <h2 className="gis-modal-title">Transcribed Vernacular Petitions: Vadodara Rural (18 Petitions)</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveIntelModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="table-wrap">
+                <table className="data-table" style={{ fontSize: 12 }}>
+                  <thead>
+                    <tr>
+                      <th>VILLAGE</th>
+                      <th>CATEGORY</th>
+                      <th>TRANSCRIBED GUJARATI EXTRACT</th>
+                      <th>NLP RISK</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { v: 'Padra Rural', c: 'Tree Solatium', t: 'ફળઝાડ અને આંબાના ઝાડના મૂલ્યાંકનમાં બાગાયત વિભાગના દર ખૂબ ઓછા ગણેલ છે...', r: 'HIGH' },
+                      { v: 'Chikhli', c: 'Borewell Value', t: 'કૂવા અને પાઈપલાઈનનું મુઆવજો ચુકવ્યા વગર જમીન ખાલી કરાવવાનો વિરોધ છે...', r: 'MODERATE' },
+                      { v: 'Kanjari', c: 'Gram Sabha Resolution', t: 'સમગ્ર ગામ સભામાં સર્વાનુમતે ઠરાવ કર્યો છે કે પુનઃસ્થાપન પેકેજ સ્પષ્ટ થાય...', r: 'HIGH' }
+                    ].map((p, idx) => (
+                      <tr key={idx}>
+                        <td style={{ fontWeight: 600 }}>{p.v}</td>
+                        <td><span className="tag">{p.c}</span></td>
+                        <td style={{ fontStyle: 'italic' }}>{p.t}</td>
+                        <td><strong style={{ color: p.r === 'HIGH' ? '#E85D68' : '#F2A51A' }}>{p.r}</strong></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <span className="muted tiny">Transcribed via AI Bhashini &amp; Gujarat Lok Adalat Speech API.</span>
+              <button className="btn btn-primary" onClick={() => setActiveIntelModal(null)}>Close Petitions</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 6. Dispatch Lok Adalat Officer Modal */}
+      {activeIntelModal === 'dispatch_lok_adalat' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveIntelModal(null)}>
+          <div className="gis-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <Scale size={13} color="#16A878" />
+                  <span>PRE-EMPTIVE DISPUTE RESOLUTION • LOK ADALAT</span>
+                </div>
+                <h2 className="gis-modal-title">Dispatch Lok Adalat Mediation Officer: Vadodara Rural</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveIntelModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-info-box">
+                <strong>Pre-Emptive Conciliation Session:</strong> Authorizes District Legal Services Authority (DLSA) mediation team to hold village-level hearings on 16 June 2025 regarding horticulture tree solatium valuation, avoiding civil court litigation.
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <button className="btn btn-secondary" onClick={() => setActiveIntelModal(null)}>Cancel</button>
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  setActiveIntelModal(null);
+                  triggerNotify('Order issued: Lok Adalat Officer dispatched for proactive hearing.');
+                }}
+              >
+                Issue Dispatch Summons
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 7. API Gateway & Webhook Modal */}
+      {activeIntelModal === 'api_gateway' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveIntelModal(null)}>
+          <div className="gis-modal-card" style={{ maxWidth: 780 }} onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <Sliders size={13} color="#0FA89A" />
+                  <span>DEVELOPER GATEWAY • STATE REVENUE APIS</span>
+                </div>
+                <h2 className="gis-modal-title">API Key Management &amp; Webhook Dispatch Gateway</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveIntelModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">ACTIVE WEBHOOKS</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#16A878' }}>4 Endpoints (200 OK)</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">AVG DISPATCH LATENCY</div>
+                  <div className="gis-modal-metric-value">42 ms</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">ACTIVE MASTER KEY</div>
+                  <div className="gis-modal-metric-value" style={{ fontSize: 13, color: '#0FA89A' }}>bh_live_9941a***</div>
+                </div>
+              </div>
+
+              <div className="gis-modal-info-box">
+                <strong>Connected Endpoints:</strong><br />
+                • ISRO Bhuvan Spatial Feed (5-minute poll)<br />
+                • AnyRoR Land Record Sync (Daily delta)<br />
+                • e-Courts National Judicial Grid Injunction Listener (Instant push)<br />
+                • RBI/PFMS Treasury Remittance Callback (Batch ACK)
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <button className="btn btn-secondary" onClick={() => triggerNotify('Generated new rotated API key token.')}>
+                Rotate API Key
+              </button>
+              <button className="btn btn-primary" onClick={() => setActiveIntelModal(null)}>Done</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

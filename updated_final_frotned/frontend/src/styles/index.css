@@ -9355,3 +9355,217 @@ a { color: inherit; text-decoration: none; }
   .lp-stat-row { grid-template-columns: 1fr 1fr; }
   .lp-legend-row { gap: 5px; }
 }
+
+/* ============================================================
+   BHOOMISETU INTERACTIVE ACTION MODALS (CORRIDOR, TREASURY, INTEL)
+   ============================================================ */
+.gis-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(3, 20, 24, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: gisFadeIn 0.2s ease-out;
+}
+
+.gis-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 860px;
+  max-height: 88vh;
+  background: #FFFFFF;
+  border-radius: 14px;
+  border: 1px solid #D8E8E6;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: gisSlideUp 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark .gis-modal-card {
+  background: #082229;
+  border-color: rgba(78, 224, 209, 0.25);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(15, 168, 154, 0.15);
+  color: #F5FAF9;
+}
+
+@keyframes gisFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes gisSlideUp {
+  from { opacity: 0; transform: scale(0.95) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.gis-modal-header {
+  padding: 18px 24px;
+  background: #F0F6F5;
+  border-bottom: 1px solid #D8E8E6;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dark .gis-modal-header {
+  background: rgba(6, 76, 85, 0.5);
+  border-bottom-color: rgba(78, 224, 209, 0.2);
+}
+
+.gis-modal-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #0FA89A;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.gis-modal-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: #102A43;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.dark .gis-modal-title {
+  color: #FFFFFF;
+}
+
+.gis-modal-close-btn {
+  background: transparent;
+  border: 1px solid #D8E8E6;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #526B82;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.gis-modal-close-btn:hover {
+  background: #E0ECEB;
+  color: #102A43;
+}
+
+.dark .gis-modal-close-btn {
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #A3C6C4;
+}
+
+.dark .gis-modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+}
+
+.gis-modal-body {
+  padding: 22px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.gis-modal-footer {
+  padding: 14px 24px;
+  background: #F8FBFA;
+  border-top: 1px solid #D8E8E6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dark .gis-modal-footer {
+  background: rgba(6, 76, 85, 0.35);
+  border-top-color: rgba(78, 224, 209, 0.2);
+}
+
+.gis-modal-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.gis-modal-metric-card {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #F0F6F5;
+  border: 1px solid #D8E8E6;
+}
+
+.dark .gis-modal-metric-card {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(78, 224, 209, 0.18);
+}
+
+.gis-modal-metric-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #526B82;
+  margin-bottom: 4px;
+}
+
+.dark .gis-modal-metric-label {
+  color: #79B8B3;
+}
+
+.gis-modal-metric-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #102A43;
+}
+
+.dark .gis-modal-metric-value {
+  color: #FFFFFF;
+}
+
+.gis-modal-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #102A43;
+  margin: 18px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dark .gis-modal-section-title {
+  color: #4EE0D1;
+}
+
+.gis-modal-info-box {
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #EDF6F5;
+  border-left: 4px solid #0FA89A;
+  color: #102A43;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.dark .gis-modal-info-box {
+  background: rgba(15, 168, 154, 0.12);
+  color: #D8E8E6;
+  border-left-color: #4EE0D1;
+}
+

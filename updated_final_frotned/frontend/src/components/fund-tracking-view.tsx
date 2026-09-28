@@ -20,7 +20,10 @@ import {
   FileSpreadsheet,
   Layers,
   Sparkles,
-  Info
+  Info,
+  Banknote,
+  X,
+  FolderOpen
 } from 'lucide-react';
 
 interface FundTrackingViewProps {
@@ -129,6 +132,9 @@ export function FundTrackingView({ onNotify }: FundTrackingViewProps) {
   const [selectedFy, setSelectedFy] = useState('FY 2025-26 (Q1 Current)');
   const [filterCorridor, setFilterCorridor] = useState('all');
   const [selectedProjectRow, setSelectedProjectRow] = useState<string | null>(null);
+  const [activeFundModal, setActiveFundModal] = useState<string | null>(null);
+  const [selectedAuditRow, setSelectedAuditRow] = useState<any | null>(null);
+
 
   const triggerNotify = (msg: string) => {
     if (onNotify) onNotify(msg);
@@ -140,23 +146,23 @@ export function FundTrackingView({ onNotify }: FundTrackingViewProps) {
   };
 
   const handleInitiateBatchDbt = () => {
-    triggerNotify('Batch DBT Transfer Modal opened: 48,390 beneficiaries verified.');
+    setActiveFundModal('batch_dbt');
   };
 
   const handleInspectDockets = () => {
-    triggerNotify('Anand District Bypass: 342 Landholder Dockets loaded for inspection.');
+    setActiveFundModal('landholder_dockets');
   };
 
   const handleAuthorizeDsc = () => {
-    triggerNotify('e-Mudhra DSC token validated. Batch DBJ-2025-14B authorized for clearance.');
+    setActiveFundModal('dsc_token');
   };
 
   const handleReverification = () => {
-    triggerNotify('NPCI APB automated re-verification batch queued for 434 pending exceptions.');
+    setActiveFundModal('npci_reverify');
   };
 
   const handleDownloadSec80 = () => {
-    triggerNotify('Section 80 Mandatory Interest Compliance Certificate downloaded.');
+    setActiveFundModal('sec80_certificate');
   };
 
   const filteredProjects = projectsData.filter((p) => {
@@ -707,7 +713,8 @@ export function FundTrackingView({ onNotify }: FundTrackingViewProps) {
                       className="fund-audit-icon-btn"
                       onClick={(e) => {
                         e.stopPropagation();
-                        triggerNotify(`Cryptographic audit packet opened for ${row.name}`);
+                        setSelectedAuditRow(row);
+                        setActiveFundModal('audit_packet');
                       }}
                       title="Inspect Cryptographic Audit Seal"
                       data-testid={`btn-audit-${row.id}`}
@@ -789,7 +796,7 @@ export function FundTrackingView({ onNotify }: FundTrackingViewProps) {
             <span className="fund-sla-text">Court Disbursement Release SLA: <strong>Avg 18 days post judgment</strong></span>
             <button
               className="fund-link-btn"
-              onClick={() => triggerNotify('Opening Judicial Escrow Registry...')}
+              onClick={() => setActiveFundModal('judicial_escrow')}
               data-testid="link-view-docket-registry"
             >
               <span>View Docket Registry</span>
@@ -862,6 +869,443 @@ export function FundTrackingView({ onNotify }: FundTrackingViewProps) {
           </div>
         </div>
       </div>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          FUND TRACKING INTERACTIVE MODALS
+          ══════════════════════════════════════════════════════════════════ */}
+
+      {/* 1. Batch DBT Transfer Modal */}
+      {activeFundModal === 'batch_dbt' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveFundModal(null)}>
+          <div className="gis-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <Banknote size={13} />
+                  <span>PFMS &amp; NPCI APB GATEWAY • STATE TREASURY DISBURSEMENT</span>
+                </div>
+                <h2 className="gis-modal-title">Batch Direct Benefit Transfer (DBT) Authorization</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveFundModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">TOTAL DISBURSEMENT</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#16A878', fontSize: 20 }}>₹2,450.00 Cr</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">VERIFIED BENEFICIARIES</div>
+                  <div className="gis-modal-metric-value">48,390 Landholders</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">DEDUPLICATION MATCH</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#0FA89A' }}>100% (0 Collisions)</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">ROUTING PROTOCOL</div>
+                  <div className="gis-modal-metric-value">RBI NEFT/RTGS Batch</div>
+                </div>
+              </div>
+
+              <div className="gis-modal-info-box">
+                <strong>Statutory Compliance Verified:</strong> All 48,390 records verified against AnyRoR 7/12 land revenue mutation ledgers. Zero court injunction encumbrances detected in current batch.
+              </div>
+
+              <div className="gis-modal-section-title">
+                <CheckCircle2 size={15} color="#16A878" />
+                <span>Pre-Flight Treasury Checklist</span>
+              </div>
+
+              <div style={{ display: 'grid', gap: 8, marginBottom: 16 }}>
+                <label style={{ display: 'flex', gap: 10, alignItems: 'center', fontSize: 13 }}>
+                  <input type="checkbox" defaultChecked />
+                  <span>Class-3 Digital Signature Certificate (DSC) valid and pinned to session</span>
+                </label>
+                <label style={{ display: 'flex', gap: 10, alignItems: 'center', fontSize: 13 }}>
+                  <input type="checkbox" defaultChecked />
+                  <span>Dual-custody verification approved by State Finance Department</span>
+                </label>
+                <label style={{ display: 'flex', gap: 10, alignItems: 'center', fontSize: 13 }}>
+                  <input type="checkbox" defaultChecked />
+                  <span>Automated SMS intimation dispatch queued for verified mobile numbers</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <button className="btn btn-secondary" onClick={() => triggerNotify('Beneficiary manifest CSV downloaded.')}>
+                <Download size={14} /> Download Manifest
+              </button>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className="btn btn-secondary" onClick={() => setActiveFundModal(null)}>Cancel</button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    setActiveFundModal(null);
+                    triggerNotify('Batch DBT Transfer authorized! Remittance batch sent to RBI Core Banking.');
+                  }}
+                >
+                  Authorize &amp; Transmit Batch
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Landholder Dockets Modal */}
+      {activeFundModal === 'landholder_dockets' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveFundModal(null)}>
+          <div className="gis-modal-card" style={{ maxWidth: 900 }} onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <FolderOpen size={13} />
+                  <span>ANAND DISTRICT BYPASS • CALA ESCROW</span>
+                </div>
+                <h2 className="gis-modal-title">Landholder Escrow Dockets: Anand District Bypass (342 Dockets)</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveFundModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">TOTAL BENEFICIARIES</div>
+                  <div className="gis-modal-metric-value">342 Farmers</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">TOTAL ESCROW</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#0FA89A' }}>₹247.00 Cr</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">PFMS VERIFIED</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#16A878' }}>318 Accounts (93%)</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">SUCCESSION HEARINGS</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#F2A51A' }}>24 Heirship Cases</div>
+                </div>
+              </div>
+
+              <div className="table-wrap">
+                <table className="data-table" style={{ fontSize: 12 }}>
+                  <thead>
+                    <tr>
+                      <th>DOCKET ID</th>
+                      <th>LANDHOLDER NAME</th>
+                      <th>SURVEY / GAT</th>
+                      <th>COMPENSATION</th>
+                      <th>SOLATIUM</th>
+                      <th>PFMS STATUS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { id: 'AN-2025-01', name: 'Rameshbhai K. Patel', gat: 'GAT 42/1', comp: '₹1.84 Cr', sol: '100% Paid', stat: 'Disbursed' },
+                      { id: 'AN-2025-02', name: 'Karsanbhai M. Vankar', gat: 'GAT 44/B', comp: '₹2.12 Cr', sol: '100% Paid', stat: 'Disbursed' },
+                      { id: 'AN-2025-03', name: 'Champaben S. Parmar', gat: 'GAT 48/3', comp: '₹0.95 Cr', sol: 'Pending Sec 77', stat: 'Heirship Claim' },
+                      { id: 'AN-2025-04', name: 'Dineshbhai H. Solanki', gat: 'GAT 51/A', comp: '₹3.40 Cr', sol: '100% Paid', stat: 'Disbursed' },
+                      { id: 'AN-2025-05', name: 'Gordhanbhai P. Baria', gat: 'GAT 53/2', comp: '₹1.15 Cr', sol: '100% Paid', stat: 'Disbursed' }
+                    ].map((docket, idx) => (
+                      <tr key={idx}>
+                        <td className="mono" style={{ fontWeight: 600 }}>{docket.id}</td>
+                        <td style={{ fontWeight: 600 }}>{docket.name}</td>
+                        <td className="mono">{docket.gat}</td>
+                        <td className="mono" style={{ fontWeight: 700 }}>{docket.comp}</td>
+                        <td>{docket.sol}</td>
+                        <td>
+                          <span style={{ color: docket.stat === 'Disbursed' ? '#16A878' : '#F2A51A', fontWeight: 600 }}>
+                            ● {docket.stat}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <span className="muted tiny">CALA Anand Portal Ref: CALA-AN-2025-09</span>
+              <button className="btn btn-primary" onClick={() => setActiveFundModal(null)}>Close Dockets</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3. DSC Token Validation Modal */}
+      {activeFundModal === 'dsc_token' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveFundModal(null)}>
+          <div className="gis-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <ShieldCheck size={13} color="#16A878" />
+                  <span>DIGITAL SIGNATURE PROTOCOL • CCA INDIA &amp; E-MUDHRA</span>
+                </div>
+                <h2 className="gis-modal-title">e-Mudhra Class-3 DSC Token Authorization</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveFundModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">SIGNATORY OFFICER</div>
+                  <div className="gis-modal-metric-value">Dr. Sourabh Zaveri, IAS</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">DSC VALIDITY</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#16A878' }}>Valid till Dec 2026</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">KEY SPECIFICATION</div>
+                  <div className="gis-modal-metric-value">RSA 2048 / SHA-256</div>
+                </div>
+              </div>
+
+              <div className="gis-modal-info-box">
+                <strong>Digital Certificate Payload:</strong> Hardware cryptographic token detected on USB hub (ID: <code>ePass2003-GJ-98214</code>). Batch <strong>DBJ-2025-14B</strong> with 8,420 beneficiary awards has been cryptographically signed under Section 5 of Information Technology Act 2000.
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <span className="muted tiny">Certificate Serial: 7A:4F:92:10:8C:3B:55:01</span>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className="btn btn-secondary" onClick={() => setActiveFundModal(null)}>Cancel</button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    setActiveFundModal(null);
+                    triggerNotify('e-Mudhra DSC token validated. Batch DBJ-2025-14B authorized for clearance.');
+                  }}
+                >
+                  Confirm Token Signature
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. NPCI APB Re-Verification Modal */}
+      {activeFundModal === 'npci_reverify' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveFundModal(null)}>
+          <div className="gis-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <RefreshCw size={13} color="#0FA89A" />
+                  <span>NPCI AADHAAR PAYMENT BRIDGE • REAL-TIME VALIDATION</span>
+                </div>
+                <h2 className="gis-modal-title">NPCI APB Automated Re-Verification (434 Exceptions)</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveFundModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">PENDING EXCEPTIONS</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#F2A51A' }}>434 Accounts</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">PRIMARY REASON</div>
+                  <div className="gis-modal-metric-value">Bank Merger IFSC Mismatch</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">RETRY LATENCY</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#16A878' }}>Instant via NPCI API</div>
+                </div>
+              </div>
+
+              <div className="gis-modal-info-box">
+                <strong>Automated Remediation Engine:</strong> The system automatically resolves legacy IFSC codes resulting from Bank of Baroda / Dena Bank / Vijaya Bank amalgamations using live PFMS master routing tables.
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <button className="btn btn-secondary" onClick={() => setActiveFundModal(null)}>Close</button>
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  setActiveFundModal(null);
+                  triggerNotify('NPCI APB automated re-verification batch queued for 434 pending exceptions.');
+                }}
+              >
+                Run Batch Re-Verification
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 5. Section 80 Interest Certificate Modal */}
+      {activeFundModal === 'sec80_certificate' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveFundModal(null)}>
+          <div className="gis-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <FileText size={13} color="#16A878" />
+                  <span>CAG AUDIT PROTOCOL • RFCTLARR SECTION 80</span>
+                </div>
+                <h2 className="gis-modal-title">Section 80 Mandatory Interest Compliance Certificate</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveFundModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">INTEREST SAVINGS</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#16A878', fontSize: 20 }}>+ ₹51.10 Cr Saved</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">PENAL RATE AVOIDED</div>
+                  <div className="gis-modal-metric-value">15% p.a. under Sec 80</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">AVG DISBURSEMENT SPEED</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#0FA89A' }}>42 Hours post Award</div>
+                </div>
+              </div>
+
+              <div className="gis-modal-info-box">
+                <strong>Audit Finding:</strong> Certified that zero penal interest was incurred under RFCTLARR Section 80 across all 68 active infrastructure projects during FY 2024-25 due to algorithmic escrow pre-funding.
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <span className="muted tiny">CAG Audit Dossier: CAG/GJ/REV/2025/INFRA-04</span>
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  setActiveFundModal(null);
+                  triggerNotify('Section 80 Mandatory Interest Compliance Certificate downloaded.');
+                }}
+              >
+                <Download size={14} /> Download Official Certificate
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 6. Cryptographic Audit Packet Modal */}
+      {activeFundModal === 'audit_packet' && selectedAuditRow && (
+        <div className="gis-modal-overlay" onClick={() => setActiveFundModal(null)}>
+          <div className="gis-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <Shield size={13} color="#0FA89A" />
+                  <span>IMMUTABLE TREASURY PROOF • CAG AUDIT PROTOCOL</span>
+                </div>
+                <h2 className="gis-modal-title">Cryptographic Audit Packet: {selectedAuditRow.name}</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveFundModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">APPROVED BUDGET</div>
+                  <div className="gis-modal-metric-value">₹{selectedAuditRow.budgetCr} Cr</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">DISBURSED CAPITAL</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#16A878' }}>₹{selectedAuditRow.disbursedCr} Cr</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">ESCROW UNSPENT</div>
+                  <div className="gis-modal-metric-value">₹{selectedAuditRow.escrowCr} Cr</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">BENEFICIARIES</div>
+                  <div className="gis-modal-metric-value">{selectedAuditRow.beneficiariesCount?.toLocaleString()}</div>
+                </div>
+              </div>
+
+              <div className="gis-modal-info-box">
+                <strong>Cryptographic Merkle Root Hash:</strong><br />
+                <code style={{ fontSize: 12, wordBreak: 'break-all', color: '#0FA89A' }}>
+                  0x7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069
+                </code><br />
+                Block Height #8,491,204 • State Treasury Blockchain Ledger Node #3. Zero alterations detected.
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <button className="btn btn-secondary" onClick={() => triggerNotify('Verification receipt downloaded.')}>
+                <Download size={14} /> Download Receipt
+              </button>
+              <button className="btn btn-primary" onClick={() => setActiveFundModal(null)}>Close Packet</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 7. Judicial Escrow Registry Modal */}
+      {activeFundModal === 'judicial_escrow' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveFundModal(null)}>
+          <div className="gis-modal-card" style={{ maxWidth: 880 }} onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <Scale size={13} color="#D98A08" />
+                  <span>HIGH COURT &amp; LAND TRIBUNAL REGISTRY • SECTION 77</span>
+                </div>
+                <h2 className="gis-modal-title">High Court &amp; Land Tribunal Escrow Registry (₹1,240.00 Cr)</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveFundModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-info-box">
+                <strong>Section 77 Statutory Protocol:</strong> Land acquisition compensation for disputed parcels is deposited with the Land Acquisition, Rehabilitation and Resettlement Authority (LARRA) and Gujarat High Court registry to accrue standard interest until title adjudication.
+              </div>
+
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">SURAT DISTRICT COURT</div>
+                  <div className="gis-modal-metric-value">₹612.4 Cr (156 cases)</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">GUJARAT HIGH COURT REGISTRY</div>
+                  <div className="gis-modal-metric-value">₹380.6 Cr (42 writs)</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">CALA ANAND TRIBUNAL</div>
+                  <div className="gis-modal-metric-value">₹247.0 Cr (84 heirship)</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <span className="muted tiny">Live synchronization with e-Courts National Judicial Data Grid (NJDG).</span>
+              <button className="btn btn-primary" onClick={() => setActiveFundModal(null)}>Close Registry</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

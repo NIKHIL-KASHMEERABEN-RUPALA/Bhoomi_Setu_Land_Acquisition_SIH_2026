@@ -1,4 +1,9 @@
 id,name,monitored_projects,at_risk_projects,average_delay,risk_rate,compensation_pending,legal_cases
 d-01,Kutch,14,7,6.4,50.0,22.8,31
 d-02,Bharuch,12,5,4.6,41.7,16.2,24
-d-04,Ahmedabad,18,4,3.2,22.2,14.5,12
+d-03,Surat,18,6,3.2,33.3,12.8,19
+d-04,Ahmedabad,23,3,1.8,13.0,4.1,11
+d-05,Vadodara,16,4,2.7,25.0,8.4,15
+d-06,Rajkot,11,3,3.1,27.3,6.9,13
+d-07,Anand,9,2,2.2,22.2,3.8,7
+d-08,Mehsana,10,2,1.9,20.0,3.2,8

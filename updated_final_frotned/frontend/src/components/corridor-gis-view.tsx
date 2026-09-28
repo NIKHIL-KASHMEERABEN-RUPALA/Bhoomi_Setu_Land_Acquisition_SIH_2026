@@ -5,7 +5,7 @@ import {
   ExternalLink, Calendar, ShieldAlert, Radio, Compass, Plane, Satellite,
   Scale, Landmark, FileSpreadsheet, Sparkles, Eye, X, CheckSquare,
   FolderOpen, AlertCircle, Home, Star, ShieldCheck, ArrowRight, RefreshCw,
-  Users, CheckCheck, Navigation, Route
+  Users, CheckCheck, Navigation, Route, Banknote
 } from 'lucide-react';
 import { fetchNearestParcels, type NearestParcel } from '../lib/api';
 
@@ -327,6 +327,15 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
   // Layer modal / Drawer state
   const [showLayerControls, setShowLayerControls] = useState(false);
 
+  // Modal & Action Sheet States for Interactive Buttons
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [activeMilestone, setActiveMilestone] = useState<string | null>(null);
+  const [injunctionStatus, setInjunctionStatus] = useState<'pending' | 'resolved'>('pending');
+  const [trancheStatus, setTrancheStatus] = useState<'pending' | 'disbursed'>('pending');
+  const [utilityStatus, setUtilityStatus] = useState<'pending' | 'approved'>('pending');
+  const [docketsQuery, setDocketsQuery] = useState('');
+  const [docketsCorridor, setDocketsCorridor] = useState('all');
+
   // Action feedback handler
   const triggerNotify = (msg: string) => {
     if (onNotify) {
@@ -614,7 +623,7 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
           <button
             className="gis-tune-btn"
             title="Filter Settings & Precision Tuning"
-            onClick={() => triggerNotify('RTK DGPS Base Station: Gandhinagar Node calibrated at ±2cm accuracy.')}
+            onClick={() => setActiveModal('dgps_calibration')}
           >
             <Sliders size={14} />
           </button>
@@ -1679,7 +1688,7 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
               </div>
               <button
                 className="gis-view-all-link"
-                onClick={() => triggerNotify('Loaded all 420 Chainage Registry Dockets.')}
+                onClick={() => setActiveModal('registry_dockets')}
               >
                 <span>View All 420 Registry Dockets</span>
                 <span className="arrow-icon">→</span>
@@ -1715,7 +1724,7 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
                     <td>
                       <button
                         className="btn-table-action"
-                        onClick={() => triggerNotify('Injunction hearing packet dispatched to Bharuch Sub-Divisional Magistrate.')}
+                        onClick={() => setActiveModal('resolve_injunction')}
                       >
                         Resolve Injunction
                       </button>
@@ -1738,7 +1747,7 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
                     <td>
                       <button
                         className="btn-table-action"
-                        onClick={() => triggerNotify('Compensation Tranche ₹14.8 Cr cleared for Amod disbursement escrow.')}
+                        onClick={() => setActiveModal('release_tranche')}
                       >
                         Release Tranche
                       </button>
@@ -1761,7 +1770,7 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
                     <td>
                       <button
                         className="btn-table-action"
-                        onClick={() => triggerNotify('Joint survey protocol open: Padra GETCO 220kV tower shifting.')}
+                        onClick={() => setActiveModal('joint_survey')}
                       >
                         View Joint Survey
                       </button>
@@ -1835,7 +1844,7 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
                 </div>
                 <button
                   className="gis-docket-btn-dark"
-                  onClick={() => triggerNotify('Opened Joint Survey Docket: Bharuch Section (Km 188-204)')}
+                  onClick={() => setActiveModal('docket_bharuch')}
                 >
                   Open Joint Survey Docket
                 </button>
@@ -1871,7 +1880,7 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
                 </div>
                 <button
                   className="gis-docket-btn-light"
-                  onClick={() => triggerNotify('Dispatching legal briefing package to Advocate General Office for 18 Jun High Court bench.')}
+                  onClick={() => setActiveModal('docket_surat')}
                 >
                   Legal Briefing
                 </button>
@@ -1896,7 +1905,7 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
                 </div>
                 <button
                   className="gis-docket-btn-teal"
-                  onClick={() => triggerNotify('Scheduled expedited review with Amreli & Ahmedabad District Collectors for Forest NOC.')}
+                  onClick={() => setActiveModal('docket_dholera')}
                 >
                   Collector Meeting
                 </button>
@@ -1918,7 +1927,7 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
 
             <div className="gis-timeline-list">
               {/* Milestone 1 */}
-              <div className="gis-timeline-item">
+              <div className="gis-timeline-item" style={{ cursor: 'pointer' }} onClick={() => setActiveMilestone('dfc_sanand')} title="Click to open Milestone Verification Docket">
                 <div className="gis-timeline-top">
                   <div className="gis-timeline-date-wrap">
                     <span className="gis-timeline-dot dot-green" />
@@ -1933,7 +1942,7 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
               </div>
 
               {/* Milestone 2 */}
-              <div className="gis-timeline-item">
+              <div className="gis-timeline-item" style={{ cursor: 'pointer' }} onClick={() => setActiveMilestone('vadodara_ring')} title="Click to open Milestone Verification Docket">
                 <div className="gis-timeline-top">
                   <div className="gis-timeline-date-wrap">
                     <span className="gis-timeline-dot dot-teal" />
@@ -1948,7 +1957,7 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
               </div>
 
               {/* Milestone 3 */}
-              <div className="gis-timeline-item">
+              <div className="gis-timeline-item" style={{ cursor: 'pointer' }} onClick={() => setActiveMilestone('dmic_cabinet')} title="Click to open Cabinet Benchmark Review">
                 <div className="gis-timeline-top">
                   <div className="gis-timeline-date-wrap">
                     <span className="gis-timeline-dot dot-red" />
@@ -1962,6 +1971,804 @@ export function CorridorGisView({ onNotify }: CorridorGisViewProps) {
           </div>
         </div>
       </div>
+
+      {/* ══════════════════════════════════════════════════════════════════
+          GIS ACTION MODALS — OPENED BY INTERACTIVE BUTTONS
+          ══════════════════════════════════════════════════════════════════ */}
+
+      {/* 1. Chainage Parcel Registry Dockets Modal */}
+      {activeModal === 'registry_dockets' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveModal(null)}>
+          <div className="gis-modal-card" style={{ maxWidth: 940 }} onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <FolderOpen size={13} />
+                  <span>STATUTORY REGISTRY • GUJARAT REVENUE DEPT</span>
+                </div>
+                <h2 className="gis-modal-title">Chainage Parcel Registry &amp; Right-of-Way Handoff (420 Dockets)</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveModal(null)} title="Close dialog">
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+                <input
+                  type="text"
+                  placeholder="Search by Village, Chainage, or GAT Number..."
+                  value={docketsQuery}
+                  onChange={(e) => setDocketsQuery(e.target.value)}
+                  style={{
+                    flex: 1, minWidth: 240, padding: '9px 14px', borderRadius: 8,
+                    border: '1px solid #D8E8E6', background: 'transparent', color: 'inherit', fontSize: 13
+                  }}
+                />
+                <select
+                  value={docketsCorridor}
+                  onChange={(e) => setDocketsCorridor(e.target.value)}
+                  style={{ padding: '9px 14px', borderRadius: 8, border: '1px solid #D8E8E6', background: 'transparent', color: 'inherit', fontSize: 13 }}
+                >
+                  <option value="all">All Corridors (8 Mega Corridors)</option>
+                  <option value="dmic">Delhi-Mumbai Industrial Corridor (DMIC)</option>
+                  <option value="bullet">Mumbai-Ahmedabad Bullet Train HSR</option>
+                  <option value="dholera">Dholera SIR Expressway</option>
+                  <option value="dfc">Dedicated Freight Corridor (Western DFC)</option>
+                </select>
+              </div>
+
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">TOTAL DOCKETS</div>
+                  <div className="gis-modal-metric-value">420 Parcels</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">PHYSICAL POSSESSION</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#16A878' }}>378 (90%)</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">LITIGATION IMPASSE</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#E85D68' }}>42 (10%)</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">ESCROW CLEARED</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#0FA89A' }}>₹3,840.5 Cr</div>
+                </div>
+              </div>
+
+              <div className="table-wrap">
+                <table className="data-table" style={{ fontSize: 12 }}>
+                  <thead>
+                    <tr>
+                      <th>CHAINAGE</th>
+                      <th>VILLAGE &amp; TALUKA</th>
+                      <th>SURVEY / GAT</th>
+                      <th>AREA (HA)</th>
+                      <th>PHASE</th>
+                      <th>POSSESSION</th>
+                      <th>COMPENSATION</th>
+                      <th>STATUS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { ch: 'Km 188.200 - 190.500', v: 'Vagra, Bharuch', gat: 'GAT 412/A, 412/D', ha: 18.4, phase: 'Sec 20 Disputed', pos: 'Blocked (Stay)', comp: '₹34.2 Cr', stat: 'High Court Review' },
+                      { ch: 'Km 194.000 - 198.800', v: 'Amod, Bharuch', gat: 'GAT 108 to 142', ha: 32.8, phase: 'Award Declared 3G', pos: '78% Transferred', comp: '₹14.8 Cr', stat: 'Tranche Cleared' },
+                      { ch: 'Km 246.000 - 251.200', v: 'Padra, Vadodara', gat: 'GAT 78, 82, 89', ha: 24.1, phase: 'Utility Clearance', pos: 'Tower Shift', comp: '₹18.9 Cr', stat: 'GETCO Survey Done' },
+                      { ch: 'Km 284.100 - 310.000', v: 'Anand Rural', gat: 'GAT 21-89', ha: 54.0, phase: 'Mutation Complete', pos: '100% Handover', comp: '₹88.5 Cr', stat: 'Civil Works Active' },
+                      { ch: 'Km 84.000 - 88.800', v: 'Surat Peripheral', gat: 'GAT 304/B, 309', ha: 14.2, phase: 'Sec 19 Solatium', pos: 'Environmental Review', comp: '₹42.0 Cr', stat: 'Wetland Buffer NOC' },
+                      { ch: 'Km 312.400 - 325.000', v: 'Nadiad Bypass', gat: 'GAT 12-68', ha: 41.5, phase: 'Section 11 Gazette', pos: '95% Possession', comp: '₹62.1 Cr', stat: 'Disbursement Active' },
+                      { ch: 'Km 360.000 - 378.200', v: 'Sanand Industrial', gat: 'GAT 512-580', ha: 68.2, phase: 'Sec 24 Final Award', pos: '100% Handover', comp: '₹124.0 Cr', stat: 'Handed to L&T' }
+                    ].filter(item => {
+                      const q = docketsQuery.toLowerCase();
+                      return !q || item.v.toLowerCase().includes(q) || item.gat.toLowerCase().includes(q) || item.ch.toLowerCase().includes(q);
+                    }).map((row, idx) => (
+                      <tr key={idx}>
+                        <td className="mono" style={{ fontWeight: 600 }}>{row.ch}</td>
+                        <td>{row.v}</td>
+                        <td className="mono">{row.gat}</td>
+                        <td className="mono">{row.ha} Ha</td>
+                        <td><span className="tag">{row.phase}</span></td>
+                        <td><strong style={{ color: row.pos.includes('100%') ? '#16A878' : row.pos.includes('Blocked') ? '#E85D68' : '#F2A51A' }}>{row.pos}</strong></td>
+                        <td className="mono" style={{ fontWeight: 700 }}>{row.comp}</td>
+                        <td><span style={{ fontSize: 11, color: '#0FA89A' }}>● {row.stat}</span></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <span className="muted tiny">Showing live dockets synced with AnyRoR &amp; NHAI Bhumi Rashi.</span>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className="btn btn-secondary" onClick={() => triggerNotify('Complete 420-Docket CSV Export downloaded.')}>
+                  <Download size={14} /> Export CSV
+                </button>
+                <button className="btn btn-primary" onClick={() => setActiveModal(null)}>
+                  Close Registry
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Resolve Injunction Modal */}
+      {activeModal === 'resolve_injunction' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveModal(null)}>
+          <div className="gis-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <Scale size={13} />
+                  <span>HIGH COURT WRIT PETITION DISPUTE RESOLUTION • BHARUCH</span>
+                </div>
+                <h2 className="gis-modal-title">Resolve Injunction: Bharuch Stretch (Km 188.200 - 190.500)</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-info-box">
+                <strong>Case Record:</strong> Special Civil Application #SCA-11482/2025 in Gujarat High Court.<br />
+                <strong>Dispute Cause:</strong> 14 agricultural co-owners of GAT 412/A &amp; 412/D demanding parity with urban industrial compensation multiplier under RFCTLARR Act Schedule I (demanding 2.0x instead of 1.25x rural rate).
+              </div>
+
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">CIVIL WORK DELAY</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#E85D68' }}>+45 Days Impact</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">LITIGATION EXPOSURE</div>
+                  <div className="gis-modal-metric-value">₹34.20 Cr</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">HEARING AUTHORITY</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#0FA89A' }}>Sub-Divisional Magistrate</div>
+                </div>
+              </div>
+
+              <div className="gis-modal-section-title">
+                <CheckCircle2 size={15} color="#0FA89A" />
+                <span>State Advocate General Recommended Settlement Packet</span>
+              </div>
+
+              <div style={{ display: 'grid', gap: 10, marginBottom: 18 }}>
+                <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 13 }}>
+                  <input type="checkbox" defaultChecked />
+                  <span>Sanction 20% Solatium Advance under RFCTLARR Section 28 directly to verified SBI Escrow</span>
+                </label>
+                <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 13 }}>
+                  <input type="checkbox" defaultChecked />
+                  <span>Allocate 500 sq.m commercial utility parcel per family in Dahej PCPIR Logistics Park</span>
+                </label>
+                <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 13 }}>
+                  <input type="checkbox" defaultChecked />
+                  <span>Fast-track vacating of interim stay through Advocate General urgent bench listing</span>
+                </label>
+              </div>
+
+              {injunctionStatus === 'resolved' ? (
+                <div style={{ padding: 14, borderRadius: 8, background: '#E8F7F1', border: '1px solid #16A878', color: '#16A878', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <CheckCircle2 size={18} />
+                  <span>Settlement packet approved and transmitted to Sub-Divisional Magistrate Bharuch. Stay removal listed for hearing!</span>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="gis-modal-footer">
+              <button className="btn btn-secondary" onClick={() => triggerNotify('Drafted Counter-Affidavit PDF downloaded.')}>
+                <FileText size={14} /> Download Affidavit Draft
+              </button>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className="btn btn-secondary" onClick={() => setActiveModal(null)}>Cancel</button>
+                {injunctionStatus === 'pending' ? (
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => {
+                      setInjunctionStatus('resolved');
+                      triggerNotify('Injunction hearing packet dispatched to Bharuch Sub-Divisional Magistrate.');
+                    }}
+                  >
+                    Submit &amp; Dispatch Settlement
+                  </button>
+                ) : (
+                  <button className="btn btn-primary" onClick={() => setActiveModal(null)}>Done</button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Release Tranche Modal */}
+      {activeModal === 'release_tranche' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveModal(null)}>
+          <div className="gis-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <Banknote size={13} />
+                  <span>DIRECT BENEFIT TRANSFER (DBT) • TREASURY CLEARANCE</span>
+                </div>
+                <h2 className="gis-modal-title">Authorize Compensation Tranche: Amod Section (₹14.80 Cr)</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">TRANCHE AMOUNT</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#16A878', fontSize: 20 }}>₹14.80 Crores</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">BENEFICIARY LANDOWNERS</div>
+                  <div className="gis-modal-metric-value">184 Families Verified</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">PFMS / AADHAAR STATUS</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#0FA89A' }}>100% Seeded</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">ESCROW VAULT</div>
+                  <div className="gis-modal-metric-value">SBI Gandhinagar</div>
+                </div>
+              </div>
+
+              <div className="gis-modal-info-box">
+                <strong>Statutory Basis:</strong> Award declared under Section 3G of National Highways Act / Section 23 RFCTLARR 2013 for Amod Taluka GAT 108 to 142. Dual digital authorization required under State Finance Rule 84.
+              </div>
+
+              <div className="gis-modal-section-title">
+                <ShieldCheck size={15} color="#16A878" />
+                <span>Statutory Clearances &amp; Dual Authorization</span>
+              </div>
+
+              <div style={{ display: 'grid', gap: 10, marginBottom: 18 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 10, background: '#F0F6F5', borderRadius: 6 }}>
+                  <span>District Collector Bharuch (Dr. Sourabh Zaveri, IAS)</span>
+                  <span className="tag" style={{ background: '#E8F7F1', color: '#16A878', borderColor: '#16A878' }}>✓ Digital Token Signed</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 10, background: '#F0F6F5', borderRadius: 6 }}>
+                  <span>State Revenue Secretary Dual-Signatory Authorizer</span>
+                  <span className="tag" style={{ background: '#FEF5E7', color: '#D98A08', borderColor: '#D98A08' }}>
+                    {trancheStatus === 'disbursed' ? '✓ Authorized' : 'Pending Confirmation'}
+                  </span>
+                </div>
+              </div>
+
+              {trancheStatus === 'disbursed' ? (
+                <div style={{ padding: 14, borderRadius: 8, background: '#E8F7F1', border: '1px solid #16A878', color: '#16A878', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <CheckCircle2 size={18} />
+                  <span>Tranche ₹14.80 Cr successfully released to Amod disbursement escrow! Bank remittance initiated.</span>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="gis-modal-footer">
+              <button className="btn btn-secondary" onClick={() => triggerNotify('PFMS Beneficiary batch file downloaded.')}>
+                <FileSpreadsheet size={14} /> Download PFMS Batch
+              </button>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className="btn btn-secondary" onClick={() => setActiveModal(null)}>Cancel</button>
+                {trancheStatus === 'pending' ? (
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => {
+                      setTrancheStatus('disbursed');
+                      triggerNotify('Compensation Tranche ₹14.8 Cr cleared for Amod disbursement escrow.');
+                    }}
+                  >
+                    Authorize Instant Escrow Release
+                  </button>
+                ) : (
+                  <button className="btn btn-primary" onClick={() => setActiveModal(null)}>Close</button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. View Joint Survey Modal */}
+      {activeModal === 'joint_survey' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveModal(null)}>
+          <div className="gis-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <Compass size={13} />
+                  <span>JOINT MEASUREMENT SURVEY (JMS) • UTILITY PROTOCOL</span>
+                </div>
+                <h2 className="gis-modal-title">Joint Measurement Survey: Padra GETCO 220kV Tower Shift</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">CHAINAGE STRETCH</div>
+                  <div className="gis-modal-metric-value">Km 246.000 - 251.200</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">UTILITY ENCUMBRANCE</div>
+                  <div className="gis-modal-metric-value">3 HT Tower Bases</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">DIVERSION CORRIDOR</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#0FA89A' }}>850m Lateral Shift</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">ESTIMATED SHIFT COST</div>
+                  <div className="gis-modal-metric-value">₹4.20 Cr Deposit Work</div>
+                </div>
+              </div>
+
+              <div className="gis-modal-info-box">
+                <strong>Protocol Summary:</strong> Joint measurement conducted between GETCO Gujarat Transmission Corporation, NHAI Project Implementation Unit Vadodara, and Special Land Acquisition Officer. The 220kV towers #41, #42, #43 will be relocated to the peripheral service corridor within 18 working days.
+              </div>
+
+              <div className="gis-modal-section-title">
+                <Users size={15} color="#0FA89A" />
+                <span>Signatories &amp; Technical Sanction</span>
+              </div>
+
+              <div style={{ display: 'grid', gap: 8, marginBottom: 16 }}>
+                <div style={{ padding: 10, background: '#F0F6F5', borderRadius: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>Executive Engineer, GETCO Vadodara Transmission Division</span>
+                  <span style={{ color: '#16A878', fontWeight: 600 }}>✓ Feasibility Cleared</span>
+                </div>
+                <div style={{ padding: 10, background: '#F0F6F5', borderRadius: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>Land Acquisition Officer, Vadodara (GAS)</span>
+                  <span style={{ color: '#16A878', fontWeight: 600 }}>✓ RoW Mutation Demarcated</span>
+                </div>
+                <div style={{ padding: 10, background: '#F0F6F5', borderRadius: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>Project Director, NHAI Expressways</span>
+                  <span style={{ color: utilityStatus === 'approved' ? '#16A878' : '#F2A51A', fontWeight: 600 }}>
+                    {utilityStatus === 'approved' ? '✓ Execution Approved' : 'Awaiting Sign-off'}
+                  </span>
+                </div>
+              </div>
+
+              {utilityStatus === 'approved' ? (
+                <div style={{ padding: 14, borderRadius: 8, background: '#E8F7F1', border: '1px solid #16A878', color: '#16A878', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <CheckCircle2 size={18} />
+                  <span>Utility Shifting Protocol approved! Tower relocation notice issued to GETCO contractors.</span>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="gis-modal-footer">
+              <button className="btn btn-secondary" onClick={() => triggerNotify('AutoCAD DGPS Survey Alignment DXF downloaded.')}>
+                <Download size={14} /> Download CAD Drawing
+              </button>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className="btn btn-secondary" onClick={() => setActiveModal(null)}>Close</button>
+                {utilityStatus === 'pending' ? (
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => {
+                      setUtilityStatus('approved');
+                      triggerNotify('Joint survey protocol open: Padra GETCO 220kV tower shifting.');
+                    }}
+                  >
+                    Approve Utility Shifting Order
+                  </button>
+                ) : (
+                  <button className="btn btn-primary" onClick={() => setActiveModal(null)}>Done</button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 5. Docket Bharuch Section */}
+      {activeModal === 'docket_bharuch' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveModal(null)}>
+          <div className="gis-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <AlertTriangle size={13} color="#E85D68" />
+                  <span>PRIORITY STRETCH DOCKET • DMIC EXPRESSWAY SEGMENT</span>
+                </div>
+                <h2 className="gis-modal-title">Bharuch Section Bottleneck Docket (Km 188 - 204)</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">BOTTLENECK LENGTH</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#E85D68' }}>16.4 km Bottleneck</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">DISPUTED PLOTS</div>
+                  <div className="gis-modal-metric-value">342 Land Parcels</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">CONSTRUCTION IMPACT</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#E85D68' }}>+45 Days Civil Delay</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">FINANCIAL EXPOSURE</div>
+                  <div className="gis-modal-metric-value">₹142.8 Cr Pending</div>
+                </div>
+              </div>
+
+              <div className="gis-modal-info-box">
+                <strong>Executive Assessment:</strong> Landowners in Vagra taluka demanding parity with Dahej urban industrial multiplier. Antigravity AI Geospatial recommendation: Deploy parallel bypass via <strong>GAT 419 / Govt Wasteland</strong> (18.2 Ha, 0 families affected, zero habitation friction, saves 160 days).
+              </div>
+
+              <div className="gis-modal-section-title">
+                <Navigation size={15} color="#0FA89A" />
+                <span>Field Resolution Actions</span>
+              </div>
+
+              <div style={{ display: 'grid', gap: 10, marginBottom: 18 }}>
+                <button
+                  className="btn btn-soft"
+                  style={{ justifyContent: 'flex-start', textAlign: 'left', padding: '12px 16px' }}
+                  onClick={() => {
+                    setSelectedCallout('bharuch');
+                    setHabitationFilter('zero_habitation');
+                    setActiveModal(null);
+                    triggerNotify('Applied High-Priority Zero-Habitation alternative corridor for Bharuch!');
+                  }}
+                >
+                  <div>
+                    <strong>★ Adopt High-Priority Zero-Habitation Alternative (GAT 419)</strong>
+                    <div className="tiny muted">Bypasses all 342 disputed agricultural plots; saves ₹142.8 Cr and 160 days.</div>
+                  </div>
+                </button>
+                <button
+                  className="btn btn-soft"
+                  style={{ justifyContent: 'flex-start', textAlign: 'left', padding: '12px 16px' }}
+                  onClick={() => triggerNotify('Summoned Sub-Divisional Magistrate for Lok Adalat Conciliation on 18 Jun.')}
+                >
+                  <div>
+                    <strong>Summon Special Lok Adalat Mediation Session</strong>
+                    <div className="tiny muted">Direct hearing under Sub-Divisional Magistrate Bharuch with farmer delegates.</div>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <span className="muted tiny">Docket Ref: DMIC-GUJ-PKG3-BHR-2025</span>
+              <button className="btn btn-primary" onClick={() => setActiveModal(null)}>Close Docket</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 6. Legal Briefing Docket Surat */}
+      {activeModal === 'docket_surat' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveModal(null)}>
+          <div className="gis-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <Landmark size={13} />
+                  <span>HIGH COURT LEGAL BRIEFING • BULLET TRAIN HSR</span>
+                </div>
+                <h2 className="gis-modal-title">Legal Briefing Package: Surat Peripheral (Km 84 - 88.8)</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">ENCUMBERED REACH</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#F2A51A' }}>4.8 km Encumbered</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">HEARING BENCH</div>
+                  <div className="gis-modal-metric-value">18 Jun (Bench 2, HC)</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">CONTRACTOR IMPACT</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#E85D68' }}>+60 Days Scheduled</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">REPRESENTING OFFICE</div>
+                  <div className="gis-modal-metric-value">Advocate General</div>
+                </div>
+              </div>
+
+              <div className="gis-modal-info-box">
+                <strong>Legal Summary:</strong> Environmental public-interest petition regarding viaduct pier proximity to Olpad wetland buffer zone. Gujarat Ecology Commission (GEC) environmental impact report confirms 100m acoustic bio-shield is compliant with Wildlife Protection Act Section 35.
+              </div>
+
+              <div className="gis-modal-section-title">
+                <Check size={15} color="#0FA89A" />
+                <span>Advocate General Briefing Components</span>
+              </div>
+
+              <div style={{ display: 'grid', gap: 8, marginBottom: 16 }}>
+                <div style={{ padding: 10, background: '#F0F6F5', borderRadius: 6 }}>
+                  1. GEC Certified Geo-Spatial Wetland Distance Map (1:1000 Precision)
+                </div>
+                <div style={{ padding: 10, background: '#F0F6F5', borderRadius: 6 }}>
+                  2. National Green Tribunal (NGT) Principal Bench Precedent (Writ Petition #402/2023)
+                </div>
+                <div style={{ padding: 10, background: '#F0F6F5', borderRadius: 6 }}>
+                  3. Supplementary Counter-Affidavit signed by Joint Secretary (Transport &amp; Infrastructure)
+                </div>
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <button className="btn btn-secondary" onClick={() => triggerNotify('Court dossier PDF (84 pages) downloaded.')}>
+                <Download size={14} /> Download Court Dossier
+              </button>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className="btn btn-secondary" onClick={() => setActiveModal(null)}>Cancel</button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    setActiveModal(null);
+                    triggerNotify('Dispatching legal briefing package to Advocate General Office for 18 Jun High Court bench.');
+                  }}
+                >
+                  Dispatch to Advocate General
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 7. Collector Meeting Docket Dholera */}
+      {activeModal === 'docket_dholera' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveModal(null)}>
+          <div className="gis-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <Trees size={13} color="#16A878" />
+                  <span>FOREST NOC &amp; COLLECTOR SANCTION • DHOLERA SPINE</span>
+                </div>
+                <h2 className="gis-modal-title">Collector Sanction: Package 3 (Bhimnath Interlink)</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">TOTAL ACQUIRED</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#16A878' }}>92% Acquired</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">AWAITING NOC</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#F2A51A' }}>3.2 km Scrub Jungle</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">COMPENSATORY LAND</div>
+                  <div className="gis-modal-metric-value">6.4 Ha in Amreli</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">SANCTION AUTHORITY</div>
+                  <div className="gis-modal-metric-value">District Collector Ahmedabad</div>
+                </div>
+              </div>
+
+              <div className="gis-modal-info-box">
+                <strong>Review Scope:</strong> Fast-track clearance of the final 3.2 km spur connecting Bhimnath Junction to Dholera SIR Central Expressway. Compensatory afforestation non-forest revenue parcel allocated in Dhari, Amreli.
+              </div>
+
+              <div className="gis-modal-section-title">
+                <Calendar size={15} color="#0FA89A" />
+                <span>Scheduled Coordination Meeting</span>
+              </div>
+
+              <div style={{ padding: 14, background: '#F0F6F5', borderRadius: 8, marginBottom: 16 }}>
+                <strong>Collectorate VC Agenda (14 June 2025 • 11:00 AM IST):</strong>
+                <ul style={{ margin: '8px 0 0 16px', fontSize: 13, lineHeight: 1.6 }}>
+                  <li>Mutual sign-off between Amreli &amp; Ahmedabad District Collectors on mutation ledger.</li>
+                  <li>MoEFCC Parivesh portal stage-II digital certificate release.</li>
+                  <li>Handover order to Gujarat State Road Development Corporation (GSRDC).</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <span className="muted tiny">Parivesh Portal Ref: FP/GJ/ROAD/9402/2024</span>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className="btn btn-secondary" onClick={() => setActiveModal(null)}>Close</button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    setActiveModal(null);
+                    triggerNotify('Scheduled expedited review with Amreli & Ahmedabad District Collectors for Forest NOC.');
+                  }}
+                >
+                  Confirm VC Schedule
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 8. RTK DGPS Geospatial Calibration Modal */}
+      {activeModal === 'dgps_calibration' && (
+        <div className="gis-modal-overlay" onClick={() => setActiveModal(null)}>
+          <div className="gis-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <Radio size={13} color="#0FA89A" />
+                  <span>GEODETIC TELEMETRY • SURVEY OF INDIA &amp; BHOOMISETU</span>
+                </div>
+                <h2 className="gis-modal-title">RTK DGPS Geospatial Calibration Station: Gandhinagar Node</h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveModal(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">FIX ACCURACY</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#16A878' }}>±2.1 cm RTK Fixed</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">ACTIVE SATELLITES</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#0FA89A' }}>36 Tracked (12 NavIC)</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">CORRECTION LATENCY</div>
+                  <div className="gis-modal-metric-value">0.18 sec (4G/NTRIP)</div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">CONNECTED ROVERS</div>
+                  <div className="gis-modal-metric-value">42 Field Survey Teams</div>
+                </div>
+              </div>
+
+              <div className="gis-modal-info-box">
+                <strong>Base Station Benchmark:</strong> Gandhinagar Central Node #GJ-DGPS-01 (Lat: 23.21563° N, Lon: 72.63694° E, Ellipsoidal Height: 84.12m). Provides continuous differential correction stream over RTCM 3.2 protocol to all corridor surveyors.
+              </div>
+
+              <div className="gis-modal-section-title">
+                <Satellite size={15} color="#0FA89A" />
+                <span>Constellation Health &amp; Signal-to-Noise Ratio (SNR)</span>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 16 }}>
+                <div style={{ padding: 10, background: '#F0F6F5', borderRadius: 6, textAlign: 'center' }}>
+                  <div className="tiny muted">NavIC (India)</div>
+                  <strong style={{ color: '#16A878' }}>12 Sats • 48 dB-Hz</strong>
+                </div>
+                <div style={{ padding: 10, background: '#F0F6F5', borderRadius: 6, textAlign: 'center' }}>
+                  <div className="tiny muted">GPS (USA)</div>
+                  <strong style={{ color: '#16A878' }}>16 Sats • 46 dB-Hz</strong>
+                </div>
+                <div style={{ padding: 10, background: '#F0F6F5', borderRadius: 6, textAlign: 'center' }}>
+                  <div className="tiny muted">GLONASS (Russia)</div>
+                  <strong style={{ color: '#16A878' }}>8 Sats • 44 dB-Hz</strong>
+                </div>
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <button className="btn btn-secondary" onClick={() => triggerNotify('RINEX 3.04 Ephemeris observation files downloaded.')}>
+                <Download size={14} /> Download RINEX Log
+              </button>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className="btn btn-secondary" onClick={() => setActiveModal(null)}>Close</button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    setActiveModal(null);
+                    triggerNotify('RTK DGPS Base Station: Gandhinagar Node recalibrated at ±2cm accuracy.');
+                  }}
+                >
+                  Recalibrate Active Rovers
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 9. RoW Handover Milestone Verification Modal */}
+      {activeMilestone && (
+        <div className="gis-modal-overlay" onClick={() => setActiveMilestone(null)}>
+          <div className="gis-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="gis-modal-header">
+              <div>
+                <div className="gis-modal-eyebrow">
+                  <Calendar size={13} color="#0FA89A" />
+                  <span>CABINET INFRASTRUCTURE TARGET VERIFICATION</span>
+                </div>
+                <h2 className="gis-modal-title">
+                  {activeMilestone === 'dfc_sanand' && 'Milestone: DFC Sanand Logistics Interconnect (24 Jun 2025)'}
+                  {activeMilestone === 'vadodara_ring' && 'Milestone: Vadodara Urban Ring Connector (15 Jul 2025)'}
+                  {activeMilestone === 'dmic_cabinet' && 'Cabinet Target: 100% RoW Handover - DMIC Reach (30 Aug 2025)'}
+                </h2>
+              </div>
+              <button className="gis-modal-close-btn" onClick={() => setActiveMilestone(null)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="gis-modal-body">
+              <div className="gis-modal-info-box">
+                {activeMilestone === 'dfc_sanand' && (
+                  <>
+                    <strong>Status: STAGE 3B Clean Corridor Verification.</strong><br />
+                    28.4 km clean corridor possession certificate prepared for L&amp;T Infrastructure. 0 encumbrances remaining. Mutation entry verified in AnyRoR.
+                  </>
+                )}
+                {activeMilestone === 'vadodara_ring' && (
+                  <>
+                    <strong>Status: STAGE 3A Arbitration Protocol.</strong><br />
+                    Final compensation arbitration session scheduled with 84 landholders in Padra taluka. 92% of awards disbursed through PFMS escrow.
+                  </>
+                )}
+                {activeMilestone === 'dmic_cabinet' && (
+                  <>
+                    <strong>Status: CABINET INFRASTRUCTURE BENCHMARK.</strong><br />
+                    Cabinet committee on infrastructure mandate: Achieve 100% undisputed right-of-way handover for the entire 560 km DMIC Gujarat sector by 30 August 2025.
+                  </>
+                )}
+              </div>
+
+              <div className="gis-modal-metrics-grid">
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">CURRENT READINESS</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#16A878' }}>
+                    {activeMilestone === 'dfc_sanand' ? '98.5% Ready' : activeMilestone === 'vadodara_ring' ? '91.2% Ready' : '88.4% Sector Reach'}
+                  </div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">DAYS TO DEADLINE</div>
+                  <div className="gis-modal-metric-value" style={{ color: '#0FA89A' }}>
+                    {activeMilestone === 'dfc_sanand' ? '12 Days' : activeMilestone === 'vadodara_ring' ? '32 Days' : '78 Days'}
+                  </div>
+                </div>
+                <div className="gis-modal-metric-card">
+                  <div className="gis-modal-metric-label">AUDIT VERIFICATION</div>
+                  <div className="gis-modal-metric-value">CAG Certified</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="gis-modal-footer">
+              <button className="btn btn-secondary" onClick={() => triggerNotify('Milestone verification slip downloaded.')}>
+                <Download size={14} /> Download Milestone Slip
+              </button>
+              <button className="btn btn-primary" onClick={() => setActiveMilestone(null)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

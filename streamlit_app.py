@@ -42,7 +42,9 @@ def load_model_pipeline():
     samples = []
     if samples_path.exists():
         with open(samples_path, "r", encoding="utf-8") as f:
-            samples = json.load(f)
+            samples_data = json.load(f)
+            # Handle if samples_data is a dict (like sample_cases in train_and_export) or a list
+            samples = list(samples_data.values()) if isinstance(samples_data, dict) else samples_data
 
     return pipeline, metadata, samples
 
@@ -54,26 +56,64 @@ pipeline, metadata, samples = load_model_pipeline()
 # -------------------------------------------------------------
 def engineer_features(data: pd.DataFrame) -> pd.DataFrame:
     d = data.copy()
-    d["cost_per_hectare"] = d["project_cost"] / (d["land_required_hectares"] + 1e-5)
-    d["cost_per_km"] = d["project_cost"] / (d["project_length_km"] + 1e-5)
-    d["compensation_to_cost_ratio"] = d["compensation_awarded_amount"] / (d["project_cost"] + 1e-5)
-    d["compensation_disbursement_rate"] = d["compensation_paid_amount"] / (d["compensation_awarded_amount"] + 1e-5)
-    d["pending_comp_to_cost"] = d["compensation_pending_amount"] / (d["project_cost"] + 1e-5)
-    d["total_litigation_cases"] = (
-        d["legal_case_count"] + d["court_case_count"] + d["arbitration_case_count"] + d["ownership_dispute_count"]
+    epsilon = 1e-5
+    
+    # 1. Financial & Compensation Friction
+    d["cost_per_hectare"] = d["project_cost"] / (d["land_required_hectares"] + epsilon)
+    d["cost_per_family"] = d["project_cost"] / (d["affected_families"] + epsilon)
+    d["cost_per_km"] = d["project_cost"] / (d["project_length_km"] + epsilon)
+    
+    d["pending_compensation_ratio"] = d["compensation_pending_amount"] / (d["compensation_awarded_amount"] + epsilon)
+    
+    cost_variance = (d["project_cost"] - d.get("estimated_cost", d["project_cost"])) / (d.get("estimated_cost", d["project_cost"]) + epsilon)
+    funds_in_litigation_pct = d.get("funds_locked_in_litigation", 0) / (d["project_cost"] + epsilon)
+    d["financial_stress_index"] = np.maximum(0, cost_variance) * (1 + funds_in_litigation_pct)
+
+    # 2. Legal & Social Friction Density
+    d["total_active_cases"] = d["legal_case_count"] + d["court_case_count"] + d["arbitration_case_count"]
+    d["litigation_density_per_family"] = d["total_active_cases"] / (d["affected_families"] + 1)
+    d["litigation_density_per_hectare"] = d["total_active_cases"] / (d["land_required_hectares"] + epsilon)
+    
+    d["litigation_severity_score"] = (
+        (d.get("supreme_court_cases", 0) * 5) + 
+        (d.get("high_court_cases", 0) * 3) + 
+        (d.get("district_court_cases", d["total_active_cases"]) * 1)
     )
-    d["litigation_per_family"] = (d["legal_case_count"] + d["court_case_count"]) / (d["affected_families"] + 1)
-    d["litigation_per_km"] = d["total_litigation_cases"] / (d["project_length_km"] + 1e-5)
+
     d["public_friction_index"] = (
-        d["public_objection_count"] + d["unresolved_grievances"] + d["rr_grievances"]
+        (d["public_objection_count"] * 2) + 
+        d["unresolved_grievances"] + 
+        d["rr_grievances"]
     ) / (d["affected_families"] + 1)
-    d["land_acquisition_rate"] = d["land_acquired_pct"] / (d["days_since_notification"] + 1)
-    d["possession_gap"] = d["land_acquired_pct"] - d["possession_pct"]
-    d["row_bottleneck_index"] = 100.0 - d["row_available_pct"]
-    d["encumbrance_vulnerability"] = 100.0 - d["encumbrance_free_pct"]
-    d["relocation_deficit"] = 100.0 - d["families_relocated_pct"]
-    d["stakeholder_friction_x_comp_pending"] = d["public_friction_index"] * d["compensation_pending_pct"]
-    d["legal_x_delay_interaction"] = d["total_litigation_cases"] * d["days_in_current_stage"]
+    
+    avg_regional_lag = d.groupby('district')['average_compensation_delay_days'].transform('mean').fillna(0) if 'district' in d else 0
+    d["dispute_resolution_lag"] = d.get("avg_case_resolution_days", avg_regional_lag)
+
+    # 3. Lifecycle Velocity & Momentum
+    historical_stage_avg = d.get("historical_stage_avg_days", 180)
+    d["stage_stagnation_ratio"] = d["days_in_current_stage"] / (historical_stage_avg + epsilon)
+    
+    months_elapsed = np.maximum(1, d["days_since_notification"] / 30.0)
+    d["acquisition_velocity_hectares_per_month"] = (d["land_acquired_pct"] / 100 * d["land_required_hectares"]) / months_elapsed
+    d["rr_velocity_families_per_month"] = (d["rr_completion_pct"] / 100 * d["affected_families"]) / months_elapsed
+
+    if "project_id" in d.columns and "snapshot_id" in d.columns:
+        d = d.sort_values(["project_id", "snapshot_id"])
+        d["current_acquisition_rate"] = d.groupby("project_id")["land_acquired_pct"].diff().fillna(0)
+        d["previous_acquisition_rate"] = d.groupby("project_id")["current_acquisition_rate"].shift(1).fillna(0)
+        d["administrative_deceleration"] = d["previous_acquisition_rate"] - d["current_acquisition_rate"]
+    else:
+        d["administrative_deceleration"] = 0.0
+
+    # 4. Interaction & Compound Risk
+    d["friction_x_pending_comp"] = d["public_friction_index"] * d["pending_compensation_ratio"]
+    d["possession_deficit_x_rr_velocity"] = np.maximum(0, d["possession_pct"] - d["rr_completion_pct"]) / (d["rr_velocity_families_per_month"] + epsilon)
+
+    skewed_columns = ["total_active_cases", "public_objection_count", "affected_families", "compensation_pending_amount"]
+    for col in skewed_columns:
+        if col in d.columns:
+            d[f"log_{col}"] = np.log1p(d[col])
+
     return d
 
 # -------------------------------------------------------------

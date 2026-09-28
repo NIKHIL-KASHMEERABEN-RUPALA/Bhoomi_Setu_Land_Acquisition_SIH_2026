@@ -39,43 +39,64 @@ print("[*] Performing domain feature engineering...")
 
 def engineer_features(data: pd.DataFrame) -> pd.DataFrame:
     d = data.copy()
+    epsilon = 1e-5
     
-    # 1. Financial Ratios
-    d["cost_per_hectare"] = d["project_cost"] / (d["land_required_hectares"] + 1e-5)
-    d["cost_per_km"] = d["project_cost"] / (d["project_length_km"] + 1e-5)
-    d["compensation_to_cost_ratio"] = d["compensation_awarded_amount"] / (d["project_cost"] + 1e-5)
-    d["compensation_disbursement_rate"] = d["compensation_paid_amount"] / (d["compensation_awarded_amount"] + 1e-5)
-    d["pending_comp_to_cost"] = d["compensation_pending_amount"] / (d["project_cost"] + 1e-5)
+    # 1. Financial & Compensation Friction
+    d["cost_per_hectare"] = d["project_cost"] / (d["land_required_hectares"] + epsilon)
+    d["cost_per_family"] = d["project_cost"] / (d["affected_families"] + epsilon)
+    d["cost_per_km"] = d["project_cost"] / (d["project_length_km"] + epsilon)
+    
+    d["pending_compensation_ratio"] = d["compensation_pending_amount"] / (d["compensation_awarded_amount"] + epsilon)
+    
+    cost_variance = (d["project_cost"] - d.get("estimated_cost", d["project_cost"])) / (d.get("estimated_cost", d["project_cost"]) + epsilon)
+    funds_in_litigation_pct = d.get("funds_locked_in_litigation", 0) / (d["project_cost"] + epsilon)
+    d["financial_stress_index"] = np.maximum(0, cost_variance) * (1 + funds_in_litigation_pct)
 
-    # 2. Legal & Dispute Density
-    d["total_litigation_cases"] = (
-        d["legal_case_count"] + d["court_case_count"] + d["arbitration_case_count"] + d["ownership_dispute_count"]
+    # 2. Legal & Social Friction Density
+    d["total_active_cases"] = d["legal_case_count"] + d["court_case_count"] + d["arbitration_case_count"]
+    d["litigation_density_per_family"] = d["total_active_cases"] / (d["affected_families"] + 1)
+    d["litigation_density_per_hectare"] = d["total_active_cases"] / (d["land_required_hectares"] + epsilon)
+    
+    d["litigation_severity_score"] = (
+        (d.get("supreme_court_cases", 0) * 5) + 
+        (d.get("high_court_cases", 0) * 3) + 
+        (d.get("district_court_cases", d["total_active_cases"]) * 1)
     )
-    d["litigation_per_family"] = (d["legal_case_count"] + d["court_case_count"]) / (d["affected_families"] + 1)
-    d["litigation_per_km"] = d["total_litigation_cases"] / (d["project_length_km"] + 1e-5)
+
     d["public_friction_index"] = (
-        d["public_objection_count"] + d["unresolved_grievances"] + d["rr_grievances"]
+        (d["public_objection_count"] * 2) + 
+        d["unresolved_grievances"] + 
+        d["rr_grievances"]
     ) / (d["affected_families"] + 1)
+    
+    avg_regional_lag = d.groupby('district')['average_compensation_delay_days'].transform('mean').fillna(0) if 'district' in d else 0
+    d["dispute_resolution_lag"] = d.get("avg_case_resolution_days", avg_regional_lag)
 
-    # 3. Lifecycle Velocity & Temporal Momentum
-    d["land_acquisition_rate"] = d["land_acquired_pct"] / (d["days_since_notification"] + 1)
-    d["rr_velocity"] = d["rr_completion_pct"] / (d["days_since_notification"] + 1)
-    d["stage_stagnation_ratio"] = d["days_in_current_stage"] / (d["days_since_notification"] + 1)
-    d["administrative_lag_share"] = (
-        d["notification_delay_days"] + d["approval_delay_days"] + d["survey_delay_days"]
-    ) / (d["days_since_notification"] + 1)
+    # 3. Lifecycle Velocity & Momentum
+    historical_stage_avg = d.get("historical_stage_avg_days", 180)
+    d["stage_stagnation_ratio"] = d["days_in_current_stage"] / (historical_stage_avg + epsilon)
+    
+    months_elapsed = np.maximum(1, d["days_since_notification"] / 30.0)
+    d["acquisition_velocity_hectares_per_month"] = (d["land_acquired_pct"] / 100 * d["land_required_hectares"]) / months_elapsed
+    d["rr_velocity_families_per_month"] = (d["rr_completion_pct"] / 100 * d["affected_families"]) / months_elapsed
 
-    # Longitudinal delta features within each project
     if "project_id" in d.columns and "snapshot_id" in d.columns:
-        d = d.sort_values(["project_id", "snapshot_id"]).reset_index(drop=True)
-        d["delta_land_acquired_pct"] = d.groupby("project_id")["land_acquired_pct"].diff().fillna(0)
+        d = d.sort_values(["project_id", "snapshot_id"])
+        d["current_acquisition_rate"] = d.groupby("project_id")["land_acquired_pct"].diff().fillna(0)
+        d["previous_acquisition_rate"] = d.groupby("project_id")["current_acquisition_rate"].shift(1).fillna(0)
+        d["administrative_deceleration"] = d["previous_acquisition_rate"] - d["current_acquisition_rate"]
     else:
-        if "delta_land_acquired_pct" not in d.columns:
-            d["delta_land_acquired_pct"] = 0.0
+        d["administrative_deceleration"] = 0.0
 
-    # 4. SHAP-Guided Interaction Terms
-    d["stakeholder_friction_x_comp_pending"] = (100 - d["stakeholder_response_rate"]) * d["compensation_pending_pct"] / 100
-    d["possession_deficit"] = d["land_acquired_pct"] - d["possession_pct"]
+    # 4. Interaction & Compound Risk
+    d["friction_x_pending_comp"] = d["public_friction_index"] * d["pending_compensation_ratio"]
+    d["possession_deficit_x_rr_velocity"] = np.maximum(0, d["possession_pct"] - d["rr_completion_pct"]) / (d["rr_velocity_families_per_month"] + epsilon)
+
+    skewed_columns = ["total_active_cases", "public_objection_count", "affected_families", "compensation_pending_amount"]
+    for col in skewed_columns:
+        if col in d.columns:
+            d[f"log_{col}"] = np.log1p(d[col])
+
     return d
 
 df = engineer_features(df)
@@ -99,11 +120,13 @@ BASE_FEATURES = [
 ]
 
 ENGINEERED_FEATURES = [
-    "cost_per_hectare", "cost_per_km", "compensation_to_cost_ratio",
-    "compensation_disbursement_rate", "pending_comp_to_cost",
-    "total_litigation_cases", "litigation_per_family", "litigation_per_km", "public_friction_index",
-    "land_acquisition_rate", "rr_velocity", "stage_stagnation_ratio", "administrative_lag_share",
-    "delta_land_acquired_pct", "stakeholder_friction_x_comp_pending", "possession_deficit"
+    "cost_per_hectare", "cost_per_family", "cost_per_km", 
+    "pending_compensation_ratio", "financial_stress_index",
+    "total_active_cases", "litigation_density_per_family", "litigation_density_per_hectare",
+    "litigation_severity_score", "public_friction_index", "dispute_resolution_lag",
+    "stage_stagnation_ratio", "acquisition_velocity_hectares_per_month", "rr_velocity_families_per_month",
+    "administrative_deceleration", "friction_x_pending_comp", "possession_deficit_x_rr_velocity",
+    "log_total_active_cases", "log_public_objection_count", "log_affected_families", "log_compensation_pending_amount"
 ]
 
 ALL_FEATURES = BASE_FEATURES + ENGINEERED_FEATURES
