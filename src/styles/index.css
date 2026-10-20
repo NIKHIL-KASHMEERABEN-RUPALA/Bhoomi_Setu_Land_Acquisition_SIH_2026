@@ -9702,4 +9702,414 @@ html, body {
   }
 }
 
+/* ==========================================================================
+   MOBILE & MULTI-DEVICE RESPONSIVE SUITE (BHOOMISETU STANDOUT UI)
+   ========================================================================== */
+
+/* 1. Header Responsive Buttons */
+.mobile-only-btn {
+  display: none;
+}
+
+.mobile-menu-btn {
+  display: none;
+}
+
+.mobile-ai-icon-btn {
+  background: linear-gradient(135deg, rgba(15, 168, 154, 0.25), rgba(6, 76, 85, 0.5));
+  border: 1px solid rgba(78, 224, 209, 0.45);
+  color: #4EE0D1;
+}
+
+@media (max-width: 1024px) {
+  .mobile-only-btn {
+    display: inline-grid;
+    place-items: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: inline-grid;
+    place-items: center;
+  }
+  .status-indicator {
+    display: none;
+  }
+  .main-content {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 16px));
+  }
+  .app-footer {
+    display: none; /* Native mobile feel with bottom nav */
+  }
+}
+
+/* 2. Fixed Mobile Bottom Navigation Bar */
+.mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-bottom-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    height: calc(58px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid #D8E8E6;
+    box-shadow: 0 -4px 20px rgba(6, 76, 85, 0.08);
+  }
+
+  .dark .mobile-bottom-nav {
+    background: rgba(11, 25, 38, 0.95);
+    border-top-color: rgba(78, 224, 209, 0.2);
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.6);
+  }
+}
+
+.mobile-bottom-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+  padding: 4px 0 2px;
+  background: transparent;
+  border: none;
+  color: #627D98;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s ease;
+}
+
+.dark .mobile-bottom-item {
+  color: #8FA3BC;
+}
+
+.mobile-bottom-item.active {
+  color: #0FA89A;
+  font-weight: 700;
+}
+
+.dark .mobile-bottom-item.active {
+  color: #4EE0D1;
+}
+
+.mobile-bottom-icon-wrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 24px;
+}
+
+.mobile-bottom-badge {
+  position: absolute;
+  top: -2px;
+  right: 0px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #E85D68;
+  box-shadow: 0 0 6px rgba(232, 93, 104, 0.8);
+  animation: pulse 1.8s infinite;
+}
+
+.mobile-bottom-label {
+  font-size: 10px;
+  margin-top: 2px;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+
+/* 3. Full Mobile Navigation Slide-Over Drawer */
+.mobile-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 25, 33, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeInModal 0.2s ease-out;
+}
+
+.mobile-drawer-sheet {
+  width: min(390px, 88vw);
+  height: 100%;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -10px 0 35px rgba(6, 76, 85, 0.22);
+  animation: slideDrawerLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.dark .mobile-drawer-sheet {
+  background: #0E2233;
+  color: #F8FAFC;
+  border-left: 1px solid rgba(78, 224, 209, 0.2);
+}
+
+@keyframes slideDrawerLeft {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.mobile-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid #E2ECEB;
+  background: #F8FAFA;
+}
+
+.dark .mobile-drawer-header {
+  background: #0B1926;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.mobile-drawer-quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  background: #F1F6F5;
+  border-bottom: 1px solid #E2ECEB;
+  overflow-x: auto;
+}
+
+.dark .mobile-drawer-quick-actions {
+  background: #081622;
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.mobile-drawer-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  border: 1px solid #D8E8E6;
+  background: #FFFFFF;
+  color: #102A43;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.dark .mobile-drawer-pill {
+  background: #0E2233;
+  border-color: rgba(78, 224, 209, 0.25);
+  color: #E2E8F0;
+}
+
+.mobile-drawer-pill-ai {
+  background: linear-gradient(135deg, #0FA89A, #064C55);
+  color: #FFFFFF;
+  border-color: #4EE0D1;
+}
+
+.mobile-drawer-user-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-bottom: 1px solid #E2ECEB;
+  background: #FFFFFF;
+}
+
+.dark .mobile-drawer-user-card {
+  background: #0E2233;
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.mobile-drawer-links {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mobile-drawer-group-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #627D98;
+  margin-bottom: 6px;
+  padding-left: 6px;
+}
+
+.dark .mobile-drawer-group-title {
+  color: #8FA3BC;
+}
+
+.mobile-drawer-group-items {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mobile-drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #102A43;
+  transition: background 0.15s ease;
+}
+
+.dark .mobile-drawer-item {
+  color: #E2E8F0;
+}
+
+.mobile-drawer-item:hover {
+  background: #F1F6F5;
+}
+
+.dark .mobile-drawer-item:hover {
+  background: rgba(15, 168, 154, 0.15);
+}
+
+.mobile-drawer-item.active {
+  background: #EDF6F5;
+  color: #0FA89A;
+  font-weight: 700;
+}
+
+.dark .mobile-drawer-item.active {
+  background: rgba(15, 168, 154, 0.22);
+  color: #4EE0D1;
+}
+
+.mobile-drawer-item-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  background: #F1F6F5;
+  color: #0FA89A;
+  flex-shrink: 0;
+}
+
+.dark .mobile-drawer-item-icon {
+  background: rgba(15, 168, 154, 0.18);
+  color: #4EE0D1;
+}
+
+.mobile-drawer-item-label {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.mobile-drawer-item-note {
+  font-size: 11px;
+  color: #78909C;
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dark .mobile-drawer-item-note {
+  color: #8FA3BC;
+}
+
+.mobile-drawer-active-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0FA89A;
+  flex-shrink: 0;
+}
+
+.dark .mobile-drawer-active-dot {
+  background: #4EE0D1;
+}
+
+.mobile-drawer-footer {
+  padding: 16px 18px;
+  border-top: 1px solid #E2ECEB;
+  background: #F8FAFA;
+}
+
+.dark .mobile-drawer-footer {
+  background: #0B1926;
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+/* 4. Adaptive Layout Tweaks for Small Screens */
+@media (max-width: 640px) {
+  .page-wrap {
+    padding: 12px 10px calc(80px + env(safe-area-inset-bottom, 16px)) !important;
+  }
+  .grid-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+  .grid-kpis .surface-pad {
+    padding: 12px 14px !important;
+  }
+  .grid-kpis .stat-value {
+    font-size: 20px !important;
+    margin-top: 6px !important;
+  }
+  .kpi-stat-value {
+    font-size: 22px !important;
+  }
+  .table-wrap {
+    margin: 0 -10px;
+    width: calc(100% + 20px);
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
+  .fund-header-wrap,
+  .gis-header-row,
+  .bench-header-wrap {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .fund-header-actions,
+  .gis-header-actions,
+  .bench-actions-row {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .grid-kpis {
+    grid-template-columns: 1fr !important;
+  }
+  .stat-value {
+    font-size: 24px !important;
+  }
+}
+
+
 

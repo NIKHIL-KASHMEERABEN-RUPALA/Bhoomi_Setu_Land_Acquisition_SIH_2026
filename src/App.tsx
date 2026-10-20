@@ -96,8 +96,14 @@ function AppShell({ children }: { children: ReactNode }) {
   const [palette, setPalette] = useState(false);
   const [aiModalOpen, setAiModalOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [toast, setToast] = useState('');
   const [dark, setDark] = useState(() => window.localStorage.getItem('bhoomi-theme') === 'dark');
+
+  // Automatically close mobile drawer when route changes
+  useEffect(() => {
+    setMobileDrawerOpen(false);
+  }, [location]);
 
   useEffect(() => {
     const listener = (event: KeyboardEvent) => {
@@ -173,6 +179,28 @@ function AppShell({ children }: { children: ReactNode }) {
             </div>
 
             <div className="right-section">
+              {/* Mobile Search Button (visible on tablet and phone) */}
+              <button
+                className="icon-btn mobile-only-btn"
+                onClick={() => setPalette(true)}
+                aria-label="Search projects"
+                title="Search (⌘K)"
+                data-testid="button-mobile-search"
+              >
+                <Search size={17} />
+              </button>
+
+              {/* Mobile AI Assist Button */}
+              <button
+                className="icon-btn mobile-only-btn mobile-ai-icon-btn"
+                onClick={() => setAiModalOpen(true)}
+                aria-label="AI Assist"
+                title="AI Assist Matrix"
+                data-testid="button-mobile-ai"
+              >
+                <Sparkles size={16} />
+              </button>
+
               <div className="status-indicator">
                 <div className="status-title-row">
                   <span className="status-dot" />
@@ -223,6 +251,17 @@ function AppShell({ children }: { children: ReactNode }) {
               >
                 <LogOut size={18} />
               </button>
+
+              {/* Mobile Menu Hamburger Toggle */}
+              <button
+                className="icon-btn mobile-menu-btn"
+                onClick={() => setMobileDrawerOpen(true)}
+                aria-label="Open Navigation Menu"
+                title="Navigation Menu"
+                data-testid="button-mobile-drawer-toggle"
+              >
+                <Menu size={20} />
+              </button>
             </div>
           </div>
         </div>
@@ -248,6 +287,19 @@ function AppShell({ children }: { children: ReactNode }) {
       </header>
 
       <main className="main-content">{children}</main>
+
+      {/* Modern Fixed Mobile Bottom Navigation Bar (Screens <= 768px) */}
+      <MobileBottomNav onOpenDrawer={() => setMobileDrawerOpen(true)} />
+
+      {/* Full-Featured Mobile Slide-Over Navigation Drawer */}
+      <MobileNavDrawer
+        isOpen={mobileDrawerOpen}
+        onClose={() => setMobileDrawerOpen(false)}
+        onOpenSearch={() => setPalette(true)}
+        onOpenAi={() => setAiModalOpen(true)}
+        dark={dark}
+        onToggleTheme={() => setDark((v) => !v)}
+      />
 
       <footer className="app-footer">
         <div className="app-footer-inner">
@@ -378,6 +430,226 @@ function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+const navCategories = [
+  {
+    title: 'Core Operations & Analytics',
+    items: [
+      { href: '/dashboard', label: 'Command Center', icon: LayoutDashboard, note: 'State portfolio risk pulse' },
+      { href: '/ml-models', label: 'ML Models & Backend', icon: Cpu, note: 'XGBoost & TreeSHAP sandbox' },
+      { href: '/corridor-map', label: 'National Corridor GIS', icon: RouteIcon, note: 'Right-of-Way & cadastral layers' },
+    ],
+  },
+  {
+    title: 'Diagnostics & Alerts',
+    items: [
+      { href: '/district-diagnostics', label: 'District Diagnostics', icon: BarChart3, note: 'SLA benchmarks & rankings' },
+      { href: '/early-warning', label: 'Early Warning Center', icon: ShieldAlert, note: '72hr task force intervention' },
+      { href: '/state-benchmarking', label: 'State Benchmarking', icon: BarChart2, note: 'Interstate performance matrix' },
+    ],
+  },
+  {
+    title: 'Statutory Finance & Land Rights',
+    items: [
+      { href: '/fund-tracking', label: 'Fund Tracking & DBT', icon: WalletCards, note: 'Sec 77/80 escrow reconciliation' },
+      { href: '/group-land', label: 'Group Land & Co-Ownership', icon: Users, note: 'Co-sharer consent & lineage' },
+      { href: '/project/p-004', label: 'Projects 360', icon: Network, note: 'What-If counterfactual sandbox' },
+    ],
+  },
+  {
+    title: 'Governance & Institutional',
+    items: [
+      { href: '/intelligence', label: 'Intelligence Modules', icon: Cpu, note: 'B.L.A.S.T. multi-modal diagnostics' },
+      { href: '/policy-briefing', label: 'Policy Briefing Packet', icon: FileText, note: '1-click PDF executive export' },
+      { href: '/audit-log', label: 'Tamper-Evident Audit Log', icon: ClipboardList, note: 'SHA-256 immutable ledger' },
+      { href: '/settings', label: 'Settings & Access', icon: Settings2, note: 'RBAC, thresholds & webhooks' },
+      { href: '/login', label: 'Switch Role / Login Portal', icon: LockKeyhole, note: 'Multi-role authentication' },
+    ],
+  },
+];
+
+function MobileBottomNav({ onOpenDrawer }: { onOpenDrawer: () => void }) {
+  const [location] = useLocation();
+  const bottomItems = [
+    { href: '/dashboard', label: 'Command', icon: LayoutDashboard },
+    { href: '/ml-models', label: 'ML Engine', icon: Cpu },
+    { href: '/corridor-map', label: 'GIS Map', icon: RouteIcon },
+    { href: '/early-warning', label: 'EWS Alerts', icon: ShieldAlert, badge: true },
+  ];
+
+  return (
+    <nav className="mobile-bottom-nav" aria-label="Mobile Navigation Bar">
+      {bottomItems.map(({ href, label, icon: Icon, badge }) => {
+        const isActive = location === href || (href !== '/dashboard' && location.startsWith(href));
+        return (
+          <Link
+            key={href}
+            href={href}
+            className={`mobile-bottom-item ${isActive ? 'active' : ''}`}
+            data-testid={`bottom-nav-${label.toLowerCase().replaceAll(' ', '-')}`}
+          >
+            <div className="mobile-bottom-icon-wrap">
+              <Icon size={20} />
+              {badge && <span className="mobile-bottom-badge" />}
+            </div>
+            <span className="mobile-bottom-label">{label}</span>
+          </Link>
+        );
+      })}
+      <button
+        type="button"
+        className="mobile-bottom-item"
+        onClick={onOpenDrawer}
+        data-testid="bottom-nav-all-views"
+        aria-label="Open All Operational Views"
+      >
+        <div className="mobile-bottom-icon-wrap">
+          <Menu size={20} />
+        </div>
+        <span className="mobile-bottom-label">All Views</span>
+      </button>
+    </nav>
+  );
+}
+
+function MobileNavDrawer({
+  isOpen,
+  onClose,
+  onOpenSearch,
+  onOpenAi,
+  dark,
+  onToggleTheme,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onOpenSearch: () => void;
+  onOpenAi: () => void;
+  dark: boolean;
+  onToggleTheme: () => void;
+}) {
+  const [location, setLocation] = useLocation();
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="mobile-drawer-overlay" onClick={onClose} data-testid="mobile-nav-drawer-overlay">
+      <div className="mobile-drawer-sheet" onClick={(e) => e.stopPropagation()}>
+        <div className="mobile-drawer-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div className="logo-box" style={{ width: 34, height: 34 }}>
+              <Landmark size={18} />
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span className="brand-name" style={{ fontSize: 16 }}>BhoomiSetu</span>
+                <span className="network-badge" style={{ fontSize: 8.5, padding: '2px 5px' }}>GATEWAY</span>
+              </div>
+              <div className="brand-subtext" style={{ fontSize: 9.5 }}>State-Control Room • 256-bit</div>
+            </div>
+          </div>
+          <button className="icon-btn" onClick={onClose} aria-label="Close menu">
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Quick Action Pills */}
+        <div className="mobile-drawer-quick-actions">
+          <button
+            className="mobile-drawer-pill"
+            onClick={() => {
+              onClose();
+              onOpenSearch();
+            }}
+          >
+            <Search size={14} color="#0FA89A" />
+            <span>Search (⌘K)</span>
+          </button>
+          <button
+            className="mobile-drawer-pill mobile-drawer-pill-ai"
+            onClick={() => {
+              onClose();
+              onOpenAi();
+            }}
+          >
+            <Sparkles size={14} color="#4EE0D1" />
+            <span>AI Assist</span>
+          </button>
+          <button className="mobile-drawer-pill" onClick={onToggleTheme}>
+            {dark ? <Sun size={14} color="#F2A51A" /> : <Moon size={14} color="#526B82" />}
+            <span>{dark ? 'Light Theme' : 'Dark Theme'}</span>
+          </button>
+        </div>
+
+        {/* User Card */}
+        <div className="mobile-drawer-user-card">
+          <div className="user-avatar" style={{ width: 36, height: 36, fontSize: 13 }}>RK</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--navy-primary)' }}>R. K. Shah, IAS</div>
+            <div style={{ fontSize: 11, color: 'var(--slate-secondary)' }}>Special Land Acquisition Officer (CALA)</div>
+          </div>
+          <Link
+            href="/login"
+            onClick={onClose}
+            className="tag risk-info"
+            style={{ fontSize: 10, textDecoration: 'none' }}
+          >
+            Switch
+          </Link>
+        </div>
+
+        {/* Categorized Navigation Links */}
+        <div className="mobile-drawer-links">
+          {navCategories.map((cat) => (
+            <div key={cat.title} className="mobile-drawer-group">
+              <div className="mobile-drawer-group-title">{cat.title}</div>
+              <div className="mobile-drawer-group-items">
+                {cat.items.map(({ href, label, icon: Icon, note }) => {
+                  const isActive = location === href || (href !== '/dashboard' && location.startsWith(href));
+                  return (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={onClose}
+                      className={`mobile-drawer-item ${isActive ? 'active' : ''}`}
+                    >
+                      <div className="mobile-drawer-item-icon">
+                        <Icon size={16} />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div className="mobile-drawer-item-label">{label}</div>
+                        {note && <div className="mobile-drawer-item-note">{note}</div>}
+                      </div>
+                      {isActive && <div className="mobile-drawer-active-dot" />}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer */}
+        <div className="mobile-drawer-footer">
+          <div style={{ fontSize: 11, color: 'var(--slate-muted)' }}>
+            Encrypted StateLink • Western Grid (Gandhinagar)
+          </div>
+          <button
+            className="btn btn-secondary"
+            style={{ width: '100%', minHeight: 38, marginTop: 10, fontSize: 12, justifyContent: 'center' }}
+            onClick={() => {
+              clearStoredToken();
+              onClose();
+              setLocation('/login');
+            }}
+          >
+            <LogOut size={14} />
+            <span>Secure Logout</span>
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

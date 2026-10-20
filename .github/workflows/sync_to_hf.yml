@@ -1,0 +1,26 @@
+name: Sync to Hugging Face Space
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Push to Hugging Face Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git config --global user.email "bot@bhoomisetu.gov.in"
+          git config --global user.name "BhoomiSetu Sync Bot"
+          
+          # Push the repository directly to Hugging Face Spaces
+          git push --force https://NIKHILPATEL00212:$HF_TOKEN@huggingface.co/spaces/NIKHILPATEL00212/bhoomisetu-ml-engine main:main || true
